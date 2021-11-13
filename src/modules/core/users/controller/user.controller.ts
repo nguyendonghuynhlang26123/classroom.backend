@@ -27,7 +27,6 @@ import {
   UpdateUserDTO,
   CreateUserDto,
   ChangePassDTO,
-  UpdateUserTypeDTO,
 } from 'src/interfaces';
 import { AllowFors } from 'src/decorators/allowFors.decorator';
 import { UserType } from 'src/enums';
@@ -62,30 +61,6 @@ export class UserControllerV1 {
     name: 'XSRF-Token',
     description: 'XSRF-Token',
   })
-  @Post()
-  async createService(
-    @Body() user: CreateUserDto,
-  ): Promise<HttpException | User> {
-    return await this.userService.createUser(user);
-  }
-
-  @ApiHeader({
-    name: 'XSRF-Token',
-    description: 'XSRF-Token',
-  })
-  @UseGuards(JwtAuthGuard)
-  @AllowFors(UserType.Admin)
-  @Post('admin/create-user')
-  async adminCreateService(
-    @Body() user: CreateUserDto,
-  ): Promise<HttpException | User> {
-    return await this.userService.adminCreateUser(user);
-  }
-
-  @ApiHeader({
-    name: 'XSRF-Token',
-    description: 'XSRF-Token',
-  })
   @UseGuards(JwtAuthGuard)
   @AllowFors(UserType.User, UserType.Admin)
   @Get(':user_id')
@@ -109,70 +84,56 @@ export class UserControllerV1 {
     return await this.userService.changePass(req.user._id, param.user_id, pass);
   }
 
-  // @UseGuards(JwtAuthGuard)
-  // @AllowFors(UserType.User, UserType.Admin)
-  // @UseInterceptors(
-  //   FileInterceptor('avatar_upload', {
-  //     storage: diskStorage({
-  //       destination: function (req, file, cb) {
-  //         const uniqueSuffix = `${Date.now()}${Math.round(
-  //           Math.random() * 1e9,
-  //         )}`;
-  //         let url = join(process.cwd(), '/public/upload/avatars');
-  //         fs.mkdirSync(url, { recursive: true });
-  //         cb(null, url);
-  //       },
-
-  //       filename: function (req, file, cb) {
-  //         const uniqueSuffix = `${Date.now()}${Math.round(
-  //           Math.random() * 1e9,
-  //         )}`;
-  //         cb(
-  //           null,
-  //           file.fieldname +
-  //             '-' +
-  //             uniqueSuffix +
-  //             path.extname(file.originalname),
-  //         );
-  //       },
-  //     }),
-  //     fileFilter: imageFileFilter,
-  //   }),
-  // )
-  // @Put(':user_id')
-  // updateUserInfo(
-  //   @Req() req,
-  //   @Body() data: UpdateUserDTO,
-  //   @Param() { user_id },
-  //   @UploadedFile() file: Express.Multer.File,
-  // ) {
-  //   data.avatar = null;
-  //   if (file) {
-  //     data.avatar = file.filename;
-  //   }
-  //   if (req.user._id != user_id) {
-  //     throw new HttpException('FORBIDDEN', HttpStatus.FORBIDDEN);
-  //   }
-  //   return this.userService
-  //     .updateUser(req.user.user_type, req.user._id, user_id, data)
-  //     .then((d) => d)
-  //     .catch((e) => {
-  //       throw e;
-  //     });
-  // }
-
-  @ApiHeader({
-    name: 'XSRF-Token',
-    description: 'XSRF-Token',
-  })
   @UseGuards(JwtAuthGuard)
-  @AllowFors(UserType.Admin)
-  @Put(':user_id/type')
-  async updateRoleService(
-    @Body() data: UpdateUserTypeDTO,
-    @Param() param: { user_id: string },
+  @AllowFors(UserType.User, UserType.Admin)
+  @UseInterceptors(
+    FileInterceptor('avatar_upload', {
+      storage: diskStorage({
+        destination: function (req, file, cb) {
+          const uniqueSuffix = `${Date.now()}${Math.round(
+            Math.random() * 1e9,
+          )}`;
+          let url = join(process.cwd(), '/public/upload/avatars');
+          fs.mkdirSync(url, { recursive: true });
+          cb(null, url);
+        },
+
+        filename: function (req, file, cb) {
+          const uniqueSuffix = `${Date.now()}${Math.round(
+            Math.random() * 1e9,
+          )}`;
+          cb(
+            null,
+            file.fieldname +
+              '-' +
+              uniqueSuffix +
+              path.extname(file.originalname),
+          );
+        },
+      }),
+      fileFilter: imageFileFilter,
+    }),
+  )
+  @Put(':user_id')
+  updateUserInfo(
+    @Req() req,
+    @Body() data: UpdateUserDTO,
+    @Param() { user_id },
+    @UploadedFile() file: Express.Multer.File,
   ) {
-    return await this.userService.updateUserType(param.user_id, data.user_type);
+    data.avatar = null;
+    if (file) {
+      data.avatar = file.filename;
+    }
+    if (req.user._id != user_id) {
+      throw new HttpException('FORBIDDEN', HttpStatus.FORBIDDEN);
+    }
+    return this.userService
+      .updateUser(req.user._id, user_id, data)
+      .then((d) => d)
+      .catch((e) => {
+        throw e;
+      });
   }
 
   @UseGuards(JwtAuthGuard)

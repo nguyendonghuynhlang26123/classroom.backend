@@ -23,8 +23,8 @@ export class AuthService {
     private _logUtil: LoggerUtilService,
   ) {}
 
-  async validateUser(username: string, pass: string): Promise<any> {
-    const user = await this.usersService.getOneUser(username);
+  async validateUser(email: string, pass: string): Promise<any> {
+    const user = await this.usersService.getOneUser(email);
     if (!user) {
       return null;
     }
@@ -35,8 +35,7 @@ export class AuthService {
     const { password, ...result } = user;
     const data: IPayLoadToken = {
       _id: result._id,
-      username: result.username,
-      user_type: result.user_type,
+      email: result.email,
     };
     return data;
   }
@@ -47,10 +46,10 @@ export class AuthService {
       throw new HttpException('not found', HttpStatus.NOT_FOUND);
     }
     let data;
-    if (user.username) {
-      data = await this.validateUser(user.username, user.password);
+    if (user.email) {
+      data = await this.validateUser(user.email, user.password);
     }
-    if (!user.username) {
+    if (!user.email) {
       throw new HttpException('BAD REQUEST', HttpStatus.BAD_REQUEST);
     }
     const token = await this._tokenService.createToken(
@@ -90,15 +89,14 @@ export class AuthService {
       if (token.expires < Date.now()) {
         throw new UnprocessableEntityException('Refresh token expired');
       }
-      const result = await this.usersService.getOneUser(check.username);
+      const result = await this.usersService.getOneUser(check.email);
       if (!result) {
         throw new HttpException('UNAUTHORIZED', HttpStatus.UNAUTHORIZED);
       }
 
       const data: IPayLoadToken = {
         _id: result._id,
-        username: result.username,
-        user_type: result.user_type,
+        email: result.email,
       };
       return {
         user: data,

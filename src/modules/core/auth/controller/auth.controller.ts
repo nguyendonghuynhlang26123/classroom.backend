@@ -1,15 +1,26 @@
-import { Controller, Post, Body, Res, Param, Req } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Res,
+  Param,
+  Req,
+  HttpException,
+} from '@nestjs/common';
 import { Response } from 'express';
 import { ApiHeader, ApiTags } from '@nestjs/swagger';
 import { AuthService } from '../../../../modules/core/auth/services/auth.service';
-import { LoginDto } from 'src/interfaces';
+import { CreateUserDto, LoginDto } from 'src/interfaces';
 import { LogOutService } from '../services/logOut.service';
+import { UserService } from '../../users/services/user.service';
+import { User } from 'src/modules/connector/repository';
 
 @ApiTags('Authenticate')
 @Controller('v1/auth')
 export class AuthController {
   constructor(
     private authService: AuthService,
+    private userService: UserService,
     private logOutService: LogOutService,
   ) {
     console.log(process.env.DOMAIN_ROOT);
@@ -36,6 +47,17 @@ export class AuthController {
     });
 
     return res.send(result.user);
+  }
+
+  @ApiHeader({
+    name: 'XSRF-Token',
+    description: 'XSRF-Token',
+  })
+  @Post('register')
+  async createService(
+    @Body() user: CreateUserDto,
+  ): Promise<HttpException | User> {
+    return await this.userService.createUser(user);
   }
 
   @ApiHeader({

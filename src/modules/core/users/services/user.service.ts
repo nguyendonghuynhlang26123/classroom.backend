@@ -7,7 +7,6 @@ import {
   UpdateUserDTO,
   CreateUserDto,
   ChangePassDTO,
-  AdminCreateUserDto,
 } from 'src/interfaces';
 import { Subscription } from 'rxjs';
 import { UserRepository } from '../../../connector/repository';
@@ -26,45 +25,13 @@ export class UserService {
   async createUser(data: CreateUserDto) {
     try {
       let dataUser: UserInterface = {
-        username: data.username,
+        email: data.email,
         password: data.password,
-        first_name: data.first_name || null,
-        last_name: data.last_name || null,
+        student_id: null,
+        first_name: null,
+        last_name: null,
         avatar: null,
-        email: data.email || null,
-        phone: data.phone,
-        user_type: 'user',
-      };
-      dataUser.password = await this.hashPassword(dataUser.password);
-      const createUser = new this._userRepository._model(dataUser);
-      let user = await this._userRepository.create(createUser);
-      return user;
-    } catch (error) {
-      this._logUtil.errorLogger(error, 'UserService');
-      if (error instanceof HttpException) {
-        throw error;
-      }
-      if (error.code == 11000 || error.code == 11001) {
-        throw new HttpException(
-          `Duplicate key error collection: ${Object.keys(error.keyValue)}`,
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-      throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
-    }
-  }
-
-  async adminCreateUser(data: AdminCreateUserDto) {
-    try {
-      let dataUser: UserInterface = {
-        username: data.username,
-        password: data.password,
-        first_name: data.first_name || null,
-        last_name: data.last_name || null,
-        avatar: null,
-        email: data.email || null,
-        phone: data.phone || null,
-        user_type: 'user',
+        google_id: null,
       };
       dataUser.password = await this.hashPassword(dataUser.password);
       const createUser = new this._userRepository._model(dataUser);
@@ -124,12 +91,7 @@ export class UserService {
     }
   }
 
-  async updateUser(
-    userType: string,
-    userID: string,
-    paramId: string,
-    dataUpdate: UpdateUserDTO,
-  ) {
+  async updateUser(userID: string, paramId: string, dataUpdate: UpdateUserDTO) {
     try {
       let user = await this._userRepository.getOneDocument({
         _id: paramId,
@@ -137,36 +99,12 @@ export class UserService {
       if (!user) {
         throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
       }
-      if (userType == user.user_type || userType == 'user') {
-        if (userID != paramId) {
-          throw new HttpException('Not Expired', HttpStatus.CONFLICT);
-        }
+      if (userID != paramId) {
+        throw new HttpException('Not Expired', HttpStatus.CONFLICT);
       }
       let result = await this._userRepository.updateDocument(
         { _id: user._id },
         { ...dataUpdate },
-      );
-      return result;
-    } catch (error) {
-      this._logUtil.errorLogger(error, 'UserService');
-      if (error instanceof HttpException) {
-        throw error;
-      }
-      throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
-    }
-  }
-
-  async updateUserType(paramId: string, userType: 'admin' | 'user') {
-    try {
-      let user = await this._userRepository.getOneDocument({
-        _id: paramId,
-      });
-      if (!user) {
-        throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
-      }
-      let result = await this._userRepository.updateDocument(
-        { _id: user._id },
-        { user_type: userType },
       );
       return result;
     } catch (error) {
@@ -183,18 +121,10 @@ export class UserService {
       let user = await this._userRepository.getOneDocument({
         _id: paramId,
       });
-      if (user.user_type == 'admin') {
-        if (userAction.user_type != 'root' && userAction._id != paramId) {
-          throw new HttpException('Not Expired', HttpStatus.CONFLICT);
-        }
-        return await this._deleteUser(user._id);
+      if (userAction._id != paramId) {
+        throw new HttpException('Not Expired', HttpStatus.CONFLICT);
       }
-      if (user.user_type == 'user') {
-        if (userAction.user_type != 'admin' && userAction._id != paramId) {
-          throw new HttpException('Not Expired', HttpStatus.CONFLICT);
-        }
-        return await this._deleteUser(user._id);
-      }
+      return await this._deleteUser(user._id);
     } catch (error) {
       this._logUtil.errorLogger(error, 'UserService');
       if (error instanceof HttpException) {
@@ -270,16 +200,9 @@ export class UserService {
     }
   }
 
-  async getOneUser(username: string) {
+  async getOneUser(email: string) {
     const user = await this._userRepository.getOneDocument({
-      username: username,
-    });
-    return user;
-  }
-
-  async getOneUserByPhone(phone: string) {
-    const user = await this._userRepository.getOneDocument({
-      phone: phone,
+      email: email,
     });
     return user;
   }

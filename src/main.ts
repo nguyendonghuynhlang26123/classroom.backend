@@ -56,9 +56,9 @@ async function bootstrap() {
   app.setGlobalPrefix(globalPrefix);
 
   const options = new DocumentBuilder()
-    .setTitle('LofiVN')
+    .setTitle('Classroom')
     .addCookieAuth('access_token_cms')
-    .setDescription('The lofi API description')
+    .setDescription('The classroom API description')
     .setVersion('1.0')
     .build();
   const document = SwaggerModule.createDocument(app, options);

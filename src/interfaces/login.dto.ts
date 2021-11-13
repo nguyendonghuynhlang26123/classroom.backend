@@ -13,10 +13,9 @@ import {
 export class LoginDto {
   @ApiProperty({ type: String })
   @IsString()
-  @IsAscii()
+  @IsEmail()
   @IsNotEmpty()
-  @Length(5, 24)
-  username: string;
+  email: string;
 
   @ApiProperty({ type: String })
   @IsString()

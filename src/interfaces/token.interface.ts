@@ -8,7 +8,6 @@ export class IToken extends IBase {
 
 export class IPayLoadToken extends IBase {
   _id: string;
-  user_type: 'admin' | 'user' | 'root';
-  username?: string;
+  email?: string;
   jwt_id?: string;
 }
