@@ -6,14 +6,16 @@ import {
   Param,
   Req,
   HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { ApiHeader, ApiTags } from '@nestjs/swagger';
 import { AuthService } from '../../../../modules/core/auth/services/auth.service';
-import { CreateUserDto, LoginDto } from 'src/interfaces';
+import { CreateUserDto, GoogleCreateUserDto, LoginDto } from 'src/interfaces';
 import { LogOutService } from '../services/logOut.service';
 import { UserService } from '../../users/services/user.service';
 import { User } from 'src/modules/connector/repository';
+import { HttpService } from '@nestjs/axios';
 
 @ApiTags('Authenticate')
 @Controller('v1/auth')
@@ -22,6 +24,7 @@ export class AuthController {
     private authService: AuthService,
     private userService: UserService,
     private logOutService: LogOutService,
+    private httpService: HttpService,
   ) {
     console.log(process.env.DOMAIN_ROOT);
   }
@@ -58,6 +61,30 @@ export class AuthController {
     @Body() user: CreateUserDto,
   ): Promise<HttpException | User> {
     return await this.userService.createUser(user);
+  }
+
+  @ApiHeader({
+    name: 'XSRF-Token',
+    description: 'XSRF-Token',
+  })
+  @Post('register/google-activate')
+  async googleCreateService(@Body() body: GoogleCreateUserDto): Promise<any> {
+    const request = await this.httpService
+      .get(
+        `https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=${body.token_id}`,
+      )
+      .toPromise();
+    const data = request.data;
+    if (
+      data.azp == process.env.REACT_APP_GOOGLE_API_KEY &&
+      data.given_name == body.first_name &&
+      data.family_name == body.last_name &&
+      data.email == body.email &&
+      request.status == 200
+    ) {
+      return await this.userService.createGoogleUser(body);
+    }
+    return HttpStatus.BAD_REQUEST;
   }
 
   @ApiHeader({

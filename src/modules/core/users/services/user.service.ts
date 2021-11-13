@@ -7,6 +7,7 @@ import {
   UpdateUserDTO,
   CreateUserDto,
   ChangePassDTO,
+  GoogleCreateUserDto,
 } from 'src/interfaces';
 import { Subscription } from 'rxjs';
 import { UserRepository } from '../../../connector/repository';
@@ -45,7 +46,36 @@ export class UserService {
       if (error.code == 11000 || error.code == 11001) {
         throw new HttpException(
           `Duplicate key error collection: ${Object.keys(error.keyValue)}`,
-          HttpStatus.BAD_REQUEST,
+          HttpStatus.CONFLICT,
+        );
+      }
+      throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async createGoogleUser(data: GoogleCreateUserDto) {
+    try {
+      let dataUser: UserInterface = {
+        email: data.email,
+        password: null,
+        student_id: null,
+        first_name: data.first_name,
+        last_name: data.last_name,
+        avatar: data.image_url,
+        google_id: data.google_id,
+      };
+      const createUser = new this._userRepository._model(dataUser);
+      let user = await this._userRepository.create(createUser);
+      return user;
+    } catch (error) {
+      this._logUtil.errorLogger(error, 'UserService');
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      if (error.code == 11000 || error.code == 11001) {
+        throw new HttpException(
+          `Duplicate key error collection: ${Object.keys(error.keyValue)}`,
+          HttpStatus.CONFLICT,
         );
       }
       throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);

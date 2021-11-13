@@ -8,6 +8,7 @@ import { JwtStrategy } from './strategy/jwt.strategy';
 import { AuthController } from './controller/auth.controller';
 import { TokenModule } from '../token/token.module';
 import { LogOutService } from './services/logOut.service';
+import { HttpModule } from '@nestjs/axios';
 
 @Global()
 @Module({
@@ -19,6 +20,7 @@ import { LogOutService } from './services/logOut.service';
       secret: jwtConstants.secret,
       signOptions: { expiresIn: '300s' }, // 5p
     }),
+    HttpModule,
   ],
   controllers: [AuthController],
   providers: [AuthService, LogOutService, JwtStrategy],

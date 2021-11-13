@@ -22,7 +22,7 @@ export class TokenService {
       if (error.code == 11000 || error.code == 11001) {
         throw new HttpException(
           `Duplicate key error collection: ${Object.keys(error.keyValue)}`,
-          HttpStatus.BAD_REQUEST,
+          HttpStatus.CONFLICT,
         );
       }
       throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
