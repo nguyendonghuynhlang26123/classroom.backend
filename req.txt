@@ -1,0 +1,59 @@
++ auth/login
+ - DB -
+
+User:
++ id 
++ studentId: MSSV
++ email
++ name
++ avatar
++ googleId 
+
+ClassroomUser: 
++ userId:
++ status: ACTIVATED| INACTIVATED
++ role: TEACHER | STUDENT
++ invite_code: random 6digits
+
+Classes
++ id 
++ title:
++ section
++ subject
++ room
++ image: https://www.gstatic.com/classroom/themes/img_breakfast.jpg
++ code: auto generate code (6 character/number digits) 
++ users: ClassroomUser[]  // User chính của class, 
+
+ - API - 
+1.Auth
++ POST auth/login: Data={email, password}
++ POST auth/register: Data={email, password}, Trả về 409 nếu email bị trùng
++ POST auth/register/google-activate: Data={email, name, googleId, imageUrl, tokenId}: 
+	- Kiểm tra email có bị trùng -> Trả về status code 409 Conflict
+	- Gọi api đến google để kiểm tra (coi video L06.mp4 trên classroom từ 03.10.00 trở lên) 
+	- Tạo user với thông tin trên 
+ 
+2.User
++ GET users/details: Trả về thông tin User
++ PUT users/details: Update thông tin User (cho update hết trừ googleToken). Kiểm tra có bị trùng MSSV ko (studentId)
+
+3.Classes
++ GET classes/ : Check userId ở jwt token -> get list of class 
++ POST classes/ : tạo class -> gán userId làm teacher 
++ GET classes/{class id}: Check userId trong token, nếu thuộc users của classes => trả về thông tin classes theo id (trả về hết trừ teachers, students), nếu ko trả về 401
++ GET classes/people/{class id}: Check userId trong token, nếu thuộc users của classes => trả về list users (ko trả về invite_code) nếu ko trả về 401
++ POST classes/invite/{classroomId} (Data={email,role} ): Check userID trong jwt token, kiểm tra trùng, nếu userId thuộc Users VÀ có role là TEACHER 
+	-> Get class by classId -> get {classroom code}, 
+	-> Tạo ClassroomUser với status = INACTIVATED, auto generate {invite_code} rồi nhét vô classroom.users[] 
+	-> Gửi mail với đường link: {frontendHost}/classes/join/{classroomId}?role={role}&code={classroom code + invite_code}
+	-> (Phía frontend sẽ tự động bắt đăng nhập rồi gửi api đến POST /classes/invite/accept { classroomId, role, code }
++ POST /classes/invite/accept { classroomId, role, code }: 
+	- Check jwt token để lấy userId, kiểm tra userId phải thuộc users của classroomId, 
+	- Check thông tin ClassroomUser:
+		+ Lấy 6 chữ số cuối của {code} để check invite_code
+		+ Lấy 6 chữ số đầu của {code} để check classroom.code
+		+ Kiểm tra role 
+	- Update status -> ACTIVATED 
+
+** Thành công thì luôn trả về với status code 200

@@ -36,11 +36,11 @@ export class AuthController {
   @Post('login')
   async login(@Body() data: LoginDto, @Res() res: Response) {
     const result = await this.authService.login(data);
-    return {
+    return res.send({
       data: result.user,
       access_token: result.access_token,
       refresh_token: result.refresh_token,
-    };
+    });
   }
 
   @ApiHeader({
@@ -93,11 +93,11 @@ export class AuthController {
       token = token.substring(0, token.length - 1);
     }
     const result = await this.authService.refreshToken(token);
-    return {
+    return res.send({
       data: result.user,
       access_token: result.access_token,
       refresh_token: result.refresh_token,
-    };
+    });
   }
 
   @ApiHeader({
