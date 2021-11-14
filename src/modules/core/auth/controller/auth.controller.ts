@@ -36,20 +36,11 @@ export class AuthController {
   @Post('login')
   async login(@Body() data: LoginDto, @Res() res: Response) {
     const result = await this.authService.login(data);
-    let option = {
-      httpOnly: true,
+    return {
+      data: result.user,
+      access_token: result.access_token,
+      refresh_token: result.refresh_token,
     };
-    if (process.env.DOMAIN_ROOT) {
-      option['domain'] = process.env.DOMAIN_ROOT;
-    }
-    res.cookie('access_token_cms', result.access_token, {
-      ...option,
-    });
-    res.cookie('refresh_token_cms', result.refresh_token, {
-      ...option,
-    });
-
-    return res.send(result.user);
   }
 
   @ApiHeader({
@@ -92,25 +83,21 @@ export class AuthController {
     description: 'XSRF-Token',
   })
   @Post('refresh')
-  async refreshToken(@Req() req, @Res() res: Response) {
-    let option = {
-      httpOnly: true,
-    };
-    if (process.env.DOMAIN_ROOT) {
-      option['domain'] = process.env.DOMAIN_ROOT;
-    }
-    let token = req.cookies['refresh_token_cms'];
+  async refreshToken(
+    @Body() body: { refresh_token: string },
+    @Req() req,
+    @Res() res: Response,
+  ) {
+    let token = body.refresh_token;
     if (token[token.length - 1] == ',') {
       token = token.substring(0, token.length - 1);
     }
     const result = await this.authService.refreshToken(token);
-    res.cookie('access_token_cms', result.access_token, {
-      ...option,
-    });
-    res.cookie('refresh_token_cms', result.refresh_token, {
-      ...option,
-    });
-    return res.send(result.user);
+    return {
+      data: result.user,
+      access_token: result.access_token,
+      refresh_token: result.refresh_token,
+    };
   }
 
   @ApiHeader({
@@ -118,22 +105,14 @@ export class AuthController {
     description: 'XSRF-Token',
   })
   @Post('logout')
-  async logout(@Res() res: Response, @Req() req) {
-    if (req.cookies['refresh_token_cms']) {
-      await this.authService.logOut(req.cookies['refresh_token_cms']);
+  async logout(
+    @Body() body: { refresh_token: string },
+    @Res() res: Response,
+    @Req() req,
+  ) {
+    if (body.refresh_token) {
+      await this.authService.logOut(body.refresh_token);
     }
-    let option = {
-      httpOnly: true,
-    };
-    if (process.env.DOMAIN_ROOT) {
-      option['domain'] = process.env.DOMAIN_ROOT;
-    }
-    res.cookie('access_token_cms', '', {
-      ...option,
-    });
-    res.cookie('refresh_token_cms', '', {
-      ...option,
-    });
     return res.send({ status: 200 });
   }
 
@@ -143,19 +122,7 @@ export class AuthController {
   })
   @Post('logout_all')
   async logoutAll(@Res() res: Response, @Req() req) {
-    let option = {
-      httpOnly: true,
-    };
-    if (process.env.DOMAIN_ROOT) {
-      option['domain'] = process.env.DOMAIN_ROOT;
-    }
     await this.logOutService.logOutAllDevice(req.user);
-    res.cookie('access_token_cms', '', {
-      ...option,
-    });
-    res.cookie('refresh_token_cms', '', {
-      ...option,
-    });
     return res.send({ status: 200 });
   }
 }

@@ -49,7 +49,6 @@ export class UserControllerV1 {
     description: 'XSRF-Token',
   })
   @UseGuards(JwtAuthGuard)
-  @AllowFors(UserType.User, UserType.Admin)
   @Get()
   async getAllService(
     @Query() query: GenericQuery,
@@ -62,7 +61,6 @@ export class UserControllerV1 {
     description: 'XSRF-Token',
   })
   @UseGuards(JwtAuthGuard)
-  @AllowFors(UserType.User, UserType.Admin)
   @Get(':user_id')
   async getServiceById(@Param() param: { user_id: string }) {
     const user: User = <User>await this.userService.findUserById(param.user_id);
@@ -74,7 +72,6 @@ export class UserControllerV1 {
     description: 'XSRF-Token',
   })
   @UseGuards(JwtAuthGuard)
-  @AllowFors(UserType.User, UserType.Admin)
   @Put('changePass/:user_id')
   async changePassService(
     @Request() req,
@@ -85,7 +82,6 @@ export class UserControllerV1 {
   }
 
   @UseGuards(JwtAuthGuard)
-  @AllowFors(UserType.User, UserType.Admin)
   @UseInterceptors(
     FileInterceptor('avatar_upload', {
       storage: diskStorage({
@@ -137,7 +133,6 @@ export class UserControllerV1 {
   }
 
   @UseGuards(JwtAuthGuard)
-  @AllowFors(UserType.User, UserType.Admin)
   @Delete(':user_id')
   async deleteService(@Request() req, @Param() param: { user_id: string }) {
     return await this.userService.deleteUser(req.user, param.user_id);
