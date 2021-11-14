@@ -24,7 +24,7 @@ export abstract class Repository<T extends Document> {
     let queryBuilder = query || { updated_at: 'desc' };
     let page = currentPage || 1;
     let per = perPage || 10;
-    let skip = (page - 1) * perPage;
+    let skip = (page - 1) * per;
     return this._model
       .find({ ...filter, deleted_at: null })
       .sort(queryBuilder)

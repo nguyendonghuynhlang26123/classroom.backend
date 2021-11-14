@@ -57,6 +57,7 @@ async function bootstrap() {
 
   const options = new DocumentBuilder()
     .setTitle('Classroom')
+    .addCookieAuth('access_token')
     .setDescription('The classroom API description')
     .setVersion('1.0')
     .build();

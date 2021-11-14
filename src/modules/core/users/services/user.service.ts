@@ -184,15 +184,7 @@ export class UserService {
         this._userRepository.getAllDocument(
           {},
           {
-            username: 1,
-            _id: 1,
-            first_name: 1,
-            last_name: 1,
-            created_at: 1,
-            updated_at: 1,
-            email: 1,
-            phone: 1,
-            user_type: 1,
+            password: 0,
           },
           builder,
           Number(query.per_page),
