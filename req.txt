@@ -18,7 +18,8 @@ ClassroomUser:
 
 Classes
 + id 
-+ title 
++ title: 
++ name
 + section
 + subject
 + room
@@ -30,10 +31,20 @@ Classes
 1.Auth
 + POST auth/login: Data={email, password}
 + POST auth/register: Data={email, password}, Trả về 409 nếu email bị trùng
-+ POST auth/register/google-activate: Data={email, name, googleId, imageUrl, tokenId}: 
+
+(+ POST auth/register/google-activate: Data={email, name, googleId, imageUrl, tokenId}: 
 	- Kiểm tra email có bị trùng -> Trả về status code 409 Conflict
 	- Gọi api đến google để kiểm tra (coi video L06.mp4 trên classroom từ 03.10.00 trở lên) 
-	- Tạo user với thông tin trên 
+	- Tạo user với thông tin trên ) <=== bỏ
+
++ POST auth/google-validate: Data={tokenId}:
+	- Validate tokenId bằng `https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=${body.token_id}` => nhận đc {data}
+	- Kiểm tra email trong data: 
+		- Nếu chưa có: Tạo user với data lấy được từ google (với password = null)
+		- Nếu có rồi: Kiểm tra ggId với data.sub
+			+ Nếu ggID = null: Update lại ggID=data.sub
+			+ Nếu ggId != data.sub => return 400 BAD REQUEST (Cái này ko biết cần ko nhưng cứ check cho chắc)
+			+ Nếu ggId == data.sub => return { data: user, access_token, refresh_token }
  
 2.User
 + GET users/details: Trả về thông tin User
@@ -46,13 +57,13 @@ Classes
 + GET classes/people/{class id}: Check userId trong token, nếu thuộc users của classes => trả về list users (ko trả về invite_code) nếu ko trả về 401
 + POST classes/invite/{classroomId} (Data={email,role} ): Check userID trong jwt token, kiểm tra trùng, nếu userId thuộc Users VÀ có role là TEACHER 
 	-> Get class by classId -> get {classroom code}, 
-	-> Tạo ClassroomUser với status = INACTIVATED, auto generate {invite_code} (invite_code cho STUDENT = "") rồi nhét vô classroom.users[] 
+	-> Tạo ClassroomUser với status = INACTIVATED, auto generate {invite_code} rồi nhét vô classroom.users[] 
 	-> Gửi mail với đường link: {frontendHost}/classes/join/{classroomId}?role={role}&code={classroom code + invite_code}
 	-> (Phía frontend sẽ tự động bắt đăng nhập rồi gửi api đến POST /classes/invite/accept { classroomId, role, code }
 + POST /classes/invite/accept { classroomId, role, code }: 
 	- Check jwt token để lấy userId, kiểm tra userId phải thuộc users của classroomId, 
 	- Check thông tin ClassroomUser:
-		+ Lấy 6 chữ số cuối của {code} để check invite_code (khỏi check nếu là role=STUDENT)
+		+ Lấy 6 chữ số cuối của {code} để check invite_code
 		+ Lấy 6 chữ số đầu của {code} để check classroom.code
 		+ Kiểm tra role 
 	- Update status -> ACTIVATED 

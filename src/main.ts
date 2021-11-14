@@ -56,8 +56,8 @@ async function bootstrap() {
   app.setGlobalPrefix(globalPrefix);
 
   const options = new DocumentBuilder()
+    .addBearerAuth()
     .setTitle('Classroom')
-    .addCookieAuth('access_token')
     .setDescription('The classroom API description')
     .setVersion('1.0')
     .build();

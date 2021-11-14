@@ -29,8 +29,8 @@ export class UserService {
         email: data.email,
         password: data.password,
         student_id: null,
-        first_name: null,
-        last_name: null,
+        first_name: data.first_name,
+        last_name: data.last_name,
         avatar: null,
         google_id: null,
       };
