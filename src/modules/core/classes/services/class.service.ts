@@ -35,7 +35,7 @@ export class ClassService {
       let teacher: ClassroomUserInterface = {
         user_id: userId,
         status: 'ACTIVATED',
-        role: 'TEACHER',
+        role: 'ADMIN',
         invite_code: Math.random().toString(36).substr(2, 6),
       };
       dataClass.users.push(teacher);

@@ -11,7 +11,12 @@ import {
 import { Response } from 'express';
 import { ApiBearerAuth, ApiHeader, ApiTags } from '@nestjs/swagger';
 import { AuthService } from '../../../../modules/core/auth/services/auth.service';
-import { CreateUserDto, GoogleCreateUserDto, LoginDto, LoginGoogleDto } from 'src/interfaces';
+import {
+  CreateUserDto,
+  GoogleCreateUserDto,
+  LoginDto,
+  LoginGoogleDto,
+} from 'src/interfaces';
 import { LogOutService } from '../services/logOut.service';
 import { UserService } from '../../users/services/user.service';
 import { User } from 'src/modules/connector/repository';
@@ -50,10 +55,18 @@ export class AuthController {
   })
   @ApiBearerAuth()
   @Post('register')
-  async createService(
-    @Body() user: CreateUserDto,
-  ): Promise<HttpException | User> {
-    return await this.userService.createUser(user);
+  async createService(@Body() body: CreateUserDto, @Res() res: Response) {
+    let user = await this.userService.createUser(body);
+    let data: LoginDto = {
+      email: user.email,
+      password: user.password,
+    };
+    const result = await this.authService.login(data);
+    return res.send({
+      data: result.user,
+      access_token: result.access_token,
+      refresh_token: result.refresh_token,
+    });
   }
 
   @ApiHeader({
