@@ -18,18 +18,15 @@ import {
 } from '@nestjs/common';
 import { UserService } from '../services/user.service';
 import { JwtAuthGuard } from '../../auth/guard/jwt-auth.guard';
-import { ApiHeader, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiHeader, ApiTags } from '@nestjs/swagger';
 import { User } from '../../../connector/repository';
 import {
   UserInterface,
   GenericQuery,
   GenericRes,
   UpdateUserDTO,
-  CreateUserDto,
   ChangePassDTO,
 } from 'src/interfaces';
-import { AllowFors } from 'src/decorators/allowFors.decorator';
-import { UserType } from 'src/enums';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { join } from 'path';
@@ -48,6 +45,7 @@ export class UserControllerV1 {
     name: 'XSRF-Token',
     description: 'XSRF-Token',
   })
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get()
   async getAllService(
@@ -60,6 +58,7 @@ export class UserControllerV1 {
     name: 'XSRF-Token',
     description: 'XSRF-Token',
   })
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get(':user_id')
   async getServiceById(@Param() param: { user_id: string }) {
@@ -71,6 +70,7 @@ export class UserControllerV1 {
     name: 'XSRF-Token',
     description: 'XSRF-Token',
   })
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Put('changePass/:user_id')
   async changePassService(
@@ -81,6 +81,11 @@ export class UserControllerV1 {
     return await this.userService.changePass(req.user._id, param.user_id, pass);
   }
 
+  @ApiHeader({
+    name: 'XSRF-Token',
+    description: 'XSRF-Token',
+  })
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(
     FileInterceptor('avatar_upload', {
@@ -132,12 +137,22 @@ export class UserControllerV1 {
       });
   }
 
+  @ApiHeader({
+    name: 'XSRF-Token',
+    description: 'XSRF-Token',
+  })
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Delete(':user_id')
   async deleteService(@Request() req, @Param() param: { user_id: string }) {
     return await this.userService.deleteUser(req.user, param.user_id);
   }
 
+  @ApiHeader({
+    name: 'XSRF-Token',
+    description: 'XSRF-Token',
+  })
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get('avatar/:fileName')
   getAvatar(@Param() { fileName }, @Res() res) {

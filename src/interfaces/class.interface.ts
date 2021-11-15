@@ -16,5 +16,5 @@ export class ClassInterface extends IBase {
   @ApiProperty()
   code: string;
   @ApiProperty()
-  users: string | ClassroomUserInterface;
+  users: ClassroomUserInterface[];
 }

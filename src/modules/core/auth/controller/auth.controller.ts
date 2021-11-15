@@ -9,7 +9,7 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { ApiHeader, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiHeader, ApiTags } from '@nestjs/swagger';
 import { AuthService } from '../../../../modules/core/auth/services/auth.service';
 import { CreateUserDto, GoogleCreateUserDto, LoginDto, LoginGoogleDto } from 'src/interfaces';
 import { LogOutService } from '../services/logOut.service';
@@ -33,6 +33,7 @@ export class AuthController {
     name: 'XSRF-Token',
     description: 'XSRF-Token',
   })
+  @ApiBearerAuth()
   @Post('login')
   async login(@Body() data: LoginDto, @Res() res: Response) {
     const result = await this.authService.login(data);
@@ -47,6 +48,7 @@ export class AuthController {
     name: 'XSRF-Token',
     description: 'XSRF-Token',
   })
+  @ApiBearerAuth()
   @Post('register')
   async createService(
     @Body() user: CreateUserDto,
@@ -58,6 +60,7 @@ export class AuthController {
     name: 'XSRF-Token',
     description: 'XSRF-Token',
   })
+  @ApiBearerAuth()
   @Post('google-activate')
   async googleCreateService(
     @Body() body: LoginGoogleDto,
@@ -94,6 +97,7 @@ export class AuthController {
     name: 'XSRF-Token',
     description: 'XSRF-Token',
   })
+  @ApiBearerAuth()
   @Post('refresh')
   async refreshToken(
     @Body() body: { refresh_token: string },
@@ -116,6 +120,7 @@ export class AuthController {
     name: 'XSRF-Token',
     description: 'XSRF-Token',
   })
+  @ApiBearerAuth()
   @Post('logout')
   async logout(
     @Body() body: { refresh_token: string },
@@ -132,6 +137,7 @@ export class AuthController {
     name: 'XSRF-Token',
     description: 'XSRF-Token',
   })
+  @ApiBearerAuth()
   @Post('logout_all')
   async logoutAll(@Res() res: Response, @Req() req) {
     await this.logOutService.logOutAllDevice(req.user);

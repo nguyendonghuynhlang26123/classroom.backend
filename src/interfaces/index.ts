@@ -6,5 +6,6 @@ export * from './req.interface';
 export * from './res.interface';
 
 export * from './createUser.dto';
+export * from './createClass.dto';
 export * from './login.dto';
 export * from './changePass.dto';

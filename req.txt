@@ -18,8 +18,7 @@ ClassroomUser:
 
 Classes
 + id 
-+ title: 
-+ name
++ title:
 + section
 + subject
 + room

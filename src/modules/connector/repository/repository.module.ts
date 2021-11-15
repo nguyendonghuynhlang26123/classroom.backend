@@ -10,10 +10,19 @@ import APP_CONFIG from '../../../config';
     MongooseModule.forRoot(APP_CONFIG.mongodb.url),
     MongooseModule.forFeature([
       { name: 'users', schema: schema.UserSchema },
+      { name: 'classes', schema: schema.ClassSchema },
       { name: 'refresh_tokens', schema: schema.TokenSchema },
     ]),
   ],
-  providers: [repository.UserRepository, repository.TokenRepository],
-  exports: [repository.UserRepository, repository.TokenRepository],
+  providers: [
+    repository.UserRepository,
+    repository.ClassRepository,
+    repository.TokenRepository,
+  ],
+  exports: [
+    repository.UserRepository,
+    repository.ClassRepository,
+    repository.TokenRepository,
+  ],
 })
 export class RepositoryModule {}
