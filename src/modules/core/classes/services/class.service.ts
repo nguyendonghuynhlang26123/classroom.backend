@@ -91,5 +91,25 @@ export class ClassService {
     }
   }
 
+  async getClassById(classId: string, userId: string) {
+    try {
+      let classes = await this._classRepository.getOneDocument({
+        _id: classId,
+        'users.user_id': userId,
+      });
+      if (!classes) {
+        throw new HttpException('Not Found Class', HttpStatus.NOT_FOUND);
+      }
+      delete classes.users;
+      return classes;
+    } catch (error) {
+      this._logUtil.errorLogger(error, 'ClassService');
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+    }
+  }
+
   onCreate() {}
 }

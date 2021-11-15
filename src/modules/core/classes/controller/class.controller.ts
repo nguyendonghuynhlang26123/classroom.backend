@@ -9,6 +9,7 @@ import {
   CacheInterceptor,
   Query,
   Req,
+  Param,
 } from '@nestjs/common';
 import { ClassService } from '../services/class.service';
 import { JwtAuthGuard } from '../../auth/guard/jwt-auth.guard';
@@ -19,6 +20,7 @@ import {
   GenericQuery,
   GenericRes,
   CreateClassDto,
+  QueryClassDto,
 } from 'src/interfaces';
 
 @Controller('v1/classes')
@@ -52,7 +54,20 @@ export class ClassControllerV1 {
     @Req() req,
     @Body() body: CreateClassDto,
   ): Promise<HttpException | Class> {
-    // console.log(req.user);
     return await this._classService.createClass(body, req.user._id);
+  }
+
+  @ApiHeader({
+    name: 'XSRF-Token',
+    description: 'XSRF-Token',
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Get(':class_id')
+  async getServiceById(
+    @Req() req,
+    @Param() param: QueryClassDto,
+  ): Promise<HttpException | ClassInterface> {
+    return await this._classService.getClassById(param.class_id, req.user._id);
   }
 }

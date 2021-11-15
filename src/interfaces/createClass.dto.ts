@@ -29,3 +29,8 @@ export class CreateClassDto {
   @IsNotEmpty()
   room: string;
 }
+
+export class QueryClassDto {
+  @ApiProperty({ type: String })
+  class_id: string;
+}
