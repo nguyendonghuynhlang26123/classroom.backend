@@ -11,7 +11,7 @@ import {
 import { Response } from 'express';
 import { ApiHeader, ApiTags } from '@nestjs/swagger';
 import { AuthService } from '../../../../modules/core/auth/services/auth.service';
-import { CreateUserDto, GoogleCreateUserDto, LoginDto } from 'src/interfaces';
+import { CreateUserDto, GoogleCreateUserDto, LoginDto, LoginGoogleDto } from 'src/interfaces';
 import { LogOutService } from '../services/logOut.service';
 import { UserService } from '../../users/services/user.service';
 import { User } from 'src/modules/connector/repository';
@@ -58,8 +58,11 @@ export class AuthController {
     name: 'XSRF-Token',
     description: 'XSRF-Token',
   })
-  @Post('register/google-activate')
-  async googleCreateService(@Body() body: GoogleCreateUserDto): Promise<any> {
+  @Post('google-activate')
+  async googleCreateService(
+    @Body() body: LoginGoogleDto,
+    @Res() res: Response,
+  ): Promise<any> {
     const request = await this.httpService
       .get(
         `https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=${body.token_id}`,
@@ -68,12 +71,21 @@ export class AuthController {
     const data = request.data;
     if (
       data.azp == process.env.REACT_APP_GOOGLE_API_KEY &&
-      data.given_name == body.first_name &&
-      data.family_name == body.last_name &&
-      data.email == body.email &&
       request.status == 200
     ) {
-      return await this.userService.createGoogleUser(body);
+      let user = {
+        email: data.email,
+        google_id: data.sub,
+        first_name: data.given_name,
+        last_name: data.family_name,
+        avatar: data.picture,
+      };
+      let result = await this.authService.loginByGoogle(user);
+      return res.send({
+        data: result.user,
+        access_token: result.access_token,
+        refresh_token: result.refresh_token,
+      });
     }
     return HttpStatus.BAD_REQUEST;
   }

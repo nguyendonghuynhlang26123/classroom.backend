@@ -55,13 +55,27 @@ export class UserService {
 
   async createGoogleUser(data: GoogleCreateUserDto) {
     try {
+      let check = await this._userRepository.getOneDocument({
+        email: data.email,
+      });
+      if (check) {
+        if (check.google_id == null || check.google_id == data.google_id) {
+          this.updateUser(check._id, check._id, data);
+          check.google_id = data.google_id;
+          check.first_name = data.first_name;
+          check.last_name = data.last_name;
+          check.avatar = data.avatar;
+          return check;
+        }
+        throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+      }
       let dataUser: UserInterface = {
         email: data.email,
         password: null,
         student_id: null,
         first_name: data.first_name,
         last_name: data.last_name,
-        avatar: data.image_url,
+        avatar: data.avatar,
         google_id: data.google_id,
       };
       const createUser = new this._userRepository._model(dataUser);
@@ -128,6 +142,18 @@ export class UserService {
       });
       if (!user) {
         throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+      }
+      if (dataUpdate.student_id) {
+        let check = await this._userRepository.getOneDocument({
+          student_id: dataUpdate.student_id,
+          _id: { $ne: user._id },
+        });
+        if (check) {
+          throw new HttpException(
+            `Duplicate key error collection: ${Object.keys('student_id')}`,
+            HttpStatus.CONFLICT,
+          );
+        }
       }
       if (userID != paramId) {
         throw new HttpException('Not Expired', HttpStatus.CONFLICT);

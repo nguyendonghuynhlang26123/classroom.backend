@@ -28,22 +28,13 @@ export class UserInterface extends IBase {
   email: string;
   @ApiProperty()
   google_id: string;
-  // @ApiProperty()
-  // user_type: 'user' | 'admin';
 }
-
-// export class UpdateUserTypeDTO {
-//   @ApiProperty({ type: String })
-//   @IsString()
-//   @IsIn(['admin', 'user'])
-//   user_type: 'admin' | 'user';
-// }
 
 export class UpdateUserDTO {
   @ApiProperty()
   @IsString()
   @IsOptional()
-  student_id: string;
+  student_id?: string;
 
   @ApiProperty({ type: String })
   @IsString()
@@ -68,6 +59,7 @@ export class UpdateUserDTO {
   @IsOptional()
   email?: string;
 
-  @ApiPropertyOptional()
+  @ApiProperty()
+  @IsOptional()
   avatar?: string;
 }

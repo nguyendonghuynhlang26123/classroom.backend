@@ -67,10 +67,5 @@ export class GoogleCreateUserDto {
   @ApiProperty({ type: String })
   @IsString()
   @IsNotEmpty()
-  image_url: string;
-
-  @ApiProperty({ type: String })
-  @IsString()
-  @IsNotEmpty()
-  token_id: string;
+  avatar: string;
 }

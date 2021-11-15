@@ -28,6 +28,13 @@ export class LoginDto {
   password: string;
 }
 
+export class LoginGoogleDto {
+  @ApiProperty({ type: String })
+  @IsString()
+  @IsNotEmpty()
+  token_id: string;
+}
+
 export class RefreshTokenDto {
   @ApiProperty({ type: String })
   @IsString()

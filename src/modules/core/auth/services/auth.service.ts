@@ -41,7 +41,6 @@ export class AuthService {
   }
 
   async login(user: LoginDto) {
-    console.log(user);
     if (!user) {
       throw new HttpException('not found', HttpStatus.NOT_FOUND);
     }
@@ -52,6 +51,35 @@ export class AuthService {
     if (!user.email) {
       throw new HttpException('BAD REQUEST', HttpStatus.BAD_REQUEST);
     }
+    const token = await this._tokenService.createToken(
+      'user',
+      data._id,
+      Date.now() + 2592000000,
+    );
+    return {
+      user: data,
+      access_token: this.jwtService.sign({ ...data }),
+      refresh_token: this.jwtService.sign(
+        { ...data, jwt_id: token._id },
+        {
+          expiresIn: 2592000,
+          secret: jwtConstants.refresh_secret,
+        },
+      ),
+    };
+  }
+
+  async loginByGoogle(user: {
+    email: string;
+    google_id: string;
+    first_name: string;
+    last_name: string;
+    avatar: string;
+  }) {
+    if (!user) {
+      throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+    }
+    let data = await this.usersService.createGoogleUser(user);
     const token = await this._tokenService.createToken(
       'user',
       data._id,

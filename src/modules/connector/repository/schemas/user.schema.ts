@@ -19,7 +19,7 @@ export class User extends Document implements UserInterface {
   @Prop({ type: String, default: null, trim: true })
   password: string;
 
-  @Prop({ type: String, default: null, trim: true, unique: true })
+  @Prop({ type: String, default: null, trim: true })
   student_id: string;
 
   @Prop({ type: String, default: null })
