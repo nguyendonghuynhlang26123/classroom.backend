@@ -111,5 +111,28 @@ export class ClassService {
     }
   }
 
+  async getClassPeopleById(classId: string, userId: string) {
+    try {
+      let classes = await this._classRepository.getOneDocument({
+        _id: classId,
+        'users.user_id': userId,
+      });
+      if (!classes) {
+        throw new HttpException('Not Found Class', HttpStatus.NOT_FOUND);
+      }
+      let users = classes.users;
+      for (let i = 0; i < users.length; i++) {
+        delete users[i].invite_code;
+      }
+      return { users: users };
+    } catch (error) {
+      this._logUtil.errorLogger(error, 'ClassService');
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+    }
+  }
+
   onCreate() {}
 }

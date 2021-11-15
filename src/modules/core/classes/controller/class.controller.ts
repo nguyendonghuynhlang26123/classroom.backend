@@ -70,4 +70,21 @@ export class ClassControllerV1 {
   ): Promise<HttpException | ClassInterface> {
     return await this._classService.getClassById(param.class_id, req.user._id);
   }
+
+  @ApiHeader({
+    name: 'XSRF-Token',
+    description: 'XSRF-Token',
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Get('people/:class_id')
+  async getPeopleServiceById(
+    @Req() req,
+    @Param() param: QueryClassDto,
+  ) {
+    return await this._classService.getClassPeopleById(
+      param.class_id,
+      req.user._id,
+    );
+  }
 }
