@@ -42,7 +42,7 @@ export class AuthService {
 
   async login(user: LoginDto) {
     if (!user) {
-      throw new HttpException('not found', HttpStatus.NOT_FOUND);
+      throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
     }
     let data;
     if (user.email) {
