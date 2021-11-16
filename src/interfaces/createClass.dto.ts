@@ -53,9 +53,9 @@ export class InviteUserDto {
 
   @ApiProperty({ default: 'STUDENT' })
   @IsString()
-  @IsIn(['ADMIN', 'TEACHER', 'STUDENT'])
+  @IsIn(['TEACHER', 'STUDENT'])
   @IsNotEmpty()
-  role: 'ADMIN' | 'TEACHER' | 'STUDENT';
+  role: 'TEACHER' | 'STUDENT';
 }
 
 export class AcceptInviteUserDto {
@@ -66,9 +66,9 @@ export class AcceptInviteUserDto {
 
   @ApiProperty({ default: 'STUDENT' })
   @IsString()
-  @IsIn(['ADMIN', 'TEACHER', 'STUDENT'])
+  @IsIn(['TEACHER', 'STUDENT'])
   @IsNotEmpty()
-  role: 'ADMIN' | 'TEACHER' | 'STUDENT';
+  role: 'TEACHER' | 'STUDENT';
 
   @ApiProperty({ type: String })
   @IsString()

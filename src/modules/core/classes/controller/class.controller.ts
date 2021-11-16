@@ -129,4 +129,20 @@ export class ClassControllerV1 {
       body.code,
     );
   }
+
+  @ApiHeader({
+    name: 'XSRF-Token',
+    description: 'XSRF-Token',
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Post('join')
+  async joinService(@Req() req, @Body() body: AcceptInviteUserDto) {
+    return await this._classService.acceptInviteUser(
+      body.class_id,
+      req.user._id,
+      body.role,
+      body.code,
+    );
+  }
 }

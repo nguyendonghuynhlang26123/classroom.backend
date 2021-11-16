@@ -176,7 +176,7 @@ export class ClassService {
     classId: string,
     teacherId: string,
     email: string,
-    role: 'ADMIN' | 'TEACHER' | 'STUDENT',
+    role: 'TEACHER' | 'STUDENT',
   ) {
     try {
       let classes = await this._classRepository.getOneDocument({
@@ -233,7 +233,7 @@ export class ClassService {
   async acceptInviteUser(
     classId: string,
     userId: string,
-    role: 'ADMIN' | 'TEACHER' | 'STUDENT',
+    role: 'TEACHER' | 'STUDENT',
     code: string,
   ) {
     try {
@@ -264,6 +264,80 @@ export class ClassService {
         { users: classes.users },
       );
       return { status: 200 };
+    } catch (error) {
+      this._logUtil.errorLogger(error, 'ClassService');
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      if (error.code == 11000 || error.code == 11001) {
+        throw new HttpException(
+          `Duplicate key error collection: ${Object.keys(error.keyValue)}`,
+          HttpStatus.CONFLICT,
+        );
+      }
+      throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async userJoinClass(
+    classId: string,
+    userId: string,
+    role: 'TEACHER' | 'STUDENT',
+    code: string,
+  ) {
+    try {
+      let classes = await this._classRepository.getOneDocument({
+        _id: classId,
+      });
+      let index = classes.users.findIndex((e) => {
+        return e.user_id == userId;
+      });
+      if (role == 'TEACHER') {
+        if (index == -1) {
+          throw new HttpException(
+            'Not Found User In Class',
+            HttpStatus.NOT_FOUND,
+          );
+        }
+        if (
+          classes.code != code.substr(0, 6) ||
+          classes.users[index].invite_code != code.substr(6, 6)
+        ) {
+          throw new HttpException('Invalid Code', HttpStatus.NOT_IMPLEMENTED);
+        }
+        classes.users[index].status = 'ACTIVATED';
+        await this._classRepository.updateDocument(
+          { _id: classId },
+          { users: classes.users },
+        );
+        return { status: 200 };
+      }
+
+      if (role == 'STUDENT') {
+        if (index != -1) {
+          if (classes.code != code.substr(0, 6)) {
+            throw new HttpException('Invalid Code', HttpStatus.NOT_IMPLEMENTED);
+          }
+          classes.users[index].status = 'ACTIVATED';
+          await this._classRepository.updateDocument(
+            { _id: classId },
+            { users: classes.users },
+          );
+          return { status: 200 };
+        }
+        let userClassroom: ClassroomUserInterface = {
+          user_id: userId,
+          status: 'ACTIVATED',
+          role: 'STUDENT',
+          invite_code: null,
+        };
+        classes.users.push(userClassroom);
+        await this._classRepository.updateDocument(
+          { _id: classId },
+          { users: classes.users },
+        );
+        return { status: 200 };
+      }
     } catch (error) {
       this._logUtil.errorLogger(error, 'ClassService');
       if (error instanceof HttpException) {
