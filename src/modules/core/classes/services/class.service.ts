@@ -254,7 +254,7 @@ export class ClassService {
         );
       }
       if (classes.users[index].role != role) {
-        throw new HttpException('Not Implemented', HttpStatus.NOT_IMPLEMENTED);
+        throw new HttpException('Conflict', HttpStatus.CONFLICT);
       }
       if (
         classes.code != code.substr(0, 6) ||
