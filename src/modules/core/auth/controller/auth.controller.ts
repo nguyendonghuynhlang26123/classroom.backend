@@ -59,7 +59,7 @@ export class AuthController {
     let user = await this.userService.createUser(body);
     let data: LoginDto = {
       email: user.email,
-      password: user.password,
+      password: body.password,
     };
     const result = await this.authService.login(data);
     return res.send({
