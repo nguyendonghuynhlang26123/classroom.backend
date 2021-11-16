@@ -185,7 +185,7 @@ export class ClassService {
       let index = classes.users.findIndex((e) => {
         return e.user_id == teacherId;
       });
-      if (index == -1 || classes.users[index].role != 'TEACHER') {
+      if (index == -1 || (classes.users[index].role != 'TEACHER' && classes.users[index].role != 'ADMIN')) {
         throw new HttpException('Not Acceptable', HttpStatus.NOT_ACCEPTABLE);
       }
       const user = await this._userService.findUserByEmail(email);
