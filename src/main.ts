@@ -20,7 +20,10 @@ async function bootstrap() {
   // app.useStaticAssets(join(__dirname, '..', 'public'));
   app.useGlobalPipes(new ValidationPipe());
   app.use(cookieParser());
-  const allowList = ['http://localhost:3000'];
+  const allowList = [
+    'http://localhost:3000',
+    'https://nguyendonghuynhlang26123.github.io',
+  ];
   app.enableCors((req, callback) => {
     let corsOptions = {
       credentials: true,
