@@ -247,6 +247,29 @@ export class UserService {
           _id: userId,
         })
         .select({ password: 0 });
+      if (!user) {
+        throw new HttpException('Not Found User', HttpStatus.NOT_FOUND);
+      }
+      return user;
+    } catch (error) {
+      this._logUtil.errorLogger(error, 'UserService');
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async findUserByEmail(email: string) {
+    try {
+      let user = await this._userRepository
+        .getOneDocument({
+          email: email,
+        })
+        .select({ password: 0 });
+      if (!user) {
+        throw new HttpException('Not Found User', HttpStatus.NOT_FOUND);
+      }
       return user;
     } catch (error) {
       this._logUtil.errorLogger(error, 'UserService');

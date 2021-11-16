@@ -10,12 +10,16 @@ import {
 import { Subscription } from 'rxjs';
 import { ClassRepository } from '../../../connector/repository';
 import { LoggerUtilService } from '../../../shared/loggerUtil';
+import { UserService } from '../../users/services/user.service';
+import { MailService } from 'src/modules/feature/mail/mail.service';
 
 @Injectable()
 export class ClassService {
   subscription: Subscription = new Subscription();
   constructor(
     private _classRepository: ClassRepository,
+    private _userService: UserService,
+    private _mailService: MailService,
     private _logUtil: LoggerUtilService,
   ) {
     this.onCreate();
@@ -114,10 +118,12 @@ export class ClassService {
 
   async getClassPeopleById(classId: string, userId: string) {
     try {
-      let classes = await this._classRepository.getOneDocument({
-        _id: classId,
-        'users.user_id': userId,
-      });
+      let classes = await this._classRepository
+        .getOneDocument({
+          _id: classId,
+          'users.user_id': userId,
+        })
+        .populate('users.user_id');
       if (!classes) {
         throw new HttpException('Not Found Class', HttpStatus.NOT_FOUND);
       }
@@ -130,6 +136,64 @@ export class ClassService {
       this._logUtil.errorLogger(error, 'ClassService');
       if (error instanceof HttpException) {
         throw error;
+      }
+      throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async inviteUser(
+    classId: string,
+    teacherId: string,
+    email: string,
+    role: 'ADMIN' | 'TEACHER' | 'STUDENT',
+  ) {
+    try {
+      let classes = await this._classRepository.getOneDocument({
+        _id: classId,
+      });
+      let index = classes.users.findIndex((e) => {
+        return e.user_id == teacherId;
+      });
+      if (index == -1 || classes.users[index].role != 'TEACHER') {
+        throw new HttpException('Not Acceptable', HttpStatus.NOT_ACCEPTABLE);
+      }
+      const user = await this._userService.findUserByEmail(email);
+      if (
+        classes.users.findIndex((e) => {
+          return e.user_id == user._id;
+        }) != -1
+      ) {
+        throw new HttpException('Duplicated', HttpStatus.CONFLICT);
+      }
+      let userClassroom: ClassroomUserInterface = {
+        user_id: user._id,
+        status: 'INACTIVATED',
+        role: role,
+        invite_code: Math.random().toString(36).substr(2, 6),
+      };
+      classes.users.push(userClassroom);
+      this._classRepository.updateDocument(
+        { _id: classId },
+        { users: classes.users },
+      );
+      this._mailService.sendMail(
+        email,
+        classId,
+        role,
+        classes.code,
+        userClassroom.invite_code,
+      );
+      return { status: 200 };
+    } catch (error) {
+      this._logUtil.errorLogger(error, 'ClassService');
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      if (error.code == 11000 || error.code == 11001) {
+        throw new HttpException(
+          `Duplicate key error collection: ${Object.keys(error.keyValue)}`,
+          HttpStatus.CONFLICT,
+        );
       }
       throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
     }

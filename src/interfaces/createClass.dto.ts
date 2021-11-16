@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   IsAscii,
   IsEmail,
+  IsIn,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -34,4 +35,18 @@ export class CreateClassDto {
 export class QueryClassDto {
   @ApiProperty({ type: String })
   class_id: string;
+}
+
+export class InviteUser {
+  @ApiProperty({ type: String })
+  @IsString()
+  @IsEmail()
+  @IsNotEmpty()
+  email: string;
+
+  @ApiProperty({ type: 'STUDENT' })
+  @IsString()
+  @IsIn(['ADMIN', 'TEACHER', 'STUDENT'])
+  @IsNotEmpty()
+  role: 'ADMIN' | 'TEACHER' | 'STUDENT';
 }

@@ -31,7 +31,6 @@ export class AuthController {
     private logOutService: LogOutService,
     private httpService: HttpService,
   ) {
-    console.log(process.env.DOMAIN_ROOT);
   }
 
   @ApiHeader({
