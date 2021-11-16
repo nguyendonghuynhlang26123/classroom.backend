@@ -75,3 +75,16 @@ export class AcceptInviteUserDto {
   @IsNotEmpty()
   code: string;
 }
+
+export class UserJoinClassDto {
+  @ApiProperty({ default: 'STUDENT' })
+  @IsString()
+  @IsIn(['TEACHER', 'STUDENT'])
+  @IsNotEmpty()
+  role: 'TEACHER' | 'STUDENT';
+
+  @ApiProperty({ type: String })
+  @IsString()
+  @IsNotEmpty()
+  code: string;
+}

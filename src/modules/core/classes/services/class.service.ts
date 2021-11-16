@@ -185,7 +185,11 @@ export class ClassService {
       let index = classes.users.findIndex((e) => {
         return e.user_id == teacherId;
       });
-      if (index == -1 || (classes.users[index].role != 'TEACHER' && classes.users[index].role != 'ADMIN')) {
+      if (
+        index == -1 ||
+        (classes.users[index].role != 'TEACHER' &&
+          classes.users[index].role != 'ADMIN')
+      ) {
         throw new HttpException('Not Acceptable', HttpStatus.NOT_ACCEPTABLE);
       }
       const user = await this._userService.findUserByEmail(email);
@@ -280,15 +284,17 @@ export class ClassService {
   }
 
   async userJoinClass(
-    classId: string,
     userId: string,
     role: 'TEACHER' | 'STUDENT',
     code: string,
   ) {
     try {
       let classes = await this._classRepository.getOneDocument({
-        _id: classId,
+        code: code.substr(0, 6),
       });
+      if (!classes) {
+        throw new HttpException('Not Found Class', HttpStatus.NOT_FOUND);
+      }
       let index = classes.users.findIndex((e) => {
         return e.user_id == userId;
       });
@@ -307,7 +313,7 @@ export class ClassService {
         }
         classes.users[index].status = 'ACTIVATED';
         await this._classRepository.updateDocument(
-          { _id: classId },
+          { _id: classes._id },
           { users: classes.users },
         );
         return { status: 200 };
@@ -320,7 +326,7 @@ export class ClassService {
           }
           classes.users[index].status = 'ACTIVATED';
           await this._classRepository.updateDocument(
-            { _id: classId },
+            { _id: classes._id },
             { users: classes.users },
           );
           return { status: 200 };
@@ -333,7 +339,7 @@ export class ClassService {
         };
         classes.users.push(userClassroom);
         await this._classRepository.updateDocument(
-          { _id: classId },
+          { _id: classes._id },
           { users: classes.users },
         );
         return { status: 200 };

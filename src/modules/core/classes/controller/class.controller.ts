@@ -23,6 +23,7 @@ import {
   QueryClassDto,
   InviteUserDto,
   AcceptInviteUserDto,
+  UserJoinClassDto,
 } from 'src/interfaces';
 
 @Controller('v1/classes')
@@ -137,9 +138,8 @@ export class ClassControllerV1 {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Post('join')
-  async joinService(@Req() req, @Body() body: AcceptInviteUserDto) {
+  async joinService(@Req() req, @Body() body: UserJoinClassDto) {
     return await this._classService.userJoinClass(
-      body.class_id,
       req.user._id,
       body.role,
       body.code,
