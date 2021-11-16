@@ -69,7 +69,7 @@ export class ClassService {
       }
       const data = await Promise.all([
         this._classRepository.getAllDocument(
-          { 'users.user_id': userId },
+          { users: { $elemMatch: { user_id: userId, status: 'ACTIVATED' } } },
           {
             users: 0,
             __v: 0,
@@ -79,7 +79,7 @@ export class ClassService {
           Number(query.page),
         ),
         this._classRepository.getCountPage(
-          { 'users.user_id': userId },
+          { users: { $elemMatch: { user_id: userId, status: 'ACTIVATED' } } },
           Number(query.per_page),
         ),
       ]);
@@ -100,7 +100,7 @@ export class ClassService {
     try {
       let classes = await this._classRepository.getOneDocument({
         _id: classId,
-        'users.user_id': userId,
+        users: { $elemMatch: { user_id: userId, status: 'ACTIVATED' } },
       });
       if (!classes) {
         throw new HttpException('Not Found Class', HttpStatus.NOT_FOUND);
@@ -152,7 +152,7 @@ export class ClassService {
       let classes = await this._classRepository
         .getOneDocument({
           _id: classId,
-          'users.user_id': userId,
+          users: { $elemMatch: { user_id: userId, status: 'ACTIVATED' } },
         })
         .populate('users.user_id');
       if (!classes) {
