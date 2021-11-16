@@ -192,10 +192,10 @@ export class ClassService {
       ) {
         throw new HttpException('Not Acceptable', HttpStatus.NOT_ACCEPTABLE);
       }
-      const user = await this._userService.findUserByEmail(email);
+      let user = await this._userService.findUserByEmail(email);
       if (
         classes.users.findIndex((e) => {
-          return e.user_id == user._id;
+          return e.user_id == String(user._id);
         }) != -1
       ) {
         throw new HttpException('Duplicated', HttpStatus.CONFLICT);
