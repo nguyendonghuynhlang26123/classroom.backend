@@ -21,7 +21,8 @@ import {
   GenericRes,
   CreateClassDto,
   QueryClassDto,
-  InviteUser,
+  InviteUserDto,
+  AcceptInviteUserDto,
 } from 'src/interfaces';
 
 @Controller('v1/classes')
@@ -89,7 +90,7 @@ export class ClassControllerV1 {
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
-  @Get('people/:class_id')
+  @Get('/:class_id/people')
   async getPeopleServiceById(@Req() req, @Param() param: QueryClassDto) {
     return await this._classService.getClassPeopleById(
       param.class_id,
@@ -103,17 +104,29 @@ export class ClassControllerV1 {
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
-  @Post('invite/:class_id')
-  async inviteService(
-    @Req() req,
-    @Body() body: InviteUser,
-    @Param() param: QueryClassDto,
-  ) {
+  @Post('invite/')
+  async inviteService(@Req() req, @Body() body: InviteUserDto) {
     return await this._classService.inviteUser(
-      param.class_id,
+      body.class_id,
       req.user._id,
       body.email,
       body.role,
+    );
+  }
+
+  @ApiHeader({
+    name: 'XSRF-Token',
+    description: 'XSRF-Token',
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Post('invite/accept')
+  async acceptInviteService(@Req() req, @Body() body: AcceptInviteUserDto) {
+    return await this._classService.acceptInviteUser(
+      body.class_id,
+      req.user._id,
+      body.role,
+      body.code,
     );
   }
 }

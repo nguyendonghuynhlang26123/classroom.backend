@@ -61,3 +61,8 @@ export class Class extends Document implements ClassInterface {
 }
 
 export const ClassSchema = SchemaFactory.createForClass(Class);
+ClassSchema.virtual('user', {
+  ref: 'users',
+  localField: 'users.user_id',
+  foreignField: '_id',
+});
