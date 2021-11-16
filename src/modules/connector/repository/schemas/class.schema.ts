@@ -27,9 +27,9 @@ export class Class extends Document implements ClassInterface {
 
   @Prop({
     type: String,
-    default: 'https://www.gstatic.com/classroom/themes/img_breakfast.jpg',
+    default: 'https://gstatic.com/classroom/themes/img_backtoschool.jpg',
   })
-  image: 'https://www.gstatic.com/classroom/themes/img_breakfast.jpg';
+  image: 'https://gstatic.com/classroom/themes/img_backtoschool.jpg';
 
   @Prop({ type: String, default: Math.random().toString(36).substr(2, 6) })
   code: string;
@@ -37,7 +37,7 @@ export class Class extends Document implements ClassInterface {
   @Prop({
     type: [
       {
-        user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'users' },
+        user_id: { type: mongoose.Schema.Types.ObjectId },
         status: { type: String, enum: ['ACTIVATED', 'INACTIVATED'] },
         role: { type: String, enum: ['ADMIN', 'TEACHER', 'STUDENT'] },
         invite_code: {
@@ -61,7 +61,7 @@ export class Class extends Document implements ClassInterface {
 }
 
 export const ClassSchema = SchemaFactory.createForClass(Class);
-ClassSchema.virtual('user', {
+ClassSchema.virtual('users.user', {
   ref: 'users',
   localField: 'users.user_id',
   foreignField: '_id',

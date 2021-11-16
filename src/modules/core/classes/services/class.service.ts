@@ -32,7 +32,7 @@ export class ClassService {
         section: data.section,
         subject: data.subject || null,
         room: data.room || null,
-        image: 'https://www.gstatic.com/classroom/themes/img_breakfast.jpg',
+        image: 'https://gstatic.com/classroom/themes/img_backtoschool.jpg',
         code: Math.random().toString(36).substr(2, 6),
         users: [],
       };
@@ -154,7 +154,7 @@ export class ClassService {
           _id: classId,
           'users.user_id': userId,
         })
-        .populate('users.user_id');
+        .populate('users.user');
       if (!classes) {
         throw new HttpException('Not Found Class', HttpStatus.NOT_FOUND);
       }
