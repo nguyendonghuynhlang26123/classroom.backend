@@ -37,7 +37,7 @@ export class Class extends Document implements ClassInterface {
   @Prop({
     type: [
       {
-        user_id: { type: mongoose.Schema.Types.ObjectId },
+        user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'users' },
         status: { type: String, enum: ['ACTIVATED', 'INACTIVATED'] },
         role: { type: String, enum: ['ADMIN', 'TEACHER', 'STUDENT'] },
         invite_code: {
@@ -61,8 +61,3 @@ export class Class extends Document implements ClassInterface {
 }
 
 export const ClassSchema = SchemaFactory.createForClass(Class);
-ClassSchema.virtual('users.user', {
-  ref: 'users',
-  localField: 'users.user_id',
-  foreignField: '_id',
-});

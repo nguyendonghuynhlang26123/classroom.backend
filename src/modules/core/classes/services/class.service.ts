@@ -154,7 +154,7 @@ export class ClassService {
           _id: classId,
           'users.user_id': userId,
         })
-        .populate('users.user');
+        .populate('users.user_id');
       if (!classes) {
         throw new HttpException('Not Found Class', HttpStatus.NOT_FOUND);
       }
