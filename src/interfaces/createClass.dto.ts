@@ -34,6 +34,8 @@ export class CreateClassDto {
 
 export class QueryClassDto {
   @ApiProperty({ type: String })
+  @IsString()
+  @IsNotEmpty()
   class_id: string;
 }
 

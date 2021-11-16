@@ -78,6 +78,17 @@ export class ClassControllerV1 {
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
+  @Get(':class_id/role/')
+  async getRoleService(@Req() req, @Param() param: QueryClassDto) {
+    return await this._classService.getRoleUser(param.class_id, req.user._id);
+  }
+
+  @ApiHeader({
+    name: 'XSRF-Token',
+    description: 'XSRF-Token',
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
   @Get('people/:class_id')
   async getPeopleServiceById(@Req() req, @Param() param: QueryClassDto) {
     return await this._classService.getClassPeopleById(

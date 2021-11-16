@@ -116,6 +116,37 @@ export class ClassService {
     }
   }
 
+  async getRoleUser(classId: string, userId: string) {
+    try {
+      let classes = await this._classRepository.getOneDocument({
+        _id: classId,
+      });
+      if (!classes) {
+        throw new HttpException('Not Found Class', HttpStatus.NOT_FOUND);
+      }
+      let index = classes.users.findIndex((e) => {
+        return e.user_id == userId;
+      });
+      if (index == -1) {
+        throw new HttpException(
+          'Not Found User In Class',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+      return {
+        class_id: classId,
+        user_id: userId,
+        role: classes.users[index].role,
+      };
+    } catch (error) {
+      this._logUtil.errorLogger(error, 'ClassService');
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+    }
+  }
+
   async getClassPeopleById(classId: string, userId: string) {
     try {
       let classes = await this._classRepository
