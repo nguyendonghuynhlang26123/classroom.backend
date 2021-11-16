@@ -138,7 +138,7 @@ export class ClassControllerV1 {
   @UseGuards(JwtAuthGuard)
   @Post('join')
   async joinService(@Req() req, @Body() body: AcceptInviteUserDto) {
-    return await this._classService.acceptInviteUser(
+    return await this._classService.userJoinClass(
       body.class_id,
       req.user._id,
       body.role,
