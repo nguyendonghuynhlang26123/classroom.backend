@@ -65,6 +65,7 @@ export class UserService {
           check.first_name = data.first_name;
           check.last_name = data.last_name;
           check.avatar = data.avatar;
+          delete check.password;
           return check;
         }
         throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
@@ -80,7 +81,15 @@ export class UserService {
       };
       const createUser = new this._userRepository._model(dataUser);
       let user = await this._userRepository.create(createUser);
-      return user;
+      return {
+        _id: user._id,
+        email: user.email,
+        student_id: user.student_id,
+        first_name: user.first_name,
+        last_name: user.last_name,
+        avatar: user.avatar,
+        google_id: user.google_id,
+      };
     } catch (error) {
       this._logUtil.errorLogger(error, 'UserService');
       if (error instanceof HttpException) {

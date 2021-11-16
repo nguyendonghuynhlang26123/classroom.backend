@@ -80,7 +80,6 @@ export class AuthService {
       throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
     }
     let data = await this.usersService.createGoogleUser(user);
-    delete data.password;
     const token = await this._tokenService.createToken(
       'user',
       data._id,

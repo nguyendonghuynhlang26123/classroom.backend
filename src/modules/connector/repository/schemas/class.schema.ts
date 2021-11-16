@@ -19,10 +19,10 @@ export class Class extends Document implements ClassInterface {
   @Prop({ type: String, required: true })
   section: string;
 
-  @Prop({ type: String, required: true })
+  @Prop({ type: String, default: null })
   subject: string;
 
-  @Prop({ type: String, required: true })
+  @Prop({ type: String, default: null })
   room: string;
 
   @Prop({

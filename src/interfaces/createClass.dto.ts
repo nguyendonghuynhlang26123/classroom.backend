@@ -3,6 +3,7 @@ import {
   IsAscii,
   IsEmail,
   IsNotEmpty,
+  IsOptional,
   IsString,
   Length,
   Matches,
@@ -21,13 +22,13 @@ export class CreateClassDto {
 
   @ApiProperty({ type: String })
   @IsString()
-  @IsNotEmpty()
-  subject: string;
+  @IsOptional()
+  subject?: string;
 
   @ApiProperty({ type: String })
   @IsString()
-  @IsNotEmpty()
-  room: string;
+  @IsOptional()
+  room?: string;
 }
 
 export class QueryClassDto {

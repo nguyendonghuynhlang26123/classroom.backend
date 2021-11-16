@@ -26,8 +26,8 @@ export class ClassService {
       let dataClass: ClassInterface = {
         title: data.title,
         section: data.section,
-        subject: data.subject,
-        room: data.room,
+        subject: data.subject || null,
+        room: data.room || null,
         image: 'https://www.gstatic.com/classroom/themes/img_breakfast.jpg',
         code: Math.random().toString(36).substr(2, 6),
         users: [],
@@ -67,6 +67,7 @@ export class ClassService {
         this._classRepository.getAllDocument(
           { 'users.user_id': userId },
           {
+            users: 0,
             __v: 0,
           },
           builder,
