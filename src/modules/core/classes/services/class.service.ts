@@ -432,7 +432,7 @@ export class ClassService {
       const result = this._classRepository.deleteDocument({
         _id: classId,
       });
-      return result;
+      return { status: 200 };
     } catch (error) {
       this._logUtil.errorLogger(error, 'ClassService');
       if (error instanceof HttpException) {
@@ -468,7 +468,7 @@ export class ClassService {
       const result = this._classRepository.restoreDocument({
         _id: classId,
       });
-      return result;
+      return { status: 200 };
     } catch (error) {
       this._logUtil.errorLogger(error, 'ClassService');
       if (error instanceof HttpException) {
@@ -504,7 +504,7 @@ export class ClassService {
       const result = this._classRepository.removeDocument({
         _id: classId,
       });
-      return result;
+      return { status: 200 };
     } catch (error) {
       this._logUtil.errorLogger(error, 'ClassService');
       if (error instanceof HttpException) {
