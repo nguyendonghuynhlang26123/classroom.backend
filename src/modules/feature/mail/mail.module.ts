@@ -8,8 +8,7 @@ import { MailService } from './mail.service';
     MailerModule.forRoot({
       transport: {
         host: 'smtp.gmail.com',
-        port: 465,
-        secure: true,
+        secure: false,
         auth: {
           user: 'thependailynews@gmail.com',
           pass: 'thependaily',
