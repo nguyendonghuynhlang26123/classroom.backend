@@ -18,7 +18,7 @@ export class MailService {
       subject: `Class Invitation - ${new Date(
         Date.now(),
       ).toLocaleDateString()}`,
-      html: `<a target="_blank" rel="noopener noreferrer" href="http://localhost:3000/classes/join?classId=${classId}?role=${role}&code=${classroomCode}${inviteCode}">Click here to join class.</a>`,
+      html: `<a target="_blank" rel="noopener noreferrer" href="http://localhost:3000/classes/join?classId=${classId}&role=${role}&code=${classroomCode}${inviteCode}">Click here to join class.</a>`,
     });
   }
 }
