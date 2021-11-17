@@ -7,7 +7,7 @@ import { MailService } from './mail.service';
   imports: [
     MailerModule.forRoot({
       transport: {
-        host: 'smtp.gmail.com',
+        host: 'smtp.herokuapp.com',
         secure: false,
         auth: {
           user: 'thependailynews@gmail.com',
