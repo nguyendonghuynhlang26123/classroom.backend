@@ -11,6 +11,8 @@ import {
   Req,
   Put,
   Param,
+  Patch,
+  Delete,
 } from '@nestjs/common';
 import { ClassService } from '../services/class.service';
 import { JwtAuthGuard } from '../../auth/guard/jwt-auth.guard';
@@ -159,5 +161,38 @@ export class ClassControllerV1 {
       param.class_id,
       req.user._id,
     );
+  }
+
+  @ApiHeader({
+    name: 'XSRF-Token',
+    description: 'XSRF-Token',
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Patch('/:class_id/restore')
+  async restoreService(@Req() req, @Param() param: QueryClassDto) {
+    return await this._classService.restoreClass(param.class_id, req.user._id);
+  }
+
+  @ApiHeader({
+    name: 'XSRF-Token',
+    description: 'XSRF-Token',
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Delete('/:class_id/delete')
+  async deleteService(@Req() req, @Param() param: QueryClassDto) {
+    return await this._classService.deleteClass(param.class_id, req.user._id);
+  }
+
+  @ApiHeader({
+    name: 'XSRF-Token',
+    description: 'XSRF-Token',
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Delete('/:class_id/remove')
+  async removeService(@Req() req, @Param() param: QueryClassDto) {
+    return await this._classService.removeClass(param.class_id, req.user._id);
   }
 }

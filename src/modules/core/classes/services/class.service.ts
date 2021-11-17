@@ -406,7 +406,113 @@ export class ClassService {
     }
   }
 
-  
+  async deleteClass(classId: string, userId: string) {
+    try {
+      const classes = await this._classRepository.getOneDocument({
+        _id: classId,
+      });
+      if (!classes) {
+        throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+      }
+      let index = classes.users.findIndex((e) => {
+        return e.user_id == userId;
+      });
+      if (index == -1) {
+        throw new HttpException(
+          'Not Found User In Class',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+      if (classes.users[index].role != 'ADMIN') {
+        throw new HttpException(
+          'Only Admin Can Delete Class',
+          HttpStatus.NOT_ACCEPTABLE,
+        );
+      }
+      const result = this._classRepository.deleteDocument({
+        _id: classId,
+      });
+      return result;
+    } catch (error) {
+      this._logUtil.errorLogger(error, 'ClassService');
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async restoreClass(classId: string, userId: string) {
+    try {
+      const classes = await this._classRepository.getOneDocumentTrash({
+        _id: classId,
+      });
+      if (!classes) {
+        throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+      }
+      let index = classes.users.findIndex((e) => {
+        return e.user_id == userId;
+      });
+      if (index == -1) {
+        throw new HttpException(
+          'Not Found User In Class',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+      if (classes.users[index].role != 'ADMIN') {
+        throw new HttpException(
+          'Only Admin Can Restore Class',
+          HttpStatus.NOT_ACCEPTABLE,
+        );
+      }
+      const result = this._classRepository.restoreDocument({
+        _id: classId,
+      });
+      return result;
+    } catch (error) {
+      this._logUtil.errorLogger(error, 'ClassService');
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async removeClass(classId: string, userId: string) {
+    try {
+      const classes = await this._classRepository.getOneDocumentTrash({
+        _id: classId,
+      });
+      if (!classes) {
+        throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+      }
+      let index = classes.users.findIndex((e) => {
+        return e.user_id == userId;
+      });
+      if (index == -1) {
+        throw new HttpException(
+          'Not Found User In Class',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+      if (classes.users[index].role != 'ADMIN') {
+        throw new HttpException(
+          'Only Admin Can Remove Class',
+          HttpStatus.NOT_ACCEPTABLE,
+        );
+      }
+      const result = this._classRepository.removeDocument({
+        _id: classId,
+      });
+      return result;
+    } catch (error) {
+      this._logUtil.errorLogger(error, 'ClassService');
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+    }
+  }
 
   onCreate() {}
 }
