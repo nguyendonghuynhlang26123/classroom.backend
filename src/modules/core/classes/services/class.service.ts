@@ -363,5 +363,50 @@ export class ClassService {
     }
   }
 
+  async userLeaveClass(classId: string, userId: string) {
+    try {
+      let classes = await this._classRepository.getOneDocument({
+        _id: classId,
+      });
+      let index = classes.users.findIndex((e) => {
+        return e.user_id == userId;
+      });
+      if (index == -1) {
+        throw new HttpException(
+          'Not Found User In Class',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+      if (classes.users[index].role == 'ADMIN') {
+        throw new HttpException(
+          'Admin Can Not Leave Class',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      classes.users = classes.users.filter((e) => {
+        return e.user_id != userId;
+      });
+      const result = await this._classRepository.updateDocument(
+        { _id: classId },
+        { users: classes.users },
+      );
+      return { status: 200 };
+    } catch (error) {
+      this._logUtil.errorLogger(error, 'ClassService');
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      if (error.code == 11000 || error.code == 11001) {
+        throw new HttpException(
+          `Duplicate key error collection: ${Object.keys(error.keyValue)}`,
+          HttpStatus.CONFLICT,
+        );
+      }
+      throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  
+
   onCreate() {}
 }

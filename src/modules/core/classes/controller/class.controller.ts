@@ -9,6 +9,7 @@ import {
   CacheInterceptor,
   Query,
   Req,
+  Put,
   Param,
 } from '@nestjs/common';
 import { ClassService } from '../services/class.service';
@@ -143,6 +144,20 @@ export class ClassControllerV1 {
       req.user._id,
       body.role,
       body.code,
+    );
+  }
+
+  @ApiHeader({
+    name: 'XSRF-Token',
+    description: 'XSRF-Token',
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Put(':class_id/leave')
+  async leaveService(@Req() req, @Param() param: QueryClassDto) {
+    return await this._classService.userLeaveClass(
+      param.class_id,
+      req.user._id,
     );
   }
 }
