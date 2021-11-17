@@ -182,6 +182,7 @@ export class ClassService {
       let classes = await this._classRepository.getOneDocument({
         _id: classId,
       });
+      let inviter = await this._userService.findUserById(teacherId);
       let index = classes.users.findIndex((e) => {
         return e.user_id == teacherId;
       });
@@ -217,6 +218,9 @@ export class ClassService {
         role,
         classes.code,
         userClassroom.invite_code,
+        inviter.first_name + ' ' + inviter.last_name,
+        inviter.email,
+        classes.title,
       );
       return { status: 200 };
     } catch (error) {

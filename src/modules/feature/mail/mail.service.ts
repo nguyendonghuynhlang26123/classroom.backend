@@ -11,6 +11,9 @@ export class MailService {
     role: string,
     classroomCode: string,
     inviteCode: string,
+    inviterName: string,
+    inviterEmail: string,
+    classTitle: string,
   ) {
     await this.mailerService.sendMail({
       from: '"No Reply" <thependailynews@gmail.com>',
@@ -18,7 +21,7 @@ export class MailService {
       subject: `Class Invitation - ${new Date(
         Date.now(),
       ).toLocaleDateString()}`,
-      html: `<a target="_blank" rel="noopener noreferrer" href="http://localhost:3000/classes/join?classId=${classId}&role=${role}&code=${classroomCode}${inviteCode}">Click here to join class.</a>`,
+      html: `<p>${inviterName} (${inviterEmail}) want to invite you to join class "${classTitle}" as a "${role}".</p><br><a target="_blank" rel="noopener noreferrer" href="http://localhost:3000/classes/join?classId=${classId}&role=${role}&code=${classroomCode}${inviteCode}">Click here to accept.</a>`,
     });
   }
 }
