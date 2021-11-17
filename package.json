@@ -30,6 +30,7 @@
     "@nestjs/passport": "^8.0.1",
     "@nestjs/platform-express": "^8.0.0",
     "@nestjs/swagger": "^5.1.4",
+    "@sendgrid/mail": "^7.6.0",
     "bcrypt": "^5.0.1",
     "cache-manager": "^3.4.4",
     "class-transformer": "^0.4.0",
