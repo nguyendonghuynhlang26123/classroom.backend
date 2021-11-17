@@ -21,6 +21,7 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
   app.use(cookieParser());
   const allowList = [
+    'https://moorssalc-app.herokuapp.com/',
     'http://localhost:3000',
     'https://nguyendonghuynhlang26123.github.io',
   ];
