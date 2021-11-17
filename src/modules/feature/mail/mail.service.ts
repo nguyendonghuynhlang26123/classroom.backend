@@ -1,27 +1,8 @@
 import { MailerService } from '@nestjs-modules/mailer';
 import { Injectable } from '@nestjs/common';
-import * as nodemailer from 'nodemailer';
 @Injectable()
 export class MailService {
-  transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: 'thependailynews@gmail.com',
-      pass: 'thependaily',
-    },
-  });
-  constructor() {
-    this.sendMail(
-      'nguyenthaitan9@gmail.com',
-      'aaaaaaaaa',
-      'STUDENT',
-      'aaaaaa',
-      'ssssss',
-      'Tân Nguyễn',
-      'nguyentan@gmail.com',
-      'ABC',
-    );
-  }
+  constructor(private mailerService: MailerService) {}
 
   async sendMail(
     email: string,
@@ -33,7 +14,7 @@ export class MailService {
     inviterEmail: string,
     classTitle: string,
   ) {
-    await this.transporter.sendMail({
+    await this.mailerService.sendMail({
       from: '"No Reply" <thependailynews@gmail.com>',
       to: email,
       subject: `Class Invitation - ${new Date(

@@ -1,3 +1,6 @@
+import * as dotenv from 'dotenv';
+dotenv.config();
+
 export const devConfig = {
   app: {
     name: 'LofiSystemDev',
@@ -14,7 +17,7 @@ export const devConfig = {
     },
   },
   mongodb: {
-    url: 'mongodb+srv://admin:admin2020@cluster0.clc8a.azure.mongodb.net/classroom',
+    url: process.env.MONGODB_URL,
     option: { useCreateIndex: true, useNewUrlParser: true },
   },
   telegram: {

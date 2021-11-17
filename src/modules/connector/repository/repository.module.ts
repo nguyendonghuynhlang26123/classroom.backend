@@ -3,6 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import * as schema from './schemas';
 import * as repository from './repositorys';
 import APP_CONFIG from '../../../config';
+
 @Global()
 @Module({
   imports: [
