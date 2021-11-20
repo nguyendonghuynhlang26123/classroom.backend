@@ -1,4 +1,5 @@
-export enum UserType {
-  User = 'user',
-  Admin = 'admin',
+export enum Role {
+  Admin = 'ADMIN',
+  Teacher = 'TEACHER',
+  Student = 'STUDENT',
 }

@@ -1,6 +1,6 @@
 import { SetMetadata } from '@nestjs/common';
-import { UserType } from 'src/enums';
+import { Role } from 'src/enums';
 
 export const ALLOWFOR_KEY = 'allowFor';
-export const AllowFors = (...userType: UserType[]) =>
-  SetMetadata(ALLOWFOR_KEY, userType);
+export const AllowFors = (...roles: Role[]) =>
+  SetMetadata(ALLOWFOR_KEY, roles);

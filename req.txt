@@ -1,70 +1,42 @@
-+ auth/login
- - DB -
+ClassTopic
+- id: string;
+- title: string;
+- classId: string;
 
-User:
-+ id 
-+ studentId: MSSV
-+ email
-+ password
-+ name
-+ avatar
-+ googleId 
 
-ClassroomUser: 
-+ userId:
-+ status: ACTIVATED| INACTIVATED
-+ role: TEACHER | STUDENT
-+ invite_code: random 6digits
+Assignment
+- id: string
+- class_id: string (required)
+- topic: ClassTopic 
+- title: string (required)
+- instructions: string (required) <- HTML 
+- total_points: number (required, default = 100)
+- due_date: number 
+- grade_criterias: Array <{
+	name: string(required),
+	points: string
+}>
 
-Classes
-+ id 
-+ title:
-+ section
-+ subject
-+ room
-+ image: https://www.gstatic.com/classroom/themes/img_breakfast.jpg
-+ code: auto generate code (6 character/number digits) 
-+ users: ClassroomUser[]  // User chính của class, 
+GradingAssignment
+- assignment_id
+- class_id
+- student_id
+- mark: number
+- work-attachment {
+	link: string,
+	type: string,
+	submit_at: string,
+	last_update: string,
+	status: EXPIRED | VALID
+}
 
- - API - 
-1.Auth
-+ POST auth/login: Data={email, password}
-+ POST auth/register: Data={email, password}, Trả về 409 nếu email bị trùng
 
-(+ POST auth/register/google-activate: Data={email, name, googleId, imageUrl, tokenId}: 
-	- Kiểm tra email có bị trùng -> Trả về status code 409 Conflict
-	- Gọi api đến google để kiểm tra (coi video L06.mp4 trên classroom từ 03.10.00 trở lên) 
-	- Tạo user với thông tin trên ) <=== bỏ
+API: 
+1. assignment 
+POST /classses/:id/assignment {data: Assignment} For TEACHER/ ADMIN only
+GET  /classses/:id/assignment?page=1&page_size=10&sort_by=asc&sort_type=topic: get all documents in that class (For STUDENT/TEACHER/ADMIN)
+PUT /classses/:id/assignment {data: Assignment} For TEACHER/ ADMIN only
+DELETE /classses/:id/assignment
 
-+ POST auth/google-validate: Data={tokenId}:
-	- Validate tokenId bằng `https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=${body.token_id}` => nhận đc {data}
-	- Kiểm tra email trong data: 
-		- Nếu chưa có: Tạo user với data lấy được từ google (với password = null)
-		- Nếu có rồi: Kiểm tra ggId với data.sub
-			+ Nếu ggID = null: Update lại ggID=data.sub
-			+ Nếu ggId != data.sub => return 400 BAD REQUEST (Cái này ko biết cần ko nhưng cứ check cho chắc)
-			+ Nếu ggId == data.sub => return { data: user, access_token, refresh_token }
- 
-2.User
-+ GET users/details: Trả về thông tin User
-+ PUT users/details: Update thông tin User (cho update hết trừ googleToken). Kiểm tra có bị trùng MSSV ko (studentId)
+2. 
 
-3.Classes
-+ GET classes/ : Check userId ở jwt token -> get list of class 
-+ POST classes/ : tạo class -> gán userId làm teacher 
-+ GET classes/{class id}: Check userId trong token, nếu thuộc users của classes => trả về thông tin classes theo id (trả về hết trừ teachers, students), nếu ko trả về 401
-+ GET classes/people/{class id}: Check userId trong token, nếu thuộc users của classes => trả về list users (ko trả về invite_code) nếu ko trả về 401
-+ POST classes/invite/{classroomId} (Data={email,role} ): Check userID trong jwt token, kiểm tra trùng, nếu userId thuộc Users VÀ có role là TEACHER 
-	-> Get class by classId -> get {classroom code}, 
-	-> Tạo ClassroomUser với status = INACTIVATED, auto generate {invite_code} rồi nhét vô classroom.users[] 
-	-> Gửi mail với đường link: {frontendHost}/classes/join/{classroomId}?role={role}&code={classroom code + invite_code}
-	-> (Phía frontend sẽ tự động bắt đăng nhập rồi gửi api đến POST /classes/invite/accept { classroomId, role, code }
-+ POST /classes/invite/accept { classroomId, role, code }: 
-	- Check jwt token để lấy userId, kiểm tra userId phải thuộc users của classroomId, 
-	- Check thông tin ClassroomUser:
-		+ Lấy 6 chữ số cuối của {code} để check invite_code
-		+ Lấy 6 chữ số đầu của {code} để check classroom.code
-		+ Kiểm tra role 
-	- Update status -> ACTIVATED 
-
-** Thành công thì luôn trả về với status code 200

@@ -26,16 +26,6 @@ export class GenericQuery {
   sort_type: string;
 
   @ApiPropertyOptional()
-  @IsNumberString()
-  @IsOptional()
-  from_date?: string;
-
-  @ApiPropertyOptional()
-  @IsNumberString()
-  @IsOptional()
-  to_date?: string;
-
-  @ApiPropertyOptional()
   @IsBooleanString()
   @IsOptional()
   is_deleted?: string;
