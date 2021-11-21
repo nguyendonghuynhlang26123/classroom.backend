@@ -2,13 +2,11 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import * as csurf from 'csurf';
-// import * as helmet from 'helmet';
 import { ValidationPipe } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import * as cookieParser from 'cookie-parser';
 import * as dotenv from 'dotenv';
-import { join } from 'path';
-// somewhere in your initialization file
+import * as fs from 'fs';
 
 dotenv.config();
 
@@ -66,6 +64,7 @@ async function bootstrap() {
     .setVersion('1.0')
     .build();
   const document = SwaggerModule.createDocument(app, options);
+  fs.writeFileSync('./swagger-spec.json', JSON.stringify(document));
   SwaggerModule.setup('docs', app, document);
   await app.listen(parseInt(process.env.PORT) || 3001, '0.0.0.0');
   console.log(`Application is running on: ${await app.getUrl()}`);
