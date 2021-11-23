@@ -65,7 +65,3 @@ export class Assignment extends Document implements AssignmentInterface {
 }
 
 export const AssignmentSchema = SchemaFactory.createForClass(Assignment);
-AssignmentSchema.index(
-  { title: 1, class_id: 1, deleted_at: 1 },
-  { unique: true },
-);

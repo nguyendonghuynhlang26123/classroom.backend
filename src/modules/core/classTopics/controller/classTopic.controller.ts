@@ -78,7 +78,6 @@ export class ClassTopicControllerV1 {
   @AllowFors(Role.Admin, Role.Teacher, Role.Student)
   @Get('/:class_id/class-topics/:class_topic_id')
   async getServiceById(
-    @Query() query: GenericQuery,
     @Param() param: QueryClassTopicDto,
   ) {
     return await this._classTopicService.getClassTopicById(
