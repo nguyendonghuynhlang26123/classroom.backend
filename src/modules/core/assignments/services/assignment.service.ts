@@ -17,16 +17,16 @@ export class AssignmentService {
     this.onCreate();
   }
 
-  async createAssignment(data: CreateAssignmentDto) {
+  async createAssignment(data: CreateAssignmentDto, classId: string) {
     try {
       let dataAssignment: AssignmentInterface = {
-        class_id: data.class_id,
+        class_id: classId,
         topic: data.topic || null,
         title: data.title,
         instructions: data.instructions,
-        total_points: data.total_points,
+        total_points: data.total_points || null,
         due_date: data.due_date || null,
-        grade_criterias: data.grade_criterias || null,
+        grade_criterias: data.grade_criterias || [],
       };
       const createAssignment = new this._assignmentRepository._model(
         dataAssignment,
@@ -60,7 +60,6 @@ export class AssignmentService {
         this._assignmentRepository.getAllDocument(
           { class_id: classId },
           {
-            users: 0,
             __v: 0,
           },
           builder,

@@ -2,11 +2,19 @@ import { Module } from '@nestjs/common';
 import { AssignmentModule } from './assignments/assignment.module';
 import { AuthModule } from './auth/auth.module';
 import { ClassModule } from './classes/class.module';
+import { ClassTopicModule } from './classTopics/classTopic.module';
 import { TokenModule } from './token/token.module';
 import { UserModule } from './users/user.module';
 
 @Module({
-  imports: [UserModule, ClassModule, AssignmentModule, AuthModule, TokenModule],
+  imports: [
+    UserModule,
+    ClassModule,
+    AssignmentModule,
+    ClassTopicModule,
+    AuthModule,
+    TokenModule,
+  ],
   providers: [],
   exports: [],
 })

@@ -16,43 +16,16 @@ import {
     },
   },
 })
-export class Assignment extends Document implements AssignmentInterface {
+export class ClassTopic extends Document implements ClassTopicInterface {
+  @Prop({ type: String, required: true })
+  title: string;
+
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'classes',
     required: true,
   })
   class_id: string;
-
-  @Prop({
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'class-topics',
-    default: null,
-  })
-  topic: string;
-
-  @Prop({ type: String, required: true })
-  title: string;
-
-  @Prop({ type: String, required: true })
-  instructions: string;
-
-  @Prop({ type: Number, default: 100 })
-  total_points: number;
-
-  @Prop({ type: Number, default: null })
-  due_date: number;
-
-  @Prop({
-    type: [
-      {
-        name: { type: String, required: true },
-        points: { type: Number, default: null },
-      },
-    ],
-    default: [],
-  })
-  grade_criterias: GradeCriteria[];
 
   @Prop({ type: Number })
   created_at: number;
@@ -64,8 +37,8 @@ export class Assignment extends Document implements AssignmentInterface {
   deleted_at: number;
 }
 
-export const AssignmentSchema = SchemaFactory.createForClass(Assignment);
-AssignmentSchema.index(
+export const ClassTopicSchema = SchemaFactory.createForClass(ClassTopic);
+ClassTopicSchema.index(
   { title: 1, class_id: 1, deleted_at: 1 },
   { unique: true },
 );

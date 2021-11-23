@@ -12,14 +12,8 @@ import { ClassTopicInterface, GradeCriteria } from '.';
 export class CreateAssignmentDto {
   @ApiProperty({ type: String })
   @IsString()
-  @IsNotEmpty()
-  class_id: string;
-
-  @ApiProperty({ type: ClassTopicInterface })
-  @ValidateNested()
-  @Type(() => ClassTopicInterface)
   @IsOptional()
-  topic?: ClassTopicInterface;
+  topic?: string;
 
   @ApiProperty({ type: String })
   @IsString()
@@ -33,8 +27,8 @@ export class CreateAssignmentDto {
 
   @ApiProperty({ type: Number, default: 100 })
   @IsNumber()
-  @IsNotEmpty()
-  total_points: number;
+  @IsOptional()
+  total_points?: number;
 
   @ApiProperty({ type: Number })
   @IsNumber()

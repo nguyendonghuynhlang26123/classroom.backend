@@ -14,6 +14,7 @@ import APP_CONFIG from '../../../config';
       { name: 'classes', schema: schema.ClassSchema },
       { name: 'refresh_tokens', schema: schema.TokenSchema },
       { name: 'assignments', schema: schema.AssignmentSchema },
+      { name: 'class-topics', schema: schema.ClassTopicSchema },
     ]),
   ],
   providers: [
@@ -21,12 +22,14 @@ import APP_CONFIG from '../../../config';
     repository.ClassRepository,
     repository.AssignmentRepository,
     repository.TokenRepository,
+    repository.ClassTopicRepository,
   ],
   exports: [
     repository.UserRepository,
     repository.ClassRepository,
     repository.AssignmentRepository,
     repository.TokenRepository,
+    repository.ClassTopicRepository,
   ],
 })
 export class RepositoryModule {}

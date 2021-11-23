@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNotEmpty } from 'class-validator';
+import { IsString, IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
 import { IBase } from './base/base.interface';
 import { ClassTopicInterface } from './classTopic.interface';
 
@@ -9,17 +9,17 @@ export class GradeCriteria {
   @IsNotEmpty()
   name: string;
   
-  @ApiProperty({ type: String })
-  @IsString()
-  @IsNotEmpty()
-  points: string;
+  @ApiProperty({ type: Number })
+  @IsNumber()
+  @IsOptional()
+  points?: number;
 }
 
 export class AssignmentInterface extends IBase {
   @ApiProperty()
   class_id: string;
   @ApiProperty()
-  topic: ClassTopicInterface;
+  topic: string | ClassTopicInterface;
   @ApiProperty()
   title: string;
   @ApiProperty()

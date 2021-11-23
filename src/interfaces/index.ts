@@ -9,6 +9,7 @@ export * from './res.interface';
 
 export * from './createUser.dto';
 export * from './createClass.dto';
+export * from './createClassTopic.dto';
 export * from './createAssignment.dto';
 export * from './login.dto';
 export * from './changePass.dto';
