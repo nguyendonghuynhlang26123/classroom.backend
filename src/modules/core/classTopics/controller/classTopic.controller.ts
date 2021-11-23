@@ -75,10 +75,30 @@ export class ClassTopicControllerV1 {
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
+  @AllowFors(Role.Admin, Role.Teacher, Role.Student)
+  @Get('/:class_id/class-topics/:class_topic_id')
+  async getServiceById(
+    @Query() query: GenericQuery,
+    @Param() param: QueryClassTopicDto,
+  ) {
+    return await this._classTopicService.getClassTopicById(
+      param.class_topic_id,
+      param.class_id,
+    );
+  }
+
+  @ApiHeader({
+    name: 'XSRF-Token',
+    description: 'XSRF-Token',
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @AllowFors(Role.Admin, Role.Teacher)
   @Patch('/:class_id/class-topics/:class_topic_id/restore')
   async restoreService(@Param() param: QueryClassTopicDto) {
-    return await this._classTopicService.restoreClassTopic(param.class_topic_id);
+    return await this._classTopicService.restoreClassTopic(
+      param.class_topic_id,
+    );
   }
 
   @ApiHeader({

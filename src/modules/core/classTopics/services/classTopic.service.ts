@@ -79,13 +79,32 @@ export class ClassTopicService {
     }
   }
 
+  async getClassTopicById(classTopicId: string, classId: string) {
+    try {
+      let classTopics = await this._classTopicRepository.getOneDocument({
+        _id: classTopicId,
+        class_id: classId,
+      });
+      if (!classTopics) {
+        throw new HttpException('Not Found Class Topic', HttpStatus.NOT_FOUND);
+      }
+      return classTopics;
+    } catch (error) {
+      this._logUtil.errorLogger(error, 'ClassService');
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+    }
+  }
+
   async deleteClassTopic(classTopicId: string) {
     try {
       const classTopic = await this._classTopicRepository.getOneDocument({
         _id: classTopicId,
       });
       if (!classTopic) {
-        throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+        throw new HttpException('Not Found Class Topic', HttpStatus.NOT_FOUND);
       }
       const result = this._classTopicRepository.deleteDocument({
         _id: classTopicId,
@@ -106,7 +125,7 @@ export class ClassTopicService {
         _id: classTopicId,
       });
       if (!classTopic) {
-        throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+        throw new HttpException('Not Found Class Topic', HttpStatus.NOT_FOUND);
       }
       const result = this._classTopicRepository.restoreDocument({
         _id: classTopicId,
@@ -127,7 +146,7 @@ export class ClassTopicService {
         _id: classTopicId,
       });
       if (!classTopic) {
-        throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+        throw new HttpException('Not Found Class Topic', HttpStatus.NOT_FOUND);
       }
       const result = this._classTopicRepository.removeDocument({
         _id: classTopicId,
