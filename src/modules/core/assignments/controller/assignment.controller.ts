@@ -75,6 +75,21 @@ export class AssignmentControllerV1 {
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
+  @AllowFors(Role.Admin, Role.Teacher, Role.Student)
+  @Get('/:class_id/assignments/:assignment_id')
+  async getServiceById(@Param() param: QueryAssignmentDto) {
+    return await this._assignmentService.getAssignmentById(
+      param.assignment_id,
+      param.class_id,
+    );
+  }
+
+  @ApiHeader({
+    name: 'XSRF-Token',
+    description: 'XSRF-Token',
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @AllowFors(Role.Admin, Role.Teacher)
   @Put('/:class_id/assignments/:assignment_id')
   async updateService(

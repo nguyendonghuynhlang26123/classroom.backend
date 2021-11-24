@@ -90,7 +90,7 @@ export class ClassTopicService {
       }
       return classTopics;
     } catch (error) {
-      this._logUtil.errorLogger(error, 'ClassService');
+      this._logUtil.errorLogger(error, 'ClassTopicService');
       if (error instanceof HttpException) {
         throw error;
       }

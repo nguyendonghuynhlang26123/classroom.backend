@@ -84,6 +84,25 @@ export class AssignmentService {
     }
   }
 
+  async getAssignmentById(assignmentId: string, classId: string) {
+    try {
+      let assignments = await this._assignmentRepository.getOneDocument({
+        _id: assignmentId,
+        class_id: classId,
+      });
+      if (!assignments) {
+        throw new HttpException('Not Found Assignment', HttpStatus.NOT_FOUND);
+      }
+      return assignments;
+    } catch (error) {
+      this._logUtil.errorLogger(error, 'AssignmentService');
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+    }
+  }
+
   async updateAssignment(assignmentId: string, dataUpdate) {
     try {
       let assignment = await this._assignmentRepository.getOneDocument({
@@ -112,7 +131,7 @@ export class AssignmentService {
         _id: assignmentId,
       });
       if (!assignment) {
-        throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+        throw new HttpException('Not Found Assignment', HttpStatus.NOT_FOUND);
       }
       const result = this._assignmentRepository.deleteDocument({
         _id: assignmentId,
@@ -133,7 +152,7 @@ export class AssignmentService {
         _id: assignmentId,
       });
       if (!assignment) {
-        throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+        throw new HttpException('Not Found Assignment', HttpStatus.NOT_FOUND);
       }
       const result = this._assignmentRepository.restoreDocument({
         _id: assignmentId,
@@ -154,7 +173,7 @@ export class AssignmentService {
         _id: assignmentId,
       });
       if (!assignment) {
-        throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+        throw new HttpException('Not Found Assignment', HttpStatus.NOT_FOUND);
       }
       const result = this._assignmentRepository.removeDocument({
         _id: assignmentId,
