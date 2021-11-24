@@ -103,10 +103,11 @@ export class AssignmentService {
     }
   }
 
-  async updateAssignment(assignmentId: string, dataUpdate) {
+  async updateAssignment(assignmentId: string, classId: string, dataUpdate) {
     try {
       let assignment = await this._assignmentRepository.getOneDocument({
         _id: assignmentId,
+        class_id: classId,
       });
       if (!assignment) {
         throw new HttpException('Not Found Assignment', HttpStatus.NOT_FOUND);
@@ -125,10 +126,11 @@ export class AssignmentService {
     }
   }
 
-  async deleteAssignment(assignmentId: string) {
+  async deleteAssignment(assignmentId: string, classId: string) {
     try {
       const assignment = await this._assignmentRepository.getOneDocument({
         _id: assignmentId,
+        class_id: classId,
       });
       if (!assignment) {
         throw new HttpException('Not Found Assignment', HttpStatus.NOT_FOUND);
@@ -146,10 +148,11 @@ export class AssignmentService {
     }
   }
 
-  async restoreAssignment(assignmentId: string) {
+  async restoreAssignment(assignmentId: string, classId: string) {
     try {
       const assignment = await this._assignmentRepository.getOneDocumentTrash({
         _id: assignmentId,
+        class_id: classId,
       });
       if (!assignment) {
         throw new HttpException('Not Found Assignment', HttpStatus.NOT_FOUND);
@@ -167,10 +170,11 @@ export class AssignmentService {
     }
   }
 
-  async removeAssignment(assignmentId: string) {
+  async removeAssignment(assignmentId: string, classId: string) {
     try {
       const assignment = await this._assignmentRepository.getOneDocumentTrash({
         _id: assignmentId,
+        class_id: classId,
       });
       if (!assignment) {
         throw new HttpException('Not Found Assignment', HttpStatus.NOT_FOUND);

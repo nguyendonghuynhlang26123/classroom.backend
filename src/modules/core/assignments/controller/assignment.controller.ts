@@ -98,6 +98,7 @@ export class AssignmentControllerV1 {
   ) {
     return await this._assignmentService.updateAssignment(
       param.assignment_id,
+      param.class_id,
       body,
     );
   }
@@ -111,7 +112,10 @@ export class AssignmentControllerV1 {
   @AllowFors(Role.Admin, Role.Teacher)
   @Patch('/:class_id/assignments/:assignment_id/restore')
   async restoreService(@Param() param: QueryAssignmentDto) {
-    return await this._assignmentService.restoreAssignment(param.assignment_id);
+    return await this._assignmentService.restoreAssignment(
+      param.assignment_id,
+      param.class_id,
+    );
   }
 
   @ApiHeader({
@@ -123,7 +127,10 @@ export class AssignmentControllerV1 {
   @AllowFors(Role.Admin, Role.Teacher)
   @Delete('/:class_id/assignments/:assignment_id/delete')
   async deleteService(@Param() param: QueryAssignmentDto) {
-    return await this._assignmentService.deleteAssignment(param.class_id);
+    return await this._assignmentService.deleteAssignment(
+      param.assignment_id,
+      param.class_id,
+    );
   }
 
   @ApiHeader({
@@ -135,6 +142,9 @@ export class AssignmentControllerV1 {
   @AllowFors(Role.Admin, Role.Teacher)
   @Delete('/:class_id/assignments/:assignment_id/remove')
   async removeService(@Param() param: QueryAssignmentDto) {
-    return await this._assignmentService.removeAssignment(param.class_id);
+    return await this._assignmentService.removeAssignment(
+      param.assignment_id,
+      param.class_id,
+    );
   }
 }
