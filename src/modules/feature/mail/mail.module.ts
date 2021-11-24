@@ -12,7 +12,7 @@ import { MailService } from './mail.service';
         secure: false,
         auth: {
           user: 'thependailynews@gmail.com',
-          pass: 'thependaily',
+          pass: 'Thependaily@123',
         },
       },
     }),
