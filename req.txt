@@ -1,42 +1,99 @@
-ClassTopic
-- id: string;
-- title: string;
-- classId: string;
-
-
+Phần 1: Chỉnh sửa
 Assignment
 - id: string
 - class_id: string (required)
-- topic: ClassTopic 
+- grade_policy_id: GradePolicy **** (required)
 - title: string (required)
-- instructions: string (required) <- HTML 
-- total_points: number (required, default = 100)
-- due_date: number 
-- grade_criterias: Array <{
-	name: string(required),
-	points: string
-}>
+- instructions: string (not required) <- HTML 
+- total_points: number (required)
+- due_date: number (not required)
+Note: bỏ topic
 
+GradePolicy ****
+- id: string;
+- title: string;
+- classId: string; 
+- point: number;
+
+Users: Xóa student_id đi 
+
+DELETE ClassTopic
+------------------------------------------------------
+Phần 2 Mới: 
 GradingAssignment
 - assignment_id
 - class_id
-- student_id
-- mark: number
-- work-attachment {
+- student_id: string
+- mark: number (co the null)
+(- work-attachment {
 	link: string,
 	type: string,
 	submit_at: string,
 	last_update: string,
-	status: EXPIRED | VALID
-}
+	submit_status: EXPIRED | VALID
+}) Tạm thời bỏ cái này ko làm  
 
+ClassStudents 
+- id
+- classId
+- file_location
+- student_ids:{
+	- student-id: string
+	- status: SYNCED | NOT_SYNCED
+	- user_id: User (null khi status = NOT_SYNCED)
+}[]
 
-API: 
-1. assignment 
-POST /classses/:id/assignment {data: Assignment} For TEACHER/ ADMIN only
-GET  /classses/:id/assignment?page=1&page_size=10&sort_by=asc&sort_type=topic: get all documents in that class (For STUDENT/TEACHER/ADMIN)
-PUT /classses/:id/assignment {data: Assignment} For TEACHER/ ADMIN only
-DELETE /classses/:id/assignment
+API:  
+1. assignment: (theo kiểu data mới)
+	- GET
+	- GET by Id
+	- CREATE: Check total_points <= grade_policy.point
+	- UPDATE: Check total_points <= grade_policy.point
+	- DELETE soft delete
+	- DELETE remove
 
-2. 
+2. GradePolicy 
+	- GET ALL
+	- GET ONE
+	- PUT (ADMIN/TEACHER ): /classes/:classId/grade-policies { id: string[], data: {title, point}[]}: Update nhiều grade policy cùng lúc
+	- POST	(ADMIN/TEACHER ) /classes/:classId/grade-policies { data: {title, point}[]}: Tạo nhiều grade policy cùng lúc 
+	- DELETE (ADMIN only)
 
+3. Class students
+	- GET (classes/:classId/students) (role=ALL) (populate student_ids {avatar, first_name, last_name, email} 
+	- GET (classes/:classId/students/student_id/:studentId) (role=ALL) Get UserId by student Id (if status = NOT_SYNCED, return 404)
+	- POST (classes/:classId/students) (role=ADMIN): body={file: file.csv (can be null)}: format studentId,name. 
+		+ If file.csv != null 
+			+ Upload that file to backend
+			+ Create a ClassStudents with student_ids[]
+		+ file.csv == null, Create a ClassStudents with student_ids = []
+	- PUT (classes/:classId/students) (role=ADMIN): body={file: file.csv}: studentId,name: Update student_ids
+	- PUT (classes/:classId/students/account-sync) (role=ALL): body={studentId: string}
+		- 404 if not found student id in student_ids
+		- 409 if status === SYNCED
+		- update user_id by jwt, set status = SYNCED 
+***** NOTE: Chỉ nhận file **.csv!!! Nhớ check đuôi file
+
+4. GradingAssignment
+	- GET (classes/:classId/grading) (role=TEACHER/ADMIN) (role=ALL): get all grading 
+		+ ?sort_type=assignment_id,student_id : Sort type >2 attributes
+	- GET (classes/:classId/grading/student/:student_id) (role=ALL) get all by student id 
+	- GET (classes/:classId/grading/assignment/:student_id) (role=ALL) get all by assignment id  
+	- POST (classes/:classId/grading): (role=TEACHER/ADMIN) {grading={assignment_id, student_id, mark}[]}: Create grading
+		+ 409 if existed
+	- PUT (classes/:classId/grading): (role=TEACHER/ADMIN) {grading={assignment_id, student_id, mark}[]}: Update grading
+		+ 404 if not found
+	- POST (classes/:classId/upload): (role=TEACHER/ADMIN) {assignment_id, file: file.csv}, format={student_id, mark}
+		+ 400 with error
+		+ 404 not found if find by classId & assignment_id
+		+ Tạo 1 GradingAssignment với từng dòng dữ liệu {student_id, mark} trong csv
+	- GET (classes/:classId/grading/total/:studentId) (role=ALL): 
+		+ Get all GradingAssignments by student_id 
+		+ Get all GradingPolicy
+		+ Nhóm kết quả theo GradingPolicy: {policy_id1: GradingAssignments1[], policy_id2: GradingAssignments2[], ...} 
+		+ Từ nhóm kết quả, tính điểm trung bình từng array {policy_id1: điểm tb GradingAssignments1[], policy_id2: điểm tb GradingAssignments2[], ...}
+		+ Tính tổng điểm tất cả nhóm trên trả về
+
+***** NOTE: Chỉ nhận file **.csv!!! Nhớ check đuôi file
+	
+	
