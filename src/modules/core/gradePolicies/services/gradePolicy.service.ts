@@ -22,7 +22,7 @@ export class GradePolicyService {
       let dataGradePolicy: GradePolicyInterface = {
         title: data.title,
         class_id: classId,
-        points: data.points || null,
+        point: data.point,
       };
       const createGradePolicy = new this._gradePolicyRepository._model(
         dataGradePolicy,

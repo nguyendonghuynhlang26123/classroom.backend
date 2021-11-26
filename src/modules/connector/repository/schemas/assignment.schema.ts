@@ -32,10 +32,10 @@ export class Assignment extends Document implements AssignmentInterface {
   @Prop({ type: String, required: true })
   title: string;
 
-  @Prop({ type: String, required: true })
+  @Prop({ type: String, default: null })
   instructions: string;
 
-  @Prop({ type: Number, default: 100 })
+  @Prop({ type: Number, required: true })
   total_points: number;
 
   @Prop({ type: Number, default: null })

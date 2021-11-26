@@ -4,14 +4,17 @@ import {
   GenericRes,
   GenericQuery,
   CreateAssignmentDto,
+  UpdateAssignmentDto,
 } from 'src/interfaces';
 import { AssignmentRepository } from '../../../connector/repository';
 import { LoggerUtilService } from '../../../shared/loggerUtil';
+import { GradePolicyService } from '../../gradePolicies/services/gradePolicy.service';
 
 @Injectable()
 export class AssignmentService {
   constructor(
     private _assignmentRepository: AssignmentRepository,
+    private _gradePolicyService: GradePolicyService,
     private _logUtil: LoggerUtilService,
   ) {
     this.onCreate();
@@ -23,10 +26,17 @@ export class AssignmentService {
         class_id: classId,
         grade_policy_id: data.grade_policy_id,
         title: data.title,
-        instructions: data.instructions,
-        total_points: data.total_points || null,
+        instructions: data.instructions || null,
+        total_points: data.total_points,
         due_date: data.due_date || null,
       };
+      const gradePolicy = await this._gradePolicyService.getGradePolicyById(
+        data.grade_policy_id,
+        classId,
+      );
+      if (dataAssignment.total_points > gradePolicy.point) {
+        throw new HttpException('Invalid Total Points', HttpStatus.BAD_REQUEST);
+      }
       const createAssignment = new this._assignmentRepository._model(
         dataAssignment,
       );
@@ -102,7 +112,11 @@ export class AssignmentService {
     }
   }
 
-  async updateAssignment(assignmentId: string, classId: string, dataUpdate) {
+  async updateAssignment(
+    assignmentId: string,
+    classId: string,
+    dataUpdate: UpdateAssignmentDto,
+  ) {
     try {
       let assignment = await this._assignmentRepository.getOneDocument({
         _id: assignmentId,
@@ -110,6 +124,17 @@ export class AssignmentService {
       });
       if (!assignment) {
         throw new HttpException('Not Found Assignment', HttpStatus.NOT_FOUND);
+      }
+      assignment.grade_policy_id =
+        dataUpdate.grade_policy_id || assignment.grade_policy_id;
+      assignment.total_points =
+        dataUpdate.total_points || assignment.total_points;
+      const gradePolicy = await this._gradePolicyService.getGradePolicyById(
+        assignment.grade_policy_id,
+        classId,
+      );
+      if (assignment.total_points > gradePolicy.point) {
+        throw new HttpException('Invalid Total Points', HttpStatus.BAD_REQUEST);
       }
       let result = await this._assignmentRepository.updateDocument(
         { _id: assignmentId },

@@ -23,8 +23,8 @@ export class GradePolicy extends Document implements GradePolicyInterface {
   })
   class_id: string;
 
-  @Prop({ type: Number, default: null })
-  points: number;
+  @Prop({ type: Number, required: true })
+  point: number;
 
   @Prop({ type: Number })
   created_at: number;

@@ -9,8 +9,8 @@ export class CreateGradePolicyDto {
 
   @ApiProperty({ type: Number })
   @IsNumber()
-  @IsOptional()
-  points?: number;
+  @IsNotEmpty()
+  point: number;
 }
 
 export class QueryGradePolicyDto {
