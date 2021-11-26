@@ -25,13 +25,15 @@ import {
   CreateGradePolicyDto,
   QueryGradePolicyDto,
   QueryClassDto,
+  CreateArrayGradePolicyDto,
+  UpdateArrayGradePolicyDto,
 } from 'src/interfaces';
 import { AllowFors } from 'src/decorators/allowFors.decorator';
 import { Role } from 'src/enums';
 import { RolesGuard } from '../../auth/guard/role.guard';
 
 @Controller('v1/classes')
-@ApiTags('Class Topics')
+@ApiTags('Grade Policies')
 @UseInterceptors(CacheInterceptor)
 export class GradePolicyControllerV1 {
   constructor(private _gradePolicyService: GradePolicyService) {}
@@ -43,7 +45,7 @@ export class GradePolicyControllerV1 {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @AllowFors(Role.Admin, Role.Teacher, Role.Student)
-  @Get('/:class_id/class-topics')
+  @Get('/:class_id/grade-policies')
   async getAllService(
     @Query() query: GenericQuery,
     @Param() param: QueryClassDto,
@@ -61,13 +63,32 @@ export class GradePolicyControllerV1 {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @AllowFors(Role.Admin, Role.Teacher)
-  @Post('/:class_id/class-topics')
+  @Post('/:class_id/grade-policies')
   async createService(
     @Param() param: QueryClassDto,
-    @Body() body: CreateGradePolicyDto,
-  ): Promise<HttpException | GradePolicy> {
+    @Body() body: CreateArrayGradePolicyDto,
+  ) {
     return await this._gradePolicyService.createGradePolicy(
-      body,
+      body.data,
+      param.class_id,
+    );
+  }
+
+  @ApiHeader({
+    name: 'XSRF-Token',
+    description: 'XSRF-Token',
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @AllowFors(Role.Admin, Role.Teacher)
+  @Put('/:class_id/grade-policies')
+  async updateService(
+    @Param() param: QueryClassDto,
+    @Body() body: UpdateArrayGradePolicyDto,
+  ) {
+    return await this._gradePolicyService.updateGradePolicy(
+      body.list_grade_policy_id,
+      body.data,
       param.class_id,
     );
   }
@@ -79,7 +100,7 @@ export class GradePolicyControllerV1 {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @AllowFors(Role.Admin, Role.Teacher, Role.Student)
-  @Get('/:class_id/class-topics/:class_topic_id')
+  @Get('/:class_id/grade-policies/:class_topic_id')
   async getServiceById(@Param() param: QueryGradePolicyDto) {
     return await this._gradePolicyService.getGradePolicyById(
       param.grade_policy_id,
@@ -93,8 +114,8 @@ export class GradePolicyControllerV1 {
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @AllowFors(Role.Admin, Role.Teacher)
-  @Patch('/:class_id/class-topics/:class_topic_id/restore')
+  @AllowFors(Role.Admin)
+  @Patch('/:class_id/grade-policies/:class_topic_id/restore')
   async restoreService(@Param() param: QueryGradePolicyDto) {
     return await this._gradePolicyService.restoreGradePolicy(
       param.grade_policy_id,
@@ -108,8 +129,8 @@ export class GradePolicyControllerV1 {
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @AllowFors(Role.Admin, Role.Teacher)
-  @Delete('/:class_id/class-topics/:class_topic_id/delete')
+  @AllowFors(Role.Admin)
+  @Delete('/:class_id/grade-policies/:class_topic_id/delete')
   async deleteService(@Param() param: QueryGradePolicyDto) {
     return await this._gradePolicyService.deleteGradePolicy(
       param.grade_policy_id,
@@ -123,8 +144,8 @@ export class GradePolicyControllerV1 {
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @AllowFors(Role.Admin, Role.Teacher)
-  @Delete('/:class_id/class-topics/:class_topic_id/remove')
+  @AllowFors(Role.Admin)
+  @Delete('/:class_id/grade-policies/:class_topic_id/remove')
   async removeService(@Param() param: QueryGradePolicyDto) {
     return await this._gradePolicyService.removeGradePolicy(
       param.grade_policy_id,

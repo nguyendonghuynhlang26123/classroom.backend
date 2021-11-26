@@ -4,6 +4,7 @@ import {
   GenericRes,
   GenericQuery,
   CreateGradePolicyDto,
+  UpdateGradePolicyDto,
 } from 'src/interfaces';
 import { GradePolicyRepository } from '../../../connector/repository';
 import { LoggerUtilService } from '../../../shared/loggerUtil';
@@ -17,20 +18,21 @@ export class GradePolicyService {
     this.onCreate();
   }
 
-  async createGradePolicy(data: CreateGradePolicyDto, classId: string) {
+  async createGradePolicy(data: CreateGradePolicyDto[], classId: string) {
     try {
-      let dataGradePolicy: GradePolicyInterface = {
-        title: data.title,
-        class_id: classId,
-        point: data.point,
-      };
-      const createGradePolicy = new this._gradePolicyRepository._model(
-        dataGradePolicy,
+      data.map((e) => {
+        e['class_id'] = classId;
+      });
+      let createGradePolicies = [];
+      for (let i = 0; i < data.length; i++) {
+        const e = data[i];
+        const createGradePolicy = new this._gradePolicyRepository._model(e);
+        createGradePolicies.push(createGradePolicy);
+      }
+      let gradePolicy = await this._gradePolicyRepository.createWithArray(
+        createGradePolicies,
       );
-      let gradePolicy = await this._gradePolicyRepository.create(
-        createGradePolicy,
-      );
-      return gradePolicy;
+      return { status: 200 };
     } catch (error) {
       this._logUtil.errorLogger(error, 'GradePolicyService');
       if (error instanceof HttpException) {
@@ -90,6 +92,33 @@ export class GradePolicyService {
         throw new HttpException('Not Found Grade Policy', HttpStatus.NOT_FOUND);
       }
       return gradePolicy;
+    } catch (error) {
+      this._logUtil.errorLogger(error, 'GradePolicyService');
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async updateGradePolicy(
+    listId: string[],
+    data: UpdateGradePolicyDto[],
+    classId: string,
+  ) {
+    try {
+      for (let i = 0; i < listId.length; i++) {
+        const id = listId[i];
+        const dataUpdate = data[i];
+        this._gradePolicyRepository.updateDocument(
+          {
+            _id: id,
+            class_id: classId,
+          },
+          dataUpdate,
+        );
+      }
+      return { status: 200 };
     } catch (error) {
       this._logUtil.errorLogger(error, 'GradePolicyService');
       if (error instanceof HttpException) {
