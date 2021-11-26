@@ -28,7 +28,6 @@ export class UserService {
       let dataUser: UserInterface = {
         email: data.email,
         password: data.password,
-        student_id: null,
         first_name: data.first_name,
         last_name: data.last_name,
         avatar: null,
@@ -73,7 +72,6 @@ export class UserService {
       let dataUser: UserInterface = {
         email: data.email,
         password: null,
-        student_id: null,
         first_name: data.first_name,
         last_name: data.last_name,
         avatar: data.avatar,
@@ -84,7 +82,6 @@ export class UserService {
       return {
         _id: user._id,
         email: user.email,
-        student_id: user.student_id,
         first_name: user.first_name,
         last_name: user.last_name,
         avatar: user.avatar,
@@ -151,18 +148,6 @@ export class UserService {
       });
       if (!user) {
         throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
-      }
-      if (dataUpdate.student_id) {
-        let check = await this._userRepository.getOneDocument({
-          student_id: dataUpdate.student_id,
-          _id: { $ne: user._id },
-        });
-        if (check) {
-          throw new HttpException(
-            `Duplicate key error collection: ${Object.keys('student_id')}`,
-            HttpStatus.CONFLICT,
-          );
-        }
       }
       if (userID != paramId) {
         throw new HttpException('Not Expired', HttpStatus.CONFLICT);
