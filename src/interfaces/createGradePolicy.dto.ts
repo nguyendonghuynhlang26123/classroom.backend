@@ -1,17 +1,19 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsNotEmpty,
-  IsString,
-} from 'class-validator';
+import { IsNotEmpty, IsString, IsNumber, IsOptional } from 'class-validator';
 
-export class CreateClassTopicDto {
+export class CreateGradePolicyDto {
   @ApiProperty({ type: String })
   @IsString()
   @IsNotEmpty()
   title: string;
+
+  @ApiProperty({ type: Number })
+  @IsNumber()
+  @IsOptional()
+  points?: number;
 }
 
-export class QueryClassTopicDto {
+export class QueryGradePolicyDto {
   @ApiProperty({ type: String })
   @IsString()
   @IsNotEmpty()
@@ -20,5 +22,5 @@ export class QueryClassTopicDto {
   @ApiProperty({ type: String })
   @IsString()
   @IsNotEmpty()
-  class_topic_id: string;
+  grade_policy_id: string;
 }

@@ -14,16 +14,16 @@ import {
   Patch,
   Delete,
 } from '@nestjs/common';
-import { ClassTopicService } from '../services/classTopic.service';
+import { GradePolicyService } from '../services/gradePolicy.service';
 import { JwtAuthGuard } from '../../auth/guard/jwt-auth.guard';
 import { ApiBearerAuth, ApiHeader, ApiTags } from '@nestjs/swagger';
-import { ClassTopic } from '../../../connector/repository';
+import { GradePolicy } from '../../../connector/repository';
 import {
-  ClassTopicInterface,
+  GradePolicyInterface,
   GenericQuery,
   GenericRes,
-  CreateClassTopicDto,
-  QueryClassTopicDto,
+  CreateGradePolicyDto,
+  QueryGradePolicyDto,
   QueryClassDto,
 } from 'src/interfaces';
 import { AllowFors } from 'src/decorators/allowFors.decorator';
@@ -33,8 +33,8 @@ import { RolesGuard } from '../../auth/guard/role.guard';
 @Controller('v1/classes')
 @ApiTags('Class Topics')
 @UseInterceptors(CacheInterceptor)
-export class ClassTopicControllerV1 {
-  constructor(private _classTopicService: ClassTopicService) {}
+export class GradePolicyControllerV1 {
+  constructor(private _gradePolicyService: GradePolicyService) {}
 
   @ApiHeader({
     name: 'XSRF-Token',
@@ -47,8 +47,8 @@ export class ClassTopicControllerV1 {
   async getAllService(
     @Query() query: GenericQuery,
     @Param() param: QueryClassDto,
-  ): Promise<HttpException | GenericRes<ClassTopicInterface>> {
-    return await this._classTopicService.getAllClassTopic(
+  ): Promise<HttpException | GenericRes<GradePolicyInterface>> {
+    return await this._gradePolicyService.getAllGradePolicy(
       query,
       param.class_id,
     );
@@ -64,9 +64,12 @@ export class ClassTopicControllerV1 {
   @Post('/:class_id/class-topics')
   async createService(
     @Param() param: QueryClassDto,
-    @Body() body: CreateClassTopicDto,
-  ): Promise<HttpException | ClassTopic> {
-    return await this._classTopicService.createClassTopic(body, param.class_id);
+    @Body() body: CreateGradePolicyDto,
+  ): Promise<HttpException | GradePolicy> {
+    return await this._gradePolicyService.createGradePolicy(
+      body,
+      param.class_id,
+    );
   }
 
   @ApiHeader({
@@ -77,11 +80,9 @@ export class ClassTopicControllerV1 {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @AllowFors(Role.Admin, Role.Teacher, Role.Student)
   @Get('/:class_id/class-topics/:class_topic_id')
-  async getServiceById(
-    @Param() param: QueryClassTopicDto,
-  ) {
-    return await this._classTopicService.getClassTopicById(
-      param.class_topic_id,
+  async getServiceById(@Param() param: QueryGradePolicyDto) {
+    return await this._gradePolicyService.getGradePolicyById(
+      param.grade_policy_id,
       param.class_id,
     );
   }
@@ -94,9 +95,10 @@ export class ClassTopicControllerV1 {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @AllowFors(Role.Admin, Role.Teacher)
   @Patch('/:class_id/class-topics/:class_topic_id/restore')
-  async restoreService(@Param() param: QueryClassTopicDto) {
-    return await this._classTopicService.restoreClassTopic(
-      param.class_topic_id,
+  async restoreService(@Param() param: QueryGradePolicyDto) {
+    return await this._gradePolicyService.restoreGradePolicy(
+      param.grade_policy_id,
+      param.class_id,
     );
   }
 
@@ -108,8 +110,11 @@ export class ClassTopicControllerV1 {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @AllowFors(Role.Admin, Role.Teacher)
   @Delete('/:class_id/class-topics/:class_topic_id/delete')
-  async deleteService(@Param() param: QueryClassTopicDto) {
-    return await this._classTopicService.deleteClassTopic(param.class_id);
+  async deleteService(@Param() param: QueryGradePolicyDto) {
+    return await this._gradePolicyService.deleteGradePolicy(
+      param.grade_policy_id,
+      param.class_id,
+    );
   }
 
   @ApiHeader({
@@ -120,7 +125,10 @@ export class ClassTopicControllerV1 {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @AllowFors(Role.Admin, Role.Teacher)
   @Delete('/:class_id/class-topics/:class_topic_id/remove')
-  async removeService(@Param() param: QueryClassTopicDto) {
-    return await this._classTopicService.removeClassTopic(param.class_id);
+  async removeService(@Param() param: QueryGradePolicyDto) {
+    return await this._gradePolicyService.removeGradePolicy(
+      param.grade_policy_id,
+      param.class_id,
+    );
   }
 }

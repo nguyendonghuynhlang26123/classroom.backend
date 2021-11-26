@@ -3,8 +3,6 @@ import { Document } from 'mongoose';
 import * as mongoose from 'mongoose';
 import {
   AssignmentInterface,
-  ClassTopicInterface,
-  GradeCriteria,
 } from 'src/interfaces';
 
 @Schema({
@@ -26,10 +24,10 @@ export class Assignment extends Document implements AssignmentInterface {
 
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'class-topics',
-    default: null,
+    ref: 'grade-policies',
+    required: true,
   })
-  topic: string;
+  grade_policy_id: string;
 
   @Prop({ type: String, required: true })
   title: string;
@@ -42,17 +40,6 @@ export class Assignment extends Document implements AssignmentInterface {
 
   @Prop({ type: Number, default: null })
   due_date: number;
-
-  @Prop({
-    type: [
-      {
-        name: { type: String, required: true },
-        points: { type: Number, default: null },
-      },
-    ],
-    default: [],
-  })
-  grade_criterias: GradeCriteria[];
 
   @Prop({ type: Number })
   created_at: number;

@@ -21,12 +21,11 @@ export class AssignmentService {
     try {
       let dataAssignment: AssignmentInterface = {
         class_id: classId,
-        topic: data.topic || null,
+        grade_policy_id: data.grade_policy_id,
         title: data.title,
         instructions: data.instructions,
         total_points: data.total_points || null,
         due_date: data.due_date || null,
-        grade_criterias: data.grade_criterias || [],
       };
       const createAssignment = new this._assignmentRepository._model(
         dataAssignment,

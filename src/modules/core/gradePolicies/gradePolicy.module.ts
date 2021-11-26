@@ -1,19 +1,19 @@
 import { Module, CacheInterceptor, CacheModule, Global } from '@nestjs/common';
 import { APP_INTERCEPTOR } from '@nestjs/core';
-import { ClassTopicControllerV1 } from './controller/classTopic.controller';
-import { ClassTopicService } from './services/classTopic.service';
+import { GradePolicyControllerV1 } from './controller/gradePolicy.controller';
+import { GradePolicyService } from './services/gradePolicy.service';
 
 @Global()
 @Module({
   imports: [CacheModule.register()],
-  controllers: [ClassTopicControllerV1],
+  controllers: [GradePolicyControllerV1],
   providers: [
-    ClassTopicService,
+    GradePolicyService,
     {
       provide: APP_INTERCEPTOR,
       useClass: CacheInterceptor,
     },
   ],
-  exports: [ClassTopicService],
+  exports: [GradePolicyService],
 })
-export class ClassTopicModule {}
+export class GradePolicyModule {}

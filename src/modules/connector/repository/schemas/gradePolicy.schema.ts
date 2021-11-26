@@ -1,11 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import * as mongoose from 'mongoose';
-import {
-  AssignmentInterface,
-  ClassTopicInterface,
-  GradeCriteria,
-} from 'src/interfaces';
+import { GradePolicyInterface } from 'src/interfaces';
 
 @Schema({
   timestamps: {
@@ -16,7 +12,7 @@ import {
     },
   },
 })
-export class ClassTopic extends Document implements ClassTopicInterface {
+export class GradePolicy extends Document implements GradePolicyInterface {
   @Prop({ type: String, required: true })
   title: string;
 
@@ -26,6 +22,9 @@ export class ClassTopic extends Document implements ClassTopicInterface {
     required: true,
   })
   class_id: string;
+
+  @Prop({ type: Number, default: null })
+  points: number;
 
   @Prop({ type: Number })
   created_at: number;
@@ -37,8 +36,8 @@ export class ClassTopic extends Document implements ClassTopicInterface {
   deleted_at: number;
 }
 
-export const ClassTopicSchema = SchemaFactory.createForClass(ClassTopic);
-ClassTopicSchema.index(
+export const GradePolicySchema = SchemaFactory.createForClass(GradePolicy);
+GradePolicySchema.index(
   { title: 1, class_id: 1, deleted_at: 1 },
   { unique: true },
 );
