@@ -19,9 +19,13 @@ export class AssignmentService {
 
   async createAssignment(data: CreateAssignmentDto, classId: string) {
     try {
+      const count = await this._assignmentRepository.getCountPage(
+        { class_id: classId },
+        1,
+      );
       let dataAssignment: AssignmentInterface = {
         class_id: classId,
-        ui_index: data.ui_index,
+        ui_index: count,
         title: data.title,
         instructions: data.instructions,
         total_points: data.total_points || null,

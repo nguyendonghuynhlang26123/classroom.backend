@@ -7,11 +7,6 @@ import {
 } from 'class-validator';
 
 export class CreateAssignmentDto {
-  @ApiProperty({ type: Number })
-  @IsString()
-  @IsNotEmpty()
-  ui_index?: number;
-
   @ApiProperty({ type: String })
   @IsString()
   @IsNotEmpty()
