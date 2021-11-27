@@ -25,7 +25,6 @@ import {
   CreateAssignmentDto,
   QueryAssignmentDto,
   QueryClassDto,
-  UpdateAssignmentDto,
 } from 'src/interfaces';
 import { AllowFors } from 'src/decorators/allowFors.decorator';
 import { Role } from 'src/enums';
@@ -95,7 +94,7 @@ export class AssignmentControllerV1 {
   @Put('/:class_id/assignments/:assignment_id')
   async updateService(
     @Param() param: QueryAssignmentDto,
-    @Body() body: UpdateAssignmentDto,
+    @Body() body: AssignmentInterface,
   ) {
     return await this._assignmentService.updateAssignment(
       param.assignment_id,

@@ -14,7 +14,6 @@ import APP_CONFIG from '../../../config';
       { name: 'classes', schema: schema.ClassSchema },
       { name: 'refresh_tokens', schema: schema.TokenSchema },
       { name: 'assignments', schema: schema.AssignmentSchema },
-      { name: 'grade-policies', schema: schema.GradePolicySchema },
     ]),
   ],
   providers: [
@@ -22,14 +21,12 @@ import APP_CONFIG from '../../../config';
     repository.ClassRepository,
     repository.AssignmentRepository,
     repository.TokenRepository,
-    repository.GradePolicyRepository,
   ],
   exports: [
     repository.UserRepository,
     repository.ClassRepository,
     repository.AssignmentRepository,
     repository.TokenRepository,
-    repository.GradePolicyRepository,
   ],
 })
 export class RepositoryModule {}

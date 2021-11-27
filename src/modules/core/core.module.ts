@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { AssignmentModule } from './assignments/assignment.module';
 import { AuthModule } from './auth/auth.module';
 import { ClassModule } from './classes/class.module';
-import { GradePolicyModule } from './gradePolicies/gradePolicy.module';
 import { TokenModule } from './token/token.module';
 import { UserModule } from './users/user.module';
 
@@ -11,7 +10,6 @@ import { UserModule } from './users/user.module';
     UserModule,
     ClassModule,
     AssignmentModule,
-    GradePolicyModule,
     AuthModule,
     TokenModule,
   ],

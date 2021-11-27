@@ -5,7 +5,7 @@ export class AssignmentInterface extends IBase {
   @ApiProperty()
   class_id: string;
   @ApiProperty()
-  grade_policy_id: string;
+  ui_index: number;
   @ApiProperty()
   title: string;
   @ApiProperty()

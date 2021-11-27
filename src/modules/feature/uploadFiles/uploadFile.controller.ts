@@ -64,12 +64,11 @@ export class UploadFileControllerV1 {
     description: 'XSRF-Token',
   })
   @ApiBearerAuth()
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Get('/:image_name')
   async getImageUpload(@Res() res, @Param() param: { image_name: string }) {
     const blob = bucket.file(param.image_name);
     const hash = await blob.download();
-    console.log(hash)
     res.end(hash[0], 'binary');
   }
 }

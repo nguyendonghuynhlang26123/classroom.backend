@@ -1,11 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class CreateAssignmentDto {
-  @ApiProperty({ type: String })
+  @ApiProperty({ type: Number })
   @IsString()
   @IsNotEmpty()
-  grade_policy_id: string;
+  ui_index?: number;
 
   @ApiProperty({ type: String })
   @IsString()
@@ -14,13 +19,13 @@ export class CreateAssignmentDto {
 
   @ApiProperty({ type: String })
   @IsString()
-  @IsOptional()
-  instructions?: string;
-
-  @ApiProperty({ type: Number })
-  @IsNumber()
   @IsNotEmpty()
-  total_points: number;
+  instructions: string;
+
+  @ApiProperty({ type: Number, default: 100 })
+  @IsNumber()
+  @IsOptional()
+  total_points?: number;
 
   @ApiProperty({ type: Number })
   @IsNumber()
@@ -38,31 +43,4 @@ export class QueryAssignmentDto {
   @IsString()
   @IsNotEmpty()
   assignment_id: string;
-}
-
-export class UpdateAssignmentDto {
-  @ApiProperty({ type: String })
-  @IsString()
-  @IsOptional()
-  grade_policy_id?: string;
-
-  @ApiProperty({ type: String })
-  @IsString()
-  @IsOptional()
-  title?: string;
-
-  @ApiProperty({ type: String })
-  @IsString()
-  @IsOptional()
-  instructions?: string;
-
-  @ApiProperty({ type: Number })
-  @IsNumber()
-  @IsOptional()
-  total_points?: number;
-
-  @ApiProperty({ type: Number })
-  @IsNumber()
-  @IsOptional()
-  due_date?: number;
 }

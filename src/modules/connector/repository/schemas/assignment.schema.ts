@@ -22,20 +22,16 @@ export class Assignment extends Document implements AssignmentInterface {
   })
   class_id: string;
 
-  @Prop({
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'grade-policies',
-    required: true,
-  })
-  grade_policy_id: string;
+  @Prop({ type: Number, required: true })
+  ui_index: number;
 
   @Prop({ type: String, required: true })
   title: string;
 
-  @Prop({ type: String, default: null })
+  @Prop({ type: String, required: true })
   instructions: string;
 
-  @Prop({ type: Number, required: true })
+  @Prop({ type: Number, default: 100 })
   total_points: number;
 
   @Prop({ type: Number, default: null })
