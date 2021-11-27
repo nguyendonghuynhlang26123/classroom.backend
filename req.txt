@@ -29,8 +29,9 @@ ClassStudents
 - id
 - classId
 - file_location
-- student_ids:{
-	- student-id: string
+- students:{
+	- student_id: string
+	- student_name: string
 	- status: SYNCED | NOT_SYNCED
 	- user_id: User (null khi status = NOT_SYNCED)
 }[]
