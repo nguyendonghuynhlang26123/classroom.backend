@@ -7,11 +7,13 @@ import {
   Req,
   UploadedFile,
   Res,
+  Get,
+  Param,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiHeader, ApiTags } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import * as path from 'path';
-import { bucket } from 'src/connectFirebase';
+import { bucket, storage } from 'src/connectFirebase';
 import { JwtAuthGuard } from 'src/modules/core/auth/guard/jwt-auth.guard';
 
 @Controller('v1/upload-files')
@@ -28,7 +30,7 @@ export class UploadFileControllerV1 {
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileInterceptor('image'))
   @Post('/image')
-  uploadImage(
+  async uploadImage(
     @Req() req,
     @UploadedFile() file: Express.Multer.File,
     @Res() res,
@@ -55,5 +57,19 @@ export class UploadFileControllerV1 {
     });
 
     blobWriter.end(file.buffer);
+  }
+
+  @ApiHeader({
+    name: 'XSRF-Token',
+    description: 'XSRF-Token',
+  })
+  @ApiBearerAuth()
+  // @UseGuards(JwtAuthGuard)
+  @Get('/:image_name')
+  async getImageUpload(@Res() res, @Param() param: { image_name: string }) {
+    const blob = bucket.file(param.image_name);
+    const hash = await blob.download();
+    console.log(hash)
+    res.end(hash[0], 'binary');
   }
 }

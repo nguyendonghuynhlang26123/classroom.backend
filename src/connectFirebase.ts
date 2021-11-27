@@ -7,4 +7,5 @@ admin.initializeApp({
   storageBucket: `${serviceAccount.project_id}.appspot.com`,
 });
 
+export const storage = admin.storage();
 export const bucket = admin.storage().bucket();
