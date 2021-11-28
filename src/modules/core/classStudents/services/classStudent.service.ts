@@ -1,22 +1,8 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
-import * as bcrypt from 'bcrypt';
-import {
-  ClassInterface,
-  GenericRes,
-  GenericQuery,
-  CreateClassDto,
-  ClassroomUserInterface,
-  ClassStudentInterface,
-  StudentInterface,
-} from 'src/interfaces';
+import { ClassStudentInterface, StudentInterface } from 'src/interfaces';
 import { Subscription } from 'rxjs';
-import {
-  ClassRepository,
-  ClassStudentRepository,
-} from '../../../connector/repository';
+import { ClassStudentRepository } from '../../../connector/repository';
 import { LoggerUtilService } from '../../../shared/loggerUtil';
-import { UserService } from '../../users/services/user.service';
-import { MailService } from 'src/modules/feature/mail/mail.service';
 import { ImportCsvService } from 'src/modules/feature/importCsv/services/importCsv.service';
 
 @Injectable()
@@ -58,6 +44,54 @@ export class ClassStudentService {
         createClassStudent,
       );
       return classStudent;
+    } catch (error) {
+      this._logUtil.errorLogger(error, 'ClassStudentService');
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      if (error.code == 11000 || error.code == 11001) {
+        throw new HttpException(
+          `Duplicate key error collection: ${Object.keys(error.keyValue)}`,
+          HttpStatus.CONFLICT,
+        );
+      }
+      throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async updateClassStudent(file, classId: string) {
+    try {
+      if (file == null) {
+        throw new HttpException(
+          'Csv File Cannot Empty',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      let classStudent = await this._classStudentRepository.getOneDocument({
+        class_id: classId,
+      });
+      classStudent.students = [];
+      let listStudents = await this._importCsvService.importFile(file.path);
+      for (let i = 0; i < listStudents.length; i++) {
+        const e = listStudents[i];
+        let student: StudentInterface = {
+          student_id: e.student_id,
+          student_name: e.name,
+          status: 'NOT_SYNCED',
+          user_id: null,
+        };
+        classStudent.students.push(student);
+      }
+      let result = await this._classStudentRepository.updateDocument(
+        {
+          _id: classStudent._id,
+        },
+        {
+          file_location: `public/uploadCsv/${file.filename}`,
+          students: classStudent.students,
+        },
+      );
+      return { status: 200 };
     } catch (error) {
       this._logUtil.errorLogger(error, 'ClassStudentService');
       if (error instanceof HttpException) {

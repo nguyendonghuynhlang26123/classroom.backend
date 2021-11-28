@@ -36,6 +36,7 @@ import * as path from 'path';
 import { AllowFors } from 'src/decorators/allowFors.decorator';
 import { RolesGuard } from '../../auth/guard/role.guard';
 import { Role } from 'src/enums';
+import { csvFileFilter } from 'src/utils/csvFilter';
 
 @Controller('v1/classes')
 @ApiTags('Class Students')
@@ -73,11 +74,53 @@ export class ClassStudentControllerV1 {
           );
         },
       }),
+      fileFilter: csvFileFilter,
     }),
   )
   @Post(':class_id/students')
-  async uploadCsv(@UploadedFile() file, @Param() param: QueryClassDto) {
+  async createService(@UploadedFile() file, @Param() param: QueryClassDto) {
     return await this._classStudentService.createClassStudent(
+      file,
+      param.class_id,
+    );
+  }
+
+  @ApiHeader({
+    name: 'XSRF-Token',
+    description: 'XSRF-Token',
+  })
+  // @UseGuards(JwtAuthGuard, RolesGuard)
+  // @AllowFors(Role.Admin)
+  @ApiConsumes('multipart/form-data')
+  @ApiFile('csv')
+  @UseInterceptors(
+    FileInterceptor('csv', {
+      storage: diskStorage({
+        destination: function (req, file, cb) {
+          const uniqueSuffix = `${Date.now()}${Math.round(
+            Math.random() * 1e9,
+          )}`;
+          cb(null, join(__dirname, '../../../', '../../public/uploadCsv'));
+        },
+        filename: function (req, file, cb) {
+          const uniqueSuffix = `${Date.now()}${Math.round(
+            Math.random() * 1e9,
+          )}`;
+          cb(
+            null,
+            file.fieldname +
+              '-' +
+              uniqueSuffix +
+              path.extname(file.originalname),
+          );
+        },
+      }),
+      fileFilter: csvFileFilter,
+    }),
+  )
+  @Put(':class_id/students')
+  async updateService(@UploadedFile() file, @Param() param: QueryClassDto) {
+    return await this._classStudentService.updateClassStudent(
       file,
       param.class_id,
     );
