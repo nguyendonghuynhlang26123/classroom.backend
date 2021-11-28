@@ -27,6 +27,7 @@ import {
   QueryClassDto,
   QueryClassStudentDto,
   AccountSyncDto,
+  QueryGetStudentDto,
 } from 'src/interfaces';
 import { ApiFile } from 'src/decorators';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -89,8 +90,8 @@ export class ClassStudentControllerV1 {
     name: 'XSRF-Token',
     description: 'XSRF-Token',
   })
-  // @UseGuards(JwtAuthGuard, RolesGuard)
-  // @AllowFors(Role.Admin)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @AllowFors(Role.Admin)
   @ApiConsumes('multipart/form-data')
   @ApiFile('csv')
   @UseInterceptors(
@@ -152,6 +153,21 @@ export class ClassStudentControllerV1 {
     return await this._classStudentService.getStudentByStudentId(
       param.class_id,
       param.student_id,
+    );
+  }
+
+  @ApiHeader({
+    name: 'XSRF-Token',
+    description: 'XSRF-Token',
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @AllowFors(Role.Admin, Role.Teacher, Role.Student)
+  @Get(':class_id/students/get-by-user/:user_id')
+  async getStudentIdByUserId(@Param() param: QueryGetStudentDto) {
+    return await this._classStudentService.getStudentIdByUserId(
+      param.class_id,
+      param.user_id,
     );
   }
 

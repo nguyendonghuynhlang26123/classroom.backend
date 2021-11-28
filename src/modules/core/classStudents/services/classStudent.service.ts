@@ -152,6 +152,36 @@ export class ClassStudentService {
     }
   }
 
+  async getStudentIdByUserId(classId: string, userId: string) {
+    try {
+      let classStudent = await this._classStudentRepository.getOneDocument({
+        class_id: classId,
+      });
+      if (!classStudent) {
+        throw new HttpException(
+          'Not Found Class Student',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+      let index = classStudent.students.findIndex((e) => {
+        return e.user_id == userId;
+      });
+      if (index == -1) {
+        throw new HttpException(
+          'Not Found User Id In Class Student',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+      return { student_id: classStudent.students[index].student_id };
+    } catch (error) {
+      this._logUtil.errorLogger(error, 'ClassStudentService');
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+    }
+  }
+
   async accountSync(classId: string, studentId: string, userId: string) {
     try {
       let classStudent = await this._classStudentRepository.getOneDocument({

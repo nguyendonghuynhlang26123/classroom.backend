@@ -13,6 +13,18 @@ export class QueryClassStudentDto {
   student_id: string;
 }
 
+export class QueryGetStudentDto {
+  @ApiProperty({ type: String })
+  @IsString()
+  @IsNotEmpty()
+  class_id: string;
+
+  @ApiProperty({ type: String })
+  @IsString()
+  @IsNotEmpty()
+  user_id: string;
+}
+
 export class AccountSyncDto {
   @ApiProperty({ type: String })
   @IsString()
