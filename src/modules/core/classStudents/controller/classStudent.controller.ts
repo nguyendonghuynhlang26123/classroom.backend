@@ -13,23 +13,29 @@ import {
   Param,
   Patch,
   Delete,
+  UploadedFile,
 } from '@nestjs/common';
 import { ClassStudentService } from '../services/classStudent.service';
 import { JwtAuthGuard } from '../../auth/guard/jwt-auth.guard';
-import { ApiBearerAuth, ApiHeader, ApiTags } from '@nestjs/swagger';
-import { Class } from '../../../connector/repository';
 import {
-  ClassInterface,
-  GenericQuery,
-  GenericRes,
-  CreateClassDto,
+  ApiBearerAuth,
+  ApiConsumes,
+  ApiHeader,
+  ApiTags,
+} from '@nestjs/swagger';
+import {
   QueryClassDto,
-  InviteUserDto,
-  AcceptInviteUserDto,
-  UserJoinClassDto,
   QueryClassStudentDto,
   AccountSyncDto,
 } from 'src/interfaces';
+import { ApiFile } from 'src/decorators';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { join } from 'path';
+import * as path from 'path';
+import { AllowFors } from 'src/decorators/allowFors.decorator';
+import { RolesGuard } from '../../auth/guard/role.guard';
+import { Role } from 'src/enums';
 
 @Controller('v1/classes')
 @ApiTags('Class Students')
@@ -41,8 +47,49 @@ export class ClassStudentControllerV1 {
     name: 'XSRF-Token',
     description: 'XSRF-Token',
   })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @AllowFors(Role.Admin)
+  @ApiConsumes('multipart/form-data')
+  @ApiFile('csv')
+  @UseInterceptors(
+    FileInterceptor('csv', {
+      storage: diskStorage({
+        destination: function (req, file, cb) {
+          const uniqueSuffix = `${Date.now()}${Math.round(
+            Math.random() * 1e9,
+          )}`;
+          cb(null, join(__dirname, '../../../', '../../public/uploadCsv'));
+        },
+        filename: function (req, file, cb) {
+          const uniqueSuffix = `${Date.now()}${Math.round(
+            Math.random() * 1e9,
+          )}`;
+          cb(
+            null,
+            file.fieldname +
+              '-' +
+              uniqueSuffix +
+              path.extname(file.originalname),
+          );
+        },
+      }),
+    }),
+  )
+  @Post(':class_id/students')
+  async uploadCsv(@UploadedFile() file, @Param() param: QueryClassDto) {
+    return await this._classStudentService.createClassStudent(
+      file,
+      param.class_id,
+    );
+  }
+
+  @ApiHeader({
+    name: 'XSRF-Token',
+    description: 'XSRF-Token',
+  })
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @AllowFors(Role.Admin, Role.Teacher, Role.Student)
   @Get(':class_id/students')
   async getServiceByClassId(@Param() param: QueryClassDto) {
     return await this._classStudentService.getClassStudentByClassId(
@@ -55,7 +102,8 @@ export class ClassStudentControllerV1 {
     description: 'XSRF-Token',
   })
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @AllowFors(Role.Admin, Role.Teacher, Role.Student)
   @Get(':class_id/students/:student_id')
   async getServiceByStudentId(@Param() param: QueryClassStudentDto) {
     return await this._classStudentService.getStudentByStudentId(
@@ -69,7 +117,8 @@ export class ClassStudentControllerV1 {
     description: 'XSRF-Token',
   })
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @AllowFors(Role.Admin, Role.Teacher, Role.Student)
   @Put(':class_id/students/account-sync')
   async syncServiceByStudentId(
     @Param() param: QueryClassDto,

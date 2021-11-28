@@ -6,6 +6,8 @@ import {
   GenericQuery,
   CreateClassDto,
   ClassroomUserInterface,
+  ClassStudentInterface,
+  StudentInterface,
 } from 'src/interfaces';
 import { Subscription } from 'rxjs';
 import {
@@ -15,15 +17,60 @@ import {
 import { LoggerUtilService } from '../../../shared/loggerUtil';
 import { UserService } from '../../users/services/user.service';
 import { MailService } from 'src/modules/feature/mail/mail.service';
+import { ImportCsvService } from 'src/modules/feature/importCsv/services/importCsv.service';
 
 @Injectable()
 export class ClassStudentService {
   subscription: Subscription = new Subscription();
   constructor(
     private _classStudentRepository: ClassStudentRepository,
+    private _importCsvService: ImportCsvService,
     private _logUtil: LoggerUtilService,
   ) {
     this.onCreate();
+  }
+
+  async createClassStudent(file, classId: string) {
+    try {
+      let dataClassStudent: ClassStudentInterface = {
+        class_id: classId,
+        file_location:
+          file != null ? `public/uploadCsv/${file.filename}` : null,
+        students: [],
+      };
+      if (file != null) {
+        let listStudents = await this._importCsvService.importFile(file.path);
+        for (let i = 0; i < listStudents.length; i++) {
+          const e = listStudents[i];
+          let student: StudentInterface = {
+            student_id: e.student_id,
+            student_name: e.name,
+            status: 'NOT_SYNCED',
+            user_id: null,
+          };
+          dataClassStudent.students.push(student);
+        }
+      }
+      const createClassStudent = new this._classStudentRepository._model(
+        dataClassStudent,
+      );
+      let classStudent = await this._classStudentRepository.create(
+        createClassStudent,
+      );
+      return classStudent;
+    } catch (error) {
+      this._logUtil.errorLogger(error, 'ClassStudentService');
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      if (error.code == 11000 || error.code == 11001) {
+        throw new HttpException(
+          `Duplicate key error collection: ${Object.keys(error.keyValue)}`,
+          HttpStatus.CONFLICT,
+        );
+      }
+      throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+    }
   }
 
   async getClassStudentByClassId(classId: string) {
