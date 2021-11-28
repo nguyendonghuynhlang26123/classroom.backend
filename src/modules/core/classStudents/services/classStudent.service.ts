@@ -32,7 +32,7 @@ export class ClassStudentService {
         .getOneDocument({
           class_id: classId,
         })
-        .populate('students.user_id', 'avartar first_name last_name email');
+        .populate('students.user_id', 'avatar first_name last_name email');
       if (!classStudent) {
         throw new HttpException(
           'Not Found Class Student',
