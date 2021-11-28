@@ -28,6 +28,7 @@ import {
   AcceptInviteUserDto,
   UserJoinClassDto,
   QueryClassStudentDto,
+  AccountSyncDto,
 } from 'src/interfaces';
 
 @Controller('v1/classes')
@@ -60,6 +61,25 @@ export class ClassStudentControllerV1 {
     return await this._classStudentService.getStudentByStudentId(
       param.class_id,
       param.student_id,
+    );
+  }
+
+  @ApiHeader({
+    name: 'XSRF-Token',
+    description: 'XSRF-Token',
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Put(':class_id/students/account-sync')
+  async syncServiceByStudentId(
+    @Req() req,
+    @Param() param: QueryClassDto,
+    @Body() body: AccountSyncDto,
+  ) {
+    return await this._classStudentService.accountSync(
+      param.class_id,
+      body.student_id,
+      req.user._id,
     );
   }
 }

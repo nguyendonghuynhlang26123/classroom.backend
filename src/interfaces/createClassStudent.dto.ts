@@ -12,3 +12,10 @@ export class QueryClassStudentDto {
   @IsNotEmpty()
   student_id: string;
 }
+
+export class AccountSyncDto {
+  @ApiProperty({ type: String })
+  @IsString()
+  @IsNotEmpty()
+  student_id: string;
+}
