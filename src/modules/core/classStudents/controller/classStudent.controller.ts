@@ -72,14 +72,13 @@ export class ClassStudentControllerV1 {
   @UseGuards(JwtAuthGuard)
   @Put(':class_id/students/account-sync')
   async syncServiceByStudentId(
-    @Req() req,
     @Param() param: QueryClassDto,
     @Body() body: AccountSyncDto,
   ) {
     return await this._classStudentService.accountSync(
       param.class_id,
       body.student_id,
-      req.user._id,
+      body.user_id,
     );
   }
 }

@@ -18,4 +18,9 @@ export class AccountSyncDto {
   @IsString()
   @IsNotEmpty()
   student_id: string;
+
+  @ApiProperty({ type: String })
+  @IsString()
+  @IsNotEmpty()
+  user_id: string;
 }
