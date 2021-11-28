@@ -30,7 +30,7 @@ export class ClassStudentService {
     try {
       let classStudent = await this._classStudentRepository
         .getOneDocument({
-          _id: classId,
+          class_id: classId,
         })
         .populate('students.user_id', 'avartar first_name last_name email');
       if (!classStudent) {
@@ -52,7 +52,7 @@ export class ClassStudentService {
   async getStudentByStudentId(classId: string, studentId: string) {
     try {
       let classStudent = await this._classStudentRepository.getOneDocument({
-        _id: classId,
+        class_id: classId,
         students: { $elemMatch: { student_id: studentId, status: 'SYNCED' } },
       });
       if (!classStudent) {
