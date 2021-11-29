@@ -27,6 +27,7 @@ import {
   QueryGradingStudentDto,
   QueryGradingAssignmentDto,
   CreateArrayGradingDto,
+  UpdateArrayGradingDto,
 } from 'src/interfaces';
 import { AllowFors } from 'src/decorators/allowFors.decorator';
 import { Role } from 'src/enums';
@@ -51,6 +52,24 @@ export class GradingAssignmentControllerV1 {
     @Body() body: CreateArrayGradingDto,
   ) {
     return await this._gradingAssignmentService.createGradingAssignment(
+      body.data,
+      param.class_id,
+    );
+  }
+
+  @ApiHeader({
+    name: 'XSRF-Token',
+    description: 'XSRF-Token',
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @AllowFors(Role.Admin, Role.Teacher)
+  @Put('/:class_id/grading')
+  async updateService(
+    @Param() param: QueryClassDto,
+    @Body() body: UpdateArrayGradingDto,
+  ) {
+    return await this._gradingAssignmentService.updateGradingAssignment(
       body.data,
       param.class_id,
     );

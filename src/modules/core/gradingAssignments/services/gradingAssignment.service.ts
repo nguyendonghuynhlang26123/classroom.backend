@@ -5,6 +5,7 @@ import {
   GenericQuery,
   GenericRes,
   GradingAssignmentInterface,
+  UpdateGradingAssignmentDto,
 } from 'src/interfaces';
 import { GradingAssignmentRepository } from '../../../connector/repository';
 import { LoggerUtilService } from '../../../shared/loggerUtil';
@@ -36,6 +37,45 @@ export class GradingAssignmentService {
         await this._gradingAssignmentRepository.createWithArray(
           createGradingAssignments,
         );
+      return { status: 200 };
+    } catch (error) {
+      this._logUtil.errorLogger(error, 'GradingAssignmentService');
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      if (error.code == 11000 || error.code == 11001) {
+        throw new HttpException(
+          `Duplicate key error collection: ${Object.keys(error.keyValue)}`,
+          HttpStatus.CONFLICT,
+        );
+      }
+      throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async updateGradingAssignment(
+    data: UpdateGradingAssignmentDto[],
+    classId: string,
+  ) {
+    try {
+      for (let i = 0; i < data.length; i++) {
+        const e = data[i];
+        const grading = await this._gradingAssignmentRepository.getOneDocument({
+          class_id: classId,
+          assignment_id: e.assignment_id,
+          student_id: e.student_id,
+        });
+        if (!grading) {
+          throw new HttpException(
+            `Not Found Grading: class_id=${classId} assignment_id=${e.assignment_id} student_id=${e.student_id}`,
+            HttpStatus.NOT_FOUND,
+          );
+        }
+        await this._gradingAssignmentRepository.updateDocument(
+          { _id: grading._id },
+          { mark: e.mark },
+        );
+      }
       return { status: 200 };
     } catch (error) {
       this._logUtil.errorLogger(error, 'GradingAssignmentService');
