@@ -46,6 +46,9 @@ export class GradingAssignment
   deleted_at: number;
 }
 
-export const GradingAssignmentSchema = SchemaFactory.createForClass(
-  GradingAssignment,
+export const GradingAssignmentSchema =
+  SchemaFactory.createForClass(GradingAssignment);
+GradingAssignmentSchema.index(
+  { assignment_id: 1, class_id: 1, student_id: 1, deleted_at: 1 },
+  { unique: true },
 );

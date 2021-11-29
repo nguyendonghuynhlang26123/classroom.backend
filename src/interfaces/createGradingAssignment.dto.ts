@@ -1,5 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import {
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
 
 export class CreateGradingAssignmentDto {
   @ApiProperty({ type: String })
@@ -18,6 +25,26 @@ export class CreateGradingAssignmentDto {
   mark?: number;
 }
 
+export class CreateArrayGradingDto {
+  @ApiProperty({ type: () => [CreateGradingAssignmentDto] })
+  @ValidateNested()
+  @Type(() => CreateGradingAssignmentDto)
+  @IsNotEmpty()
+  data: CreateGradingAssignmentDto[];
+}
+
+export class QueryGradingStudentDto {
+  @ApiProperty({ type: String })
+  @IsString()
+  @IsNotEmpty()
+  class_id: string;
+
+  @ApiProperty({ type: String })
+  @IsString()
+  @IsNotEmpty()
+  student_id: string;
+}
+
 export class QueryGradingAssignmentDto {
   @ApiProperty({ type: String })
   @IsString()
@@ -27,5 +54,5 @@ export class QueryGradingAssignmentDto {
   @ApiProperty({ type: String })
   @IsString()
   @IsNotEmpty()
-  grading_assignment_id: string;
+  assignment_id: string;
 }
