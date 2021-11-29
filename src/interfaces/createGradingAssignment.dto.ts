@@ -58,6 +58,13 @@ export class UpdateArrayGradingDto {
   data: UpdateGradingAssignmentDto[];
 }
 
+export class CreateGradingByFileDto {
+  @ApiProperty({ type: String })
+  @IsString()
+  @IsNotEmpty()
+  assignment_id: string;
+}
+
 export class QueryGradingStudentDto {
   @ApiProperty({ type: String })
   @IsString()

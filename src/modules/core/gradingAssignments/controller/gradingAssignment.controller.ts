@@ -13,10 +13,16 @@ import {
   Param,
   Patch,
   Delete,
+  UploadedFile,
 } from '@nestjs/common';
 import { GradingAssignmentService } from '../services/gradingAssignment.service';
 import { JwtAuthGuard } from '../../auth/guard/jwt-auth.guard';
-import { ApiBearerAuth, ApiHeader, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiConsumes,
+  ApiHeader,
+  ApiTags,
+} from '@nestjs/swagger';
 import { GradingAssignment } from '../../../connector/repository';
 import {
   QueryClassDto,
@@ -28,10 +34,17 @@ import {
   QueryGradingAssignmentDto,
   CreateArrayGradingDto,
   UpdateArrayGradingDto,
+  CreateGradingByFileDto,
 } from 'src/interfaces';
 import { AllowFors } from 'src/decorators/allowFors.decorator';
 import { Role } from 'src/enums';
 import { RolesGuard } from '../../auth/guard/role.guard';
+import { ApiFile } from 'src/decorators';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { join } from 'path';
+import * as path from 'path';
+import { csvFileFilter } from 'src/utils/csvFilter';
 
 @Controller('v1/classes')
 @ApiTags('Grading Assignments')
@@ -54,6 +67,52 @@ export class GradingAssignmentControllerV1 {
     return await this._gradingAssignmentService.createGradingAssignment(
       body.data,
       param.class_id,
+    );
+  }
+
+  @ApiHeader({
+    name: 'XSRF-Token',
+    description: 'XSRF-Token',
+  })
+  // @UseGuards(JwtAuthGuard, RolesGuard)
+  // @AllowFors(Role.Admin, Role.Teacher)
+  @ApiConsumes('multipart/form-data')
+  @ApiFile('csv')
+  @UseInterceptors(
+    FileInterceptor('csv', {
+      storage: diskStorage({
+        destination: function (req, file, cb) {
+          const uniqueSuffix = `${Date.now()}${Math.round(
+            Math.random() * 1e9,
+          )}`;
+          cb(null, join(__dirname, '../../../', '../../public/uploadCsv'));
+        },
+        filename: function (req, file, cb) {
+          const uniqueSuffix = `${Date.now()}${Math.round(
+            Math.random() * 1e9,
+          )}`;
+          cb(
+            null,
+            file.fieldname +
+              '-' +
+              uniqueSuffix +
+              path.extname(file.originalname),
+          );
+        },
+      }),
+      fileFilter: csvFileFilter,
+    }),
+  )
+  @Post(':class_id/grading/upload')
+  async createServiceByFile(
+    @UploadedFile() file,
+    @Param() param: QueryClassDto,
+    @Body() body: CreateGradingByFileDto,
+  ) {
+    return await this._gradingAssignmentService.createGradingAssignmentByFile(
+      file,
+      param.class_id,
+      body.assignment_id,
     );
   }
 

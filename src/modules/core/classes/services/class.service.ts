@@ -514,5 +514,23 @@ export class ClassService {
     }
   }
 
+  async findByClassId(classId: string) {
+    try {
+      let classes = await this._classRepository.getOneDocument({
+        _id: classId,
+      });
+      if (!classes) {
+        throw new HttpException('Not Found Class', HttpStatus.NOT_FOUND);
+      }
+      return classes;
+    } catch (error) {
+      this._logUtil.errorLogger(error, 'ClassService');
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+    }
+  }
+
   onCreate() {}
 }

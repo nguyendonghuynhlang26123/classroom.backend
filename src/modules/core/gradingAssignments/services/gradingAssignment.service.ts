@@ -7,13 +7,19 @@ import {
   GradingAssignmentInterface,
   UpdateGradingAssignmentDto,
 } from 'src/interfaces';
+import { ImportCsvService } from 'src/modules/feature/importCsv/services/importCsv.service';
 import { GradingAssignmentRepository } from '../../../connector/repository';
 import { LoggerUtilService } from '../../../shared/loggerUtil';
+import { AssignmentService } from '../../assignments/services/assignment.service';
+import { ClassService } from '../../classes/services/class.service';
 
 @Injectable()
 export class GradingAssignmentService {
   constructor(
     private _gradingAssignmentRepository: GradingAssignmentRepository,
+    private _classService: ClassService,
+    private _assignmentService: AssignmentService,
+    private _importCsvService: ImportCsvService,
     private _logUtil: LoggerUtilService,
   ) {
     this.onCreate();
@@ -31,6 +37,66 @@ export class GradingAssignmentService {
       for (let i = 0; i < data.length; i++) {
         const e = data[i];
         const createGrading = new this._gradingAssignmentRepository._model(e);
+        createGradingAssignments.push(createGrading);
+      }
+      let gradingAssignments =
+        await this._gradingAssignmentRepository.createWithArray(
+          createGradingAssignments,
+        );
+      return { status: 200 };
+    } catch (error) {
+      this._logUtil.errorLogger(error, 'GradingAssignmentService');
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      if (error.code == 11000 || error.code == 11001) {
+        throw new HttpException(
+          `Duplicate key error collection: ${Object.keys(error.keyValue)}`,
+          HttpStatus.CONFLICT,
+        );
+      }
+      throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async createGradingAssignmentByFile(
+    file,
+    classId: string,
+    assignmentId: string,
+  ) {
+    try {
+      if (file == null) {
+        throw new HttpException(
+          'Csv File Cannot Empty',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      const check = await Promise.all([
+        this._classService.findByClassId(classId),
+        this._assignmentService.getAssignmentById(assignmentId, classId),
+      ]);
+      if (!check[0]) {
+        throw new HttpException('Invalid Class Id', HttpStatus.BAD_REQUEST);
+      }
+      if (!check[1]) {
+        throw new HttpException(
+          'Invalid Assignment Id',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      let createGradingAssignments = [];
+      let listGrading = await this._importCsvService.importFile(file.path);
+      for (let i = 0; i < listGrading.length; i++) {
+        const e = listGrading[i];
+        let grading: GradingAssignmentInterface = {
+          assignment_id: assignmentId,
+          class_id: classId,
+          student_id: e.student_id,
+          mark: e.mark != '' ? e.mark : null,
+        };
+        const createGrading = new this._gradingAssignmentRepository._model(
+          grading,
+        );
         createGradingAssignments.push(createGrading);
       }
       let gradingAssignments =

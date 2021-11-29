@@ -89,14 +89,14 @@ export class AssignmentService {
 
   async getAssignmentById(assignmentId: string, classId: string) {
     try {
-      let assignments = await this._assignmentRepository.getOneDocument({
+      let assignment = await this._assignmentRepository.getOneDocument({
         _id: assignmentId,
         class_id: classId,
       });
-      if (!assignments) {
+      if (!assignment) {
         throw new HttpException('Not Found Assignment', HttpStatus.NOT_FOUND);
       }
-      return assignments;
+      return assignment;
     } catch (error) {
       this._logUtil.errorLogger(error, 'AssignmentService');
       if (error instanceof HttpException) {
