@@ -281,7 +281,7 @@ export class GradingAssignmentService {
       const file = readFileSync(
         join(
           process.cwd(),
-          `/public/uploadCsv/${fileName}`,
+          `/public/gradingCsv/${fileName}`,
         ),
       );
       return new StreamableFile(file);

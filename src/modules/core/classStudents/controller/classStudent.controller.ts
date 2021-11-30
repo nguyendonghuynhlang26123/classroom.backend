@@ -62,7 +62,7 @@ export class ClassStudentControllerV1 {
           const uniqueSuffix = `${Date.now()}${Math.round(
             Math.random() * 1e9,
           )}`;
-          cb(null, join(__dirname, '../../../', '../../public/uploadCsv'));
+          cb(null, join(__dirname, '../../../', '../../public/studentCsv'));
         },
         filename: function (req, file, cb) {
           const uniqueSuffix = `${Date.now()}${Math.round(
@@ -103,7 +103,7 @@ export class ClassStudentControllerV1 {
           const uniqueSuffix = `${Date.now()}${Math.round(
             Math.random() * 1e9,
           )}`;
-          cb(null, join(__dirname, '../../../', '../../public/uploadCsv'));
+          cb(null, join(__dirname, '../../../', '../../public/studentCsv'));
         },
         filename: function (req, file, cb) {
           const uniqueSuffix = `${Date.now()}${Math.round(
@@ -199,11 +199,11 @@ export class ClassStudentControllerV1 {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @AllowFors(Role.Admin, Role.Teacher)
-  @Get(':class_id/students/download-file/:file_name')
+  @Get(':class_id/students/download-file')
   async getFile(
-    @Param() param: DownloadQueryDto,
+    @Param() param: QueryClassDto,
     @Req() req,
   ): Promise<StreamableFile> {
-    return await this._classStudentService.getFile(param.file_name);
+    return await this._classStudentService.getFile(param.class_id);
   }
 }

@@ -87,7 +87,7 @@ export class GradingAssignmentControllerV1 {
           const uniqueSuffix = `${Date.now()}${Math.round(
             Math.random() * 1e9,
           )}`;
-          cb(null, join(__dirname, '../../../', '../../public/uploadCsv'));
+          cb(null, join(__dirname, '../../../', '../../public/gradingCsv'));
         },
         filename: function (req, file, cb) {
           const uniqueSuffix = `${Date.now()}${Math.round(

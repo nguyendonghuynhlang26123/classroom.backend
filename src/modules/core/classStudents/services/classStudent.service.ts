@@ -224,10 +224,19 @@ export class ClassStudentService {
     }
   }
 
-  async getFile(fileName: string) {
+  async getFile(classId: string) {
     try {
+      const classStudent = await this._classStudentRepository.getOneDocument({
+        class_id: classId,
+      });
+      if (!classStudent) {
+        throw new HttpException(
+          'Not Found Class Student',
+          HttpStatus.NOT_FOUND,
+        );
+      }
       const file = readFileSync(
-        join(process.cwd(), `/public/uploadCsv/${fileName}`),
+        join(process.cwd(), `/public/studentCsv/${classStudent.file_location}`),
       );
       return new StreamableFile(file);
     } catch (error) {
