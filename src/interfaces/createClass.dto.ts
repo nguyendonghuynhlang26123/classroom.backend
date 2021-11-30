@@ -88,3 +88,25 @@ export class UserJoinClassDto {
   @IsNotEmpty()
   code: string;
 }
+
+export class UpdateClassDto {
+  @ApiProperty({ type: String })
+  @IsString()
+  @IsOptional()
+  title?: string;
+
+  @ApiProperty({ type: String })
+  @IsString()
+  @IsOptional()
+  section?: string;
+
+  @ApiProperty({ type: String })
+  @IsString()
+  @IsOptional()
+  subject?: string;
+
+  @ApiProperty({ type: String })
+  @IsString()
+  @IsOptional()
+  room?: string;
+}
