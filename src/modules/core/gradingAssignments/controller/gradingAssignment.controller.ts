@@ -14,6 +14,7 @@ import {
   Patch,
   Delete,
   UploadedFile,
+  StreamableFile,
 } from '@nestjs/common';
 import { GradingAssignmentService } from '../services/gradingAssignment.service';
 import { JwtAuthGuard } from '../../auth/guard/jwt-auth.guard';
@@ -35,6 +36,7 @@ import {
   CreateArrayGradingDto,
   UpdateArrayGradingDto,
   CreateGradingByFileDto,
+  DownloadQueryDto,
 } from 'src/interfaces';
 import { AllowFors } from 'src/decorators/allowFors.decorator';
 import { Role } from 'src/enums';
@@ -74,8 +76,8 @@ export class GradingAssignmentControllerV1 {
     name: 'XSRF-Token',
     description: 'XSRF-Token',
   })
-  // @UseGuards(JwtAuthGuard, RolesGuard)
-  // @AllowFors(Role.Admin, Role.Teacher)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @AllowFors(Role.Admin, Role.Teacher)
   @ApiConsumes('multipart/form-data')
   @ApiFile('csv')
   @UseInterceptors(
@@ -188,5 +190,20 @@ export class GradingAssignmentControllerV1 {
       param.class_id,
       param.assignment_id,
     );
+  }
+
+  @ApiHeader({
+    name: 'XSRF-Token',
+    description: 'XSRF-Token',
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @AllowFors(Role.Admin, Role.Teacher, Role.Student)
+  @Get(':class_id/grading/download-file/:file_name')
+  async getFile(
+    @Param() param: DownloadQueryDto,
+    @Req() req,
+  ): Promise<StreamableFile> {
+    return await this._gradingAssignmentService.getFile(param.file_name);
   }
 }

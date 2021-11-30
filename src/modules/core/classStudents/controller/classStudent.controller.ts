@@ -14,6 +14,7 @@ import {
   Patch,
   Delete,
   UploadedFile,
+  StreamableFile,
 } from '@nestjs/common';
 import { ClassStudentService } from '../services/classStudent.service';
 import { JwtAuthGuard } from '../../auth/guard/jwt-auth.guard';
@@ -28,6 +29,7 @@ import {
   QueryClassStudentDto,
   AccountSyncDto,
   QueryGetStudentDto,
+  DownloadQueryDto,
 } from 'src/interfaces';
 import { ApiFile } from 'src/decorators';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -188,5 +190,20 @@ export class ClassStudentControllerV1 {
       body.student_id,
       body.user_id,
     );
+  }
+
+  @ApiHeader({
+    name: 'XSRF-Token',
+    description: 'XSRF-Token',
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @AllowFors(Role.Admin, Role.Teacher)
+  @Get(':class_id/students/download-file/:file_name')
+  async getFile(
+    @Param() param: DownloadQueryDto,
+    @Req() req,
+  ): Promise<StreamableFile> {
+    return await this._classStudentService.getFile(param.file_name);
   }
 }

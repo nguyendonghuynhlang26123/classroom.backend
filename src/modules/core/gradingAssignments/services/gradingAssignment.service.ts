@@ -1,4 +1,6 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus, StreamableFile } from '@nestjs/common';
+import { readFileSync } from 'fs';
+import { join } from 'path';
 import {
   CreateArrayGradingDto,
   CreateGradingAssignmentDto,
@@ -269,6 +271,32 @@ export class GradingAssignmentService {
         throw error;
       }
       throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async getFile(
+    fileName: string,
+  ) {
+    try {
+      const file = readFileSync(
+        join(
+          process.cwd(),
+          `/public/uploadCsv/${fileName}`,
+        ),
+      );
+      return new StreamableFile(file);
+    } catch (error) {
+      this._logUtil.errorLogger(error, 'GradingAssignmentService');
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      if (error.code == 11000 || error.code == 11001) {
+        throw new HttpException(
+          `Duplicate key error collection: ${Object.keys(error.keyValue)}`,
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
     }
   }
 

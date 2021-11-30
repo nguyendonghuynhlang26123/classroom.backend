@@ -1,9 +1,16 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import {
+  Injectable,
+  HttpException,
+  HttpStatus,
+  StreamableFile,
+} from '@nestjs/common';
 import { ClassStudentInterface, StudentInterface } from 'src/interfaces';
 import { Subscription } from 'rxjs';
 import { ClassStudentRepository } from '../../../connector/repository';
 import { LoggerUtilService } from '../../../shared/loggerUtil';
 import { ImportCsvService } from 'src/modules/feature/importCsv/services/importCsv.service';
+import { join } from 'path';
+import { readFileSync } from 'fs';
 
 @Injectable()
 export class ClassStudentService {
@@ -20,8 +27,7 @@ export class ClassStudentService {
     try {
       let dataClassStudent: ClassStudentInterface = {
         class_id: classId,
-        file_location:
-          file != null ? `public/uploadCsv/${file.filename}` : null,
+        file_location: file != null ? file.filename : null,
         students: [],
       };
       if (file != null) {
@@ -87,7 +93,7 @@ export class ClassStudentService {
           _id: classStudent._id,
         },
         {
-          file_location: `public/uploadCsv/${file.filename}`,
+          file_location: file.filename,
           students: classStudent.students,
         },
       );
@@ -215,6 +221,27 @@ export class ClassStudentService {
         throw error;
       }
       throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async getFile(fileName: string) {
+    try {
+      const file = readFileSync(
+        join(process.cwd(), `/public/uploadCsv/${fileName}`),
+      );
+      return new StreamableFile(file);
+    } catch (error) {
+      this._logUtil.errorLogger(error, 'ClassStudentService');
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      if (error.code == 11000 || error.code == 11001) {
+        throw new HttpException(
+          `Duplicate key error collection: ${Object.keys(error.keyValue)}`,
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
     }
   }
 
