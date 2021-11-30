@@ -72,6 +72,14 @@ export abstract class Repository<T extends Document> {
     return this._model.updateOne(query, dataUpdate).exec();
   }
 
+  replaceDocument(
+    query: FilterQuery<T>,
+    dataUpdate: UpdateQuery<T>,
+  ): Promise<any> {
+    this.cacheManager.reset();
+    return this._model.replaceOne(query, dataUpdate, { upsert: true }).exec();
+  }
+
   updateAllDocument(
     query: FilterQuery<T>,
     dataUpdate: UpdateQuery<T>,

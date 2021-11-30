@@ -1,4 +1,9 @@
-import { Injectable, HttpException, HttpStatus, StreamableFile } from '@nestjs/common';
+import {
+  Injectable,
+  HttpException,
+  HttpStatus,
+  StreamableFile,
+} from '@nestjs/common';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 import {
@@ -96,10 +101,15 @@ export class GradingAssignmentService {
           student_id: e.student_id,
           mark: e.mark != '' ? e.mark : null,
         };
-        const createGrading = new this._gradingAssignmentRepository._model(
-          grading,
-        );
-        createGradingAssignments.push(createGrading);
+        const createGrading =
+          await this._gradingAssignmentRepository.replaceDocument(
+            {
+              assignment_id: grading.assignment_id,
+              class_id: grading.class_id,
+              student_id: grading.student_id,
+            },
+            grading,
+          );
       }
       let gradingAssignments =
         await this._gradingAssignmentRepository.createWithArray(
@@ -274,15 +284,10 @@ export class GradingAssignmentService {
     }
   }
 
-  async getFile(
-    fileName: string,
-  ) {
+  async getFile(fileName: string) {
     try {
       const file = readFileSync(
-        join(
-          process.cwd(),
-          `/public/gradingCsv/${fileName}`,
-        ),
+        join(process.cwd(), `/public/gradingCsv/${fileName}`),
       );
       return new StreamableFile(file);
     } catch (error) {
