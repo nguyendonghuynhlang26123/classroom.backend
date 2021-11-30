@@ -199,7 +199,7 @@ export class GradingAssignmentControllerV1 {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @AllowFors(Role.Admin, Role.Teacher, Role.Student)
-  @Get(':class_id/grading/download-file/:file_name')
+  @Get(':class_id/grading/file/download/:file_name')
   async getFile(
     @Param() param: DownloadQueryDto,
     @Req() req,

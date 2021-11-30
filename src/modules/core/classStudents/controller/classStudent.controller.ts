@@ -199,7 +199,7 @@ export class ClassStudentControllerV1 {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @AllowFors(Role.Admin, Role.Teacher)
-  @Get(':class_id/students/download-file')
+  @Get(':class_id/students/file/download')
   async getFile(
     @Param() param: QueryClassDto,
     @Req() req,
