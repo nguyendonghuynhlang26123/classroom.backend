@@ -19,6 +19,8 @@ import { GradingAssignmentRepository } from '../../../connector/repository';
 import { LoggerUtilService } from '../../../shared/loggerUtil';
 import { AssignmentService } from '../../assignments/services/assignment.service';
 import { ClassService } from '../../classes/services/class.service';
+import { Parser } from 'json2csv';
+// const { Parse } = require('json2csv');
 
 @Injectable()
 export class GradingAssignmentService {
@@ -284,12 +286,21 @@ export class GradingAssignmentService {
     }
   }
 
-  async getFile(fileName: string) {
+  async exportMark(classId: string, assignmentId: string) {
     try {
-      const file = readFileSync(
-        join(process.cwd(), `/public/gradingCsv/${fileName}`),
-      );
-      return new StreamableFile(file);
+      const gradingAssignments =
+        await this._gradingAssignmentRepository.getAllDocument(
+          { class_id: classId, assignment_id: assignmentId },
+          { student_id: 1, mark: 1 },
+        );
+      gradingAssignments.map((e) => {
+        delete e._id;
+      });
+      const fields = ['student_id', 'mark'];
+      const opts = { fields };
+      const parser = new Parser(opts);
+      const csv = parser.parse(gradingAssignments);
+      return csv;
     } catch (error) {
       this._logUtil.errorLogger(error, 'GradingAssignmentService');
       if (error instanceof HttpException) {

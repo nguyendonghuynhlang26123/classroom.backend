@@ -14,7 +14,7 @@ import {
   Patch,
   Delete,
   UploadedFile,
-  StreamableFile,
+  Res,
 } from '@nestjs/common';
 import { GradingAssignmentService } from '../services/gradingAssignment.service';
 import { JwtAuthGuard } from '../../auth/guard/jwt-auth.guard';
@@ -37,6 +37,7 @@ import {
   UpdateArrayGradingDto,
   CreateGradingByFileDto,
   DownloadQueryDto,
+  QueryAssignmentDto,
 } from 'src/interfaces';
 import { AllowFors } from 'src/decorators/allowFors.decorator';
 import { Role } from 'src/enums';
@@ -105,16 +106,15 @@ export class GradingAssignmentControllerV1 {
       fileFilter: csvFileFilter,
     }),
   )
-  @Post(':class_id/grading/upload')
+  @Post(':class_id/grading/assignment/:assignment_id/import')
   async createServiceByFile(
     @UploadedFile() file,
-    @Param() param: QueryClassDto,
-    @Body() body: CreateGradingByFileDto,
+    @Param() param: QueryAssignmentDto,
   ) {
     return await this._gradingAssignmentService.createGradingAssignmentByFile(
       file,
       param.class_id,
-      body.assignment_id,
+      param.assignment_id,
     );
   }
 
@@ -199,11 +199,13 @@ export class GradingAssignmentControllerV1 {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @AllowFors(Role.Admin, Role.Teacher, Role.Student)
-  @Get(':class_id/grading/file/download/:file_name')
-  async getFile(
-    @Param() param: DownloadQueryDto,
-    @Req() req,
-  ): Promise<StreamableFile> {
-    return await this._gradingAssignmentService.getFile(param.file_name);
+  @Get(':class_id/grading/assignment/:assignment_id/export')
+  async exportFile(@Param() param: QueryAssignmentDto, @Req() req, @Res() res) {
+    let result = await this._gradingAssignmentService.exportMark(
+      param.class_id,
+      param.assignment_id,
+    );
+    res.attachment('grading.csv');
+    res.status(200).send(result);
   }
 }
