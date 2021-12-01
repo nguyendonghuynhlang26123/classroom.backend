@@ -93,7 +93,6 @@ export class GradingAssignmentService {
           HttpStatus.BAD_REQUEST,
         );
       }
-      let createGradingAssignments = [];
       let listGrading = await this._importCsvService.importFile(file.path);
       for (let i = 0; i < listGrading.length; i++) {
         const e = listGrading[i];
@@ -113,10 +112,6 @@ export class GradingAssignmentService {
             grading,
           );
       }
-      let gradingAssignments =
-        await this._gradingAssignmentRepository.createWithArray(
-          createGradingAssignments,
-        );
       return { status: 200 };
     } catch (error) {
       this._logUtil.errorLogger(error, 'GradingAssignmentService');
