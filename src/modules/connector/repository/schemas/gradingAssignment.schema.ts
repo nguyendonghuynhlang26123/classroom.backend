@@ -1,11 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import * as mongoose from 'mongoose';
-import {
-  AssignmentInterface,
-  ClassTopicInterface,
-  GradeCriteria,
-} from 'src/interfaces';
+import { GradingAssignmentInterface } from 'src/interfaces';
 
 @Schema({
   timestamps: {
@@ -16,9 +12,16 @@ import {
     },
   },
 })
-export class ClassTopic extends Document implements ClassTopicInterface {
-  @Prop({ type: String, required: true })
-  title: string;
+export class GradingAssignment
+  extends Document
+  implements GradingAssignmentInterface
+{
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'assignments',
+    required: true,
+  })
+  assignment_id: string;
 
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
@@ -26,6 +29,12 @@ export class ClassTopic extends Document implements ClassTopicInterface {
     required: true,
   })
   class_id: string;
+
+  @Prop({ type: String, required: true })
+  student_id: string;
+
+  @Prop({ type: Number, default: null })
+  mark: number;
 
   @Prop({ type: Number })
   created_at: number;
@@ -37,8 +46,9 @@ export class ClassTopic extends Document implements ClassTopicInterface {
   deleted_at: number;
 }
 
-export const ClassTopicSchema = SchemaFactory.createForClass(ClassTopic);
-ClassTopicSchema.index(
-  { title: 1, class_id: 1, deleted_at: 1 },
+export const GradingAssignmentSchema =
+  SchemaFactory.createForClass(GradingAssignment);
+GradingAssignmentSchema.index(
+  { assignment_id: 1, class_id: 1, student_id: 1, deleted_at: 1 },
   { unique: true },
 );

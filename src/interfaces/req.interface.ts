@@ -6,6 +6,7 @@ import {
   IsMongoId,
   IsString,
   IsBoolean,
+  IsNotEmpty,
 } from 'class-validator';
 
 export class GenericQuery {
@@ -29,4 +30,16 @@ export class GenericQuery {
   @IsBooleanString()
   @IsOptional()
   is_deleted?: string;
+}
+
+export class DownloadQueryDto {
+  @ApiProperty({ type: String })
+  @IsString()
+  @IsNotEmpty()
+  class_id: string;
+
+  @ApiProperty({ type: String })
+  @IsString()
+  @IsNotEmpty()
+  file_name: string;
 }

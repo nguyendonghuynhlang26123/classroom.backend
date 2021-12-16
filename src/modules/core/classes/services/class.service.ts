@@ -6,6 +6,7 @@ import {
   GenericQuery,
   CreateClassDto,
   ClassroomUserInterface,
+  UpdateClassDto,
 } from 'src/interfaces';
 import { Subscription } from 'rxjs';
 import { ClassRepository } from '../../../connector/repository';
@@ -87,6 +88,28 @@ export class ClassService {
         data: data[0],
         total_page: data[1],
       };
+    } catch (error) {
+      this._logUtil.errorLogger(error, 'ClassService');
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async updateClassById(classId: string, dataUpdate: UpdateClassDto) {
+    try {
+      let classes = await this._classRepository.getOneDocument({
+        _id: classId,
+      });
+      if (!classes) {
+        throw new HttpException('Not Found Class', HttpStatus.NOT_FOUND);
+      }
+      let result = await this._classRepository.updateDocument(
+        { _id: classes._id },
+        dataUpdate,
+      );
+      return { status: 200 };
     } catch (error) {
       this._logUtil.errorLogger(error, 'ClassService');
       if (error instanceof HttpException) {
@@ -505,6 +528,24 @@ export class ClassService {
         _id: classId,
       });
       return { status: 200 };
+    } catch (error) {
+      this._logUtil.errorLogger(error, 'ClassService');
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async findByClassId(classId: string) {
+    try {
+      let classes = await this._classRepository.getOneDocument({
+        _id: classId,
+      });
+      if (!classes) {
+        throw new HttpException('Not Found Class', HttpStatus.NOT_FOUND);
+      }
+      return classes;
     } catch (error) {
       this._logUtil.errorLogger(error, 'ClassService');
       if (error instanceof HttpException) {

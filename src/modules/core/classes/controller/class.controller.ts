@@ -27,7 +27,11 @@ import {
   InviteUserDto,
   AcceptInviteUserDto,
   UserJoinClassDto,
+  UpdateClassDto,
 } from 'src/interfaces';
+import { AllowFors } from 'src/decorators/allowFors.decorator';
+import { Role } from 'src/enums';
+import { RolesGuard } from '../../auth/guard/role.guard';
 
 @Controller('v1/classes')
 @ApiTags('Classes')
@@ -61,6 +65,22 @@ export class ClassControllerV1 {
     @Body() body: CreateClassDto,
   ): Promise<HttpException | Class> {
     return await this._classService.createClass(body, req.user._id);
+  }
+
+  @ApiHeader({
+    name: 'XSRF-Token',
+    description: 'XSRF-Token',
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @AllowFors(Role.Admin, Role.Teacher)
+  @Put(':class_id')
+  async updateService(
+    @Param() param: QueryClassDto,
+    @Req() req,
+    @Body() body: UpdateClassDto,
+  ) {
+    return await this._classService.updateClassById(param.class_id, body);
   }
 
   @ApiHeader({

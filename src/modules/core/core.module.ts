@@ -2,7 +2,8 @@ import { Module } from '@nestjs/common';
 import { AssignmentModule } from './assignments/assignment.module';
 import { AuthModule } from './auth/auth.module';
 import { ClassModule } from './classes/class.module';
-import { ClassTopicModule } from './classTopics/classTopic.module';
+import { ClassStudentModule } from './classStudents/classStudent.module';
+import { GradingAssignmentModule } from './gradingAssignments/gradingAssignment.module';
 import { TokenModule } from './token/token.module';
 import { UserModule } from './users/user.module';
 
@@ -10,10 +11,11 @@ import { UserModule } from './users/user.module';
   imports: [
     UserModule,
     ClassModule,
+    ClassStudentModule,
     AssignmentModule,
-    ClassTopicModule,
     AuthModule,
     TokenModule,
+    GradingAssignmentModule,
   ],
   providers: [],
   exports: [],

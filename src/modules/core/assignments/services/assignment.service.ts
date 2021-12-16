@@ -19,14 +19,17 @@ export class AssignmentService {
 
   async createAssignment(data: CreateAssignmentDto, classId: string) {
     try {
+      const count = await this._assignmentRepository.getCountPage(
+        { class_id: classId },
+        1,
+      );
       let dataAssignment: AssignmentInterface = {
         class_id: classId,
-        topic: data.topic || null,
+        ui_index: count,
         title: data.title,
         instructions: data.instructions,
         total_points: data.total_points || null,
         due_date: data.due_date || null,
-        grade_criterias: data.grade_criterias || [],
       };
       const createAssignment = new this._assignmentRepository._model(
         dataAssignment,
@@ -86,14 +89,14 @@ export class AssignmentService {
 
   async getAssignmentById(assignmentId: string, classId: string) {
     try {
-      let assignments = await this._assignmentRepository.getOneDocument({
+      let assignment = await this._assignmentRepository.getOneDocument({
         _id: assignmentId,
         class_id: classId,
       });
-      if (!assignments) {
+      if (!assignment) {
         throw new HttpException('Not Found Assignment', HttpStatus.NOT_FOUND);
       }
-      return assignments;
+      return assignment;
     } catch (error) {
       this._logUtil.errorLogger(error, 'AssignmentService');
       if (error instanceof HttpException) {
