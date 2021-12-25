@@ -308,6 +308,33 @@ export class GradingAssignmentService {
     }
   }
 
+  async getFinalGrading(
+    classId: string,
+    studentId: string,
+    assignmentId: string,
+  ) {
+    try {
+      const grading = await this._gradingAssignmentRepository.getOneDocument({
+        class_id: classId,
+        student_id: studentId,
+        assignment_id: assignmentId,
+      });
+      if (!grading || grading.status != 'FINAL') {
+        throw new HttpException(
+          'Not Found Grading Assignment',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+      return grading;
+    } catch (error) {
+      this._logUtil.errorLogger(error, 'GradingAssignmentService');
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+    }
+  }
+
   async exportMark(classId: string, assignmentId: string) {
     try {
       const gradingAssignments =

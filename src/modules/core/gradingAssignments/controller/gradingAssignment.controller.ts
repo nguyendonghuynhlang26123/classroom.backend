@@ -36,6 +36,7 @@ import {
   QueryAssignmentDto,
   UpdateGradingAssignmentDto,
   UpdateGradingStatusDto,
+  GradingQuery,
 } from 'src/interfaces';
 import { AllowFors } from 'src/decorators/allowFors.decorator';
 import { Role } from 'src/enums';
@@ -176,7 +177,7 @@ export class GradingAssignmentControllerV1 {
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @AllowFors(Role.Owner, Role.Teacher, Role.Student)
+  @AllowFors(Role.Owner, Role.Teacher)
   @Get('/:class_id/grading/student/:student_id')
   async getAllServiceByStudentId(
     @Query() query: GenericQuery,
@@ -195,9 +196,9 @@ export class GradingAssignmentControllerV1 {
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @AllowFors(Role.Owner, Role.Teacher, Role.Student)
+  @AllowFors(Role.Owner, Role.Teacher)
   @Get('/:class_id/grading/assignment/:assignment_id')
-  async getAllServiceBAssignmentId(
+  async getAllServiceAssignmentId(
     @Query() query: GenericQuery,
     @Param() param: QueryGradingAssignmentDto,
   ): Promise<HttpException | GenericRes<GradingAssignmentInterface>> {
@@ -223,5 +224,24 @@ export class GradingAssignmentControllerV1 {
     );
     res.attachment('grading.csv');
     res.status(200).send(result);
+  }
+
+  @ApiHeader({
+    name: 'XSRF-Token',
+    description: 'XSRF-Token',
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @AllowFors(Role.Student)
+  @Get('/:class_id/grading/finalize')
+  async getFinalService(
+    @Query() query: GradingQuery,
+    @Param() param: QueryClassDto,
+  ) {
+    return await this._gradingAssignmentService.getFinalGrading(
+      param.class_id,
+      query.student_id,
+      query.assignment_id,
+    );
   }
 }

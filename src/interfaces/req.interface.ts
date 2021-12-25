@@ -43,3 +43,15 @@ export class DownloadQueryDto {
   @IsNotEmpty()
   file_name: string;
 }
+
+export class GradingQuery {
+  @ApiProperty({ type: String })
+  @IsString()
+  @IsNotEmpty()
+  student_id: string;
+
+  @ApiProperty({ type: String })
+  @IsString()
+  @IsNotEmpty()
+  assignment_id: string;
+}
