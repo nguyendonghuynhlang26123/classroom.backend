@@ -335,6 +335,44 @@ export class GradingAssignmentService {
     }
   }
 
+  async getOverallGrading(
+    classId: string,
+    studentId: string,
+    assignmentId: string,
+  ) {
+    try {
+      const data = await Promise.all([
+        this._gradingAssignmentRepository.getAllDocument(
+          {
+            class_id: classId,
+            student_id: studentId,
+            assignment_id: assignmentId,
+            status: 'FINAL',
+          },
+          { _id: 1, mark: 1 },
+        ),
+        this._gradingAssignmentRepository.countAllDocument({
+          class_id: classId,
+          student_id: studentId,
+          assignment_id: assignmentId,
+          status: 'FINAL',
+        }),
+      ]);
+      let overall = 0;
+      for (let i = 0; i < data[0].length; i++) {
+        const e = data[0][i];
+        overall += e.mark;
+      }
+      return { overall: overall, total: data[1] };
+    } catch (error) {
+      this._logUtil.errorLogger(error, 'GradingAssignmentService');
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+    }
+  }
+
   async exportMark(classId: string, assignmentId: string) {
     try {
       const gradingAssignments =

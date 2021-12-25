@@ -244,4 +244,23 @@ export class GradingAssignmentControllerV1 {
       query.assignment_id,
     );
   }
+
+  @ApiHeader({
+    name: 'XSRF-Token',
+    description: 'XSRF-Token',
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @AllowFors(Role.Student)
+  @Get('/:class_id/grading/overall')
+  async getOverallService(
+    @Query() query: GradingQuery,
+    @Param() param: QueryClassDto,
+  ) {
+    return await this._gradingAssignmentService.getOverallGrading(
+      param.class_id,
+      query.student_id,
+      query.assignment_id,
+    );
+  }
 }
