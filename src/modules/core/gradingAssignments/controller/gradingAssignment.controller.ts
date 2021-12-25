@@ -33,11 +33,9 @@ import {
   GradingAssignmentInterface,
   QueryGradingStudentDto,
   QueryGradingAssignmentDto,
-  CreateArrayGradingDto,
-  UpdateArrayGradingDto,
-  CreateGradingByFileDto,
-  DownloadQueryDto,
   QueryAssignmentDto,
+  UpdateGradingAssignmentDto,
+  UpdateGradingStatusDto,
 } from 'src/interfaces';
 import { AllowFors } from 'src/decorators/allowFors.decorator';
 import { Role } from 'src/enums';
@@ -65,11 +63,29 @@ export class GradingAssignmentControllerV1 {
   @Post('/:class_id/grading')
   async createService(
     @Param() param: QueryClassDto,
-    @Body() body: CreateArrayGradingDto,
+    @Body() body: CreateGradingAssignmentDto,
   ) {
     return await this._gradingAssignmentService.createGradingAssignment(
-      body.data,
+      body,
       param.class_id,
+    );
+  }
+
+  @ApiHeader({
+    name: 'XSRF-Token',
+    description: 'XSRF-Token',
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @AllowFors(Role.Owner, Role.Teacher)
+  @Post('/:class_id/grading/finalize')
+  async updateStatusService(
+    @Param() param: QueryClassDto,
+    @Body() body: UpdateGradingStatusDto,
+  ) {
+    return await this._gradingAssignmentService.updateStatus(
+      param.class_id,
+      body.assignment_id,
     );
   }
 
@@ -128,10 +144,10 @@ export class GradingAssignmentControllerV1 {
   @Put('/:class_id/grading')
   async updateService(
     @Param() param: QueryClassDto,
-    @Body() body: UpdateArrayGradingDto,
+    @Body() body: UpdateGradingAssignmentDto,
   ) {
     return await this._gradingAssignmentService.updateGradingAssignment(
-      body.data,
+      body,
       param.class_id,
     );
   }
