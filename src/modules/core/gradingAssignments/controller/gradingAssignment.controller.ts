@@ -61,7 +61,7 @@ export class GradingAssignmentControllerV1 {
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @AllowFors(Role.Admin, Role.Teacher)
+  @AllowFors(Role.Owner, Role.Teacher)
   @Post('/:class_id/grading')
   async createService(
     @Param() param: QueryClassDto,
@@ -78,7 +78,7 @@ export class GradingAssignmentControllerV1 {
     description: 'XSRF-Token',
   })
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @AllowFors(Role.Admin, Role.Teacher)
+  @AllowFors(Role.Owner, Role.Teacher)
   @ApiConsumes('multipart/form-data')
   @ApiFile('csv')
   @UseInterceptors(
@@ -124,7 +124,7 @@ export class GradingAssignmentControllerV1 {
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @AllowFors(Role.Admin, Role.Teacher)
+  @AllowFors(Role.Owner, Role.Teacher)
   @Put('/:class_id/grading')
   async updateService(
     @Param() param: QueryClassDto,
@@ -142,7 +142,7 @@ export class GradingAssignmentControllerV1 {
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @AllowFors(Role.Admin, Role.Teacher, Role.Student)
+  @AllowFors(Role.Owner, Role.Teacher, Role.Student)
   @Get('/:class_id/grading')
   async getAllService(
     @Query() query: GenericQuery,
@@ -160,7 +160,7 @@ export class GradingAssignmentControllerV1 {
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @AllowFors(Role.Admin, Role.Teacher, Role.Student)
+  @AllowFors(Role.Owner, Role.Teacher, Role.Student)
   @Get('/:class_id/grading/student/:student_id')
   async getAllServiceByStudentId(
     @Query() query: GenericQuery,
@@ -179,7 +179,7 @@ export class GradingAssignmentControllerV1 {
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @AllowFors(Role.Admin, Role.Teacher, Role.Student)
+  @AllowFors(Role.Owner, Role.Teacher, Role.Student)
   @Get('/:class_id/grading/assignment/:assignment_id')
   async getAllServiceBAssignmentId(
     @Query() query: GenericQuery,
@@ -198,7 +198,7 @@ export class GradingAssignmentControllerV1 {
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @AllowFors(Role.Admin, Role.Teacher, Role.Student)
+  @AllowFors(Role.Owner, Role.Teacher, Role.Student)
   @Get(':class_id/grading/assignment/:assignment_id/export')
   async exportFile(@Param() param: QueryAssignmentDto, @Req() req, @Res() res) {
     let result = await this._gradingAssignmentService.exportMark(

@@ -40,7 +40,7 @@ export class ClassService {
       let teacher: ClassroomUserInterface = {
         user_id: userId,
         status: 'ACTIVATED',
-        role: 'ADMIN',
+        role: 'OWNER',
         invite_code: Math.random().toString(36).substr(2, 6),
       };
       dataClass.users.push(teacher);
@@ -212,7 +212,7 @@ export class ClassService {
       if (
         index == -1 ||
         (classes.users[index].role != 'TEACHER' &&
-          classes.users[index].role != 'ADMIN')
+          classes.users[index].role != 'OWNER')
       ) {
         throw new HttpException('Not Acceptable', HttpStatus.NOT_ACCEPTABLE);
       }
@@ -400,7 +400,7 @@ export class ClassService {
           HttpStatus.NOT_FOUND,
         );
       }
-      if (classes.users[index].role == 'ADMIN') {
+      if (classes.users[index].role == 'OWNER') {
         throw new HttpException(
           'Admin Can Not Leave Class',
           HttpStatus.BAD_REQUEST,
@@ -446,7 +446,7 @@ export class ClassService {
           HttpStatus.NOT_FOUND,
         );
       }
-      if (classes.users[index].role != 'ADMIN') {
+      if (classes.users[index].role != 'OWNER') {
         throw new HttpException(
           'Only Admin Can Delete Class',
           HttpStatus.NOT_ACCEPTABLE,
@@ -482,7 +482,7 @@ export class ClassService {
           HttpStatus.NOT_FOUND,
         );
       }
-      if (classes.users[index].role != 'ADMIN') {
+      if (classes.users[index].role != 'OWNER') {
         throw new HttpException(
           'Only Admin Can Restore Class',
           HttpStatus.NOT_ACCEPTABLE,
@@ -518,7 +518,7 @@ export class ClassService {
           HttpStatus.NOT_FOUND,
         );
       }
-      if (classes.users[index].role != 'ADMIN') {
+      if (classes.users[index].role != 'OWNER') {
         throw new HttpException(
           'Only Admin Can Remove Class',
           HttpStatus.NOT_ACCEPTABLE,

@@ -42,7 +42,7 @@ export class AssignmentControllerV1 {
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @AllowFors(Role.Admin, Role.Teacher, Role.Student)
+  @AllowFors(Role.Owner, Role.Teacher, Role.Student)
   @Get('/:class_id/assignments')
   async getAllService(
     @Query() query: GenericQuery,
@@ -60,7 +60,7 @@ export class AssignmentControllerV1 {
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @AllowFors(Role.Admin, Role.Teacher)
+  @AllowFors(Role.Owner, Role.Teacher)
   @Post('/:class_id/assignments')
   async createService(
     @Param() param: QueryClassDto,
@@ -75,7 +75,7 @@ export class AssignmentControllerV1 {
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @AllowFors(Role.Admin, Role.Teacher, Role.Student)
+  @AllowFors(Role.Owner, Role.Teacher, Role.Student)
   @Get('/:class_id/assignments/:assignment_id')
   async getServiceById(@Param() param: QueryAssignmentDto) {
     return await this._assignmentService.getAssignmentById(
@@ -90,7 +90,7 @@ export class AssignmentControllerV1 {
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @AllowFors(Role.Admin, Role.Teacher)
+  @AllowFors(Role.Owner, Role.Teacher)
   @Put('/:class_id/assignments/:assignment_id')
   async updateService(
     @Param() param: QueryAssignmentDto,
@@ -109,7 +109,7 @@ export class AssignmentControllerV1 {
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @AllowFors(Role.Admin, Role.Teacher)
+  @AllowFors(Role.Owner, Role.Teacher)
   @Patch('/:class_id/assignments/:assignment_id/restore')
   async restoreService(@Param() param: QueryAssignmentDto) {
     return await this._assignmentService.restoreAssignment(
@@ -124,7 +124,7 @@ export class AssignmentControllerV1 {
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @AllowFors(Role.Admin, Role.Teacher)
+  @AllowFors(Role.Owner, Role.Teacher)
   @Delete('/:class_id/assignments/:assignment_id/delete')
   async deleteService(@Param() param: QueryAssignmentDto) {
     return await this._assignmentService.deleteAssignment(
@@ -139,7 +139,7 @@ export class AssignmentControllerV1 {
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @AllowFors(Role.Admin, Role.Teacher)
+  @AllowFors(Role.Owner, Role.Teacher)
   @Delete('/:class_id/assignments/:assignment_id/remove')
   async removeService(@Param() param: QueryAssignmentDto) {
     return await this._assignmentService.removeAssignment(

@@ -52,7 +52,7 @@ export class ClassStudentControllerV1 {
     description: 'XSRF-Token',
   })
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @AllowFors(Role.Admin)
+  @AllowFors(Role.Owner)
   @ApiConsumes('multipart/form-data')
   @ApiFile('csv')
   @UseInterceptors(
@@ -93,7 +93,7 @@ export class ClassStudentControllerV1 {
     description: 'XSRF-Token',
   })
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @AllowFors(Role.Admin)
+  @AllowFors(Role.Owner)
   @ApiConsumes('multipart/form-data')
   @ApiFile('csv')
   @UseInterceptors(
@@ -135,7 +135,7 @@ export class ClassStudentControllerV1 {
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @AllowFors(Role.Admin, Role.Teacher, Role.Student)
+  @AllowFors(Role.Owner, Role.Teacher, Role.Student)
   @Get(':class_id/students')
   async getServiceByClassId(@Param() param: QueryClassDto) {
     return await this._classStudentService.getClassStudentByClassId(
@@ -149,7 +149,7 @@ export class ClassStudentControllerV1 {
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @AllowFors(Role.Admin, Role.Teacher, Role.Student)
+  @AllowFors(Role.Owner, Role.Teacher, Role.Student)
   @Get(':class_id/students/:student_id')
   async getServiceByStudentId(@Param() param: QueryClassStudentDto) {
     return await this._classStudentService.getStudentByStudentId(
@@ -164,7 +164,7 @@ export class ClassStudentControllerV1 {
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @AllowFors(Role.Admin, Role.Teacher, Role.Student)
+  @AllowFors(Role.Owner, Role.Teacher, Role.Student)
   @Get(':class_id/students/get-by-user/:user_id')
   async getStudentIdByUserId(@Param() param: QueryGetStudentDto) {
     return await this._classStudentService.getStudentIdByUserId(
@@ -179,7 +179,7 @@ export class ClassStudentControllerV1 {
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @AllowFors(Role.Admin, Role.Teacher, Role.Student)
+  @AllowFors(Role.Owner, Role.Teacher, Role.Student)
   @Put(':class_id/students/account-sync')
   async syncServiceByStudentId(
     @Param() param: QueryClassDto,
@@ -198,7 +198,7 @@ export class ClassStudentControllerV1 {
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @AllowFors(Role.Admin, Role.Teacher)
+  @AllowFors(Role.Owner, Role.Teacher)
   @Get(':class_id/students/file/download')
   async getFile(
     @Param() param: QueryClassDto,

@@ -73,7 +73,7 @@ export class ClassControllerV1 {
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @AllowFors(Role.Admin, Role.Teacher)
+  @AllowFors(Role.Owner, Role.Teacher)
   @Put(':class_id')
   async updateService(
     @Param() param: QueryClassDto,
