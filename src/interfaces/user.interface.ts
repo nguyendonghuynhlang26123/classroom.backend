@@ -15,6 +15,8 @@ import { IsVNName } from './base/validVNName';
 
 export class UserInterface extends IBase {
   @ApiProperty()
+  student_id: string;
+  @ApiProperty()
   password: string;
   @ApiProperty()
   first_name: string;
@@ -29,6 +31,11 @@ export class UserInterface extends IBase {
 }
 
 export class UpdateUserDTO {
+  @ApiProperty({ type: String })
+  @IsString()
+  @IsOptional()
+  student_id?: string;
+
   @ApiProperty({ type: String })
   @IsString()
   @Matches(

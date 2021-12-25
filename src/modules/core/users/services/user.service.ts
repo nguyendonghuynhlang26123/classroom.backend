@@ -27,6 +27,7 @@ export class UserService {
     try {
       let dataUser: UserInterface = {
         email: data.email,
+        student_id: data.student_id || null,
         password: data.password,
         first_name: data.first_name,
         last_name: data.last_name,
@@ -71,6 +72,7 @@ export class UserService {
       }
       let dataUser: UserInterface = {
         email: data.email,
+        student_id: null,
         password: null,
         first_name: data.first_name,
         last_name: data.last_name,
