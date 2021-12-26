@@ -79,7 +79,7 @@ export class GradingAssignmentControllerV1 {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @AllowFors(Role.Owner, Role.Teacher)
-  @Post('/:class_id/grading/finalize')
+  @Put('/:class_id/grading/finalize')
   async updateStatusService(
     @Param() param: QueryClassDto,
     @Body() body: UpdateGradingStatusDto,

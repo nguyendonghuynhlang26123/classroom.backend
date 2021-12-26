@@ -174,8 +174,13 @@ export class GradingAssignmentService {
           },
           { _id: 1 },
         );
+      let arrayId = [];
+      for (let i = 0; i < listGrading.length; i++) {
+        const e = listGrading[i];
+        arrayId.push(e._id);
+      }
       let result = await this._gradingAssignmentRepository.updateAllDocument(
-        listGrading,
+        { _id: arrayId },
         { status: 'FINAL' },
       );
       return { status: 200 };
