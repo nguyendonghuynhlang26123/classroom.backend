@@ -177,7 +177,7 @@ export class GradingAssignmentControllerV1 {
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @AllowFors(Role.Owner, Role.Teacher)
+  @AllowFors(Role.Student)
   @Get('/:class_id/grading/student/:student_id')
   async getAllServiceByStudentId(
     @Query() query: GenericQuery,
@@ -239,25 +239,6 @@ export class GradingAssignmentControllerV1 {
     @Param() param: QueryClassDto,
   ) {
     return await this._gradingAssignmentService.getFinalGrading(
-      param.class_id,
-      query.student_id,
-      query.assignment_id,
-    );
-  }
-
-  @ApiHeader({
-    name: 'XSRF-Token',
-    description: 'XSRF-Token',
-  })
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @AllowFors(Role.Student)
-  @Get('/:class_id/grading/overall')
-  async getOverallService(
-    @Query() query: GradingQuery,
-    @Param() param: QueryClassDto,
-  ) {
-    return await this._gradingAssignmentService.getOverallGrading(
       param.class_id,
       query.student_id,
       query.assignment_id,
