@@ -43,7 +43,7 @@ export class GradeReviewControllerV1 {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @AllowFors(Role.Owner, Role.Teacher, Role.Student)
   @Post('/:class_id/grade-review/:grade_review_id/comment')
-  async createService(
+  async addCommentService(
     @Param() param: QueryGradeReviewDto,
     @Body() body: { message: string },
     @Req() req,
@@ -53,6 +53,42 @@ export class GradeReviewControllerV1 {
       param.grade_review_id,
       req.user._id,
       body.message,
+    );
+  }
+
+  @ApiHeader({
+    name: 'XSRF-Token',
+    description: 'XSRF-Token',
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @AllowFors(Role.Owner, Role.Teacher)
+  @Put('/:class_id/grade-review/:grade_review_id/accept')
+  async acceptService(
+    @Param() param: QueryGradeReviewDto,
+    @Body() body: { mark: number },
+  ) {
+    return await this._gradeReviewService.acceptGradeReview(
+      param.class_id,
+      param.grade_review_id,
+      body.mark,
+    );
+  }
+
+  @ApiHeader({
+    name: 'XSRF-Token',
+    description: 'XSRF-Token',
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @AllowFors(Role.Owner, Role.Teacher)
+  @Put('/:class_id/grade-review/:grade_review_id/reject')
+  async rejectService(
+    @Param() param: QueryGradeReviewDto,
+  ) {
+    return await this._gradeReviewService.rejectGradeReview(
+      param.class_id,
+      param.grade_review_id,
     );
   }
 

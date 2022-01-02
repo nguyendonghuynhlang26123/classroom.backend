@@ -166,6 +166,37 @@ export class GradingAssignmentService {
     }
   }
 
+  async updateMark(gradingAssignmentId: string, mark: number) {
+    try {
+      const grading = await this._gradingAssignmentRepository.getOneDocument({
+        _id: gradingAssignmentId,
+      });
+      if (!grading) {
+        throw new HttpException(
+          `Not Found Grading Assignment`,
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
+      let result = await this._gradingAssignmentRepository.updateDocument(
+        { _id: grading._id },
+        { mark: mark },
+      );
+      return { status: 200 };
+    } catch (error) {
+      this._logUtil.errorLogger(error, 'GradingAssignmentService');
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      if (error.code == 11000 || error.code == 11001) {
+        throw new HttpException(
+          `Duplicate key error collection: ${Object.keys(error.keyValue)}`,
+          HttpStatus.CONFLICT,
+        );
+      }
+      throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+    }
+  }
+
   async updateStatus(
     classId: string,
     assignmentId: string,

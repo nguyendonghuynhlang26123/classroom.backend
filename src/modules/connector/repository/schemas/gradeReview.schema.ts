@@ -49,7 +49,6 @@ export class GradeReview extends Document implements GradeReviewInterface {
         author: {
           type: mongoose.Schema.Types.ObjectId,
           ref: 'users',
-          required: true,
         },
         message: { type: String, required: true },
         created_at: { type: Number },

@@ -8,12 +8,14 @@ import {
 import { GradeReviewRepository } from '../../../connector/repository';
 import { LoggerUtilService } from '../../../shared/loggerUtil';
 import { ClassService } from '../../classes/services/class.service';
+import { GradingAssignmentService } from '../../gradingAssignments/services/gradingAssignment.service';
 
 @Injectable()
 export class GradeReviewService {
   constructor(
     private _gradeReviewRepository: GradeReviewRepository,
     private _classService: ClassService,
+    private _gradingAssignmentService: GradingAssignmentService,
     private _logUtil: LoggerUtilService,
   ) {
     this.onCreate();
@@ -123,6 +125,73 @@ export class GradeReviewService {
           _id: gradeReview._id,
         },
         { comments: gradeReview.comments },
+      );
+      return gradeReview;
+    } catch (error) {
+      this._logUtil.errorLogger(error, 'GradeReviewService');
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async acceptGradeReview(
+    classId: string,
+    gradeReviewId: string,
+    mark: number,
+  ) {
+    try {
+      let gradeReview = await this._gradeReviewRepository.getOneDocument({
+        class_id: classId,
+        _id: gradeReviewId,
+      });
+      if (!gradeReview) {
+        throw new HttpException('Not Found Grade Review', HttpStatus.NOT_FOUND);
+      }
+      this._gradingAssignmentService.updateMark(gradeReview.grading_id, mark);
+      gradeReview.comments.push({
+        author: null,
+        message:
+          'Your teacher accepted and updated your grade. This review is marked as APPROVED and no longer available.',
+        created_at: Date.now(),
+      });
+      this._gradeReviewRepository.updateDocument(
+        {
+          _id: gradeReview._id,
+        },
+        { status: 'APPROVED', comments: gradeReview.comments },
+      );
+      return gradeReview;
+    } catch (error) {
+      this._logUtil.errorLogger(error, 'GradeReviewService');
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async rejectGradeReview(classId: string, gradeReviewId: string) {
+    try {
+      let gradeReview = await this._gradeReviewRepository.getOneDocument({
+        class_id: classId,
+        _id: gradeReviewId,
+      });
+      if (!gradeReview) {
+        throw new HttpException('Not Found Grade Review', HttpStatus.NOT_FOUND);
+      }
+      gradeReview.comments.push({
+        author: null,
+        message:
+          'Your teacher did not approve your grade request. This review is marked as REJECTED and no longer available.',
+        created_at: Date.now(),
+      });
+      this._gradeReviewRepository.updateDocument(
+        {
+          _id: gradeReview._id,
+        },
+        { status: 'REJECTED', comments: gradeReview.comments },
       );
       return gradeReview;
     } catch (error) {
