@@ -41,6 +41,27 @@ export class GradeReviewControllerV1 {
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
+  @AllowFors(Role.Owner, Role.Teacher, Role.Student)
+  @Post('/:class_id/grade-review/:grade_review_id/comment')
+  async createService(
+    @Param() param: QueryGradeReviewDto,
+    @Body() body: { message: string },
+    @Req() req,
+  ) {
+    return await this._gradeReviewService.addComment(
+      param.class_id,
+      param.grade_review_id,
+      req.user._id,
+      body.message,
+    );
+  }
+
+  @ApiHeader({
+    name: 'XSRF-Token',
+    description: 'XSRF-Token',
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @AllowFors(Role.Owner, Role.Teacher)
   @Get('/:class_id/grade-review')
   async getAllService(
@@ -61,10 +82,7 @@ export class GradeReviewControllerV1 {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @AllowFors(Role.Owner, Role.Teacher, Role.Student)
   @Get('/:class_id/grade-review/:grade_review_id')
-  async getServiceById(
-    @Param() param: QueryGradeReviewDto,
-    @Req() req,
-  ) {
+  async getServiceById(@Param() param: QueryGradeReviewDto, @Req() req) {
     return await this._gradeReviewService.getGradeReviewById(
       param.class_id,
       param.grade_review_id,

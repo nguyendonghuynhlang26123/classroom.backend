@@ -89,5 +89,50 @@ export class GradeReviewService {
     }
   }
 
+  async addComment(
+    classId: string,
+    gradeReviewId: string,
+    userId: string,
+    message: string,
+  ) {
+    try {
+      let gradeReview = await this._gradeReviewRepository.getOneDocument({
+        class_id: classId,
+        _id: gradeReviewId,
+      });
+      if (!gradeReview) {
+        throw new HttpException('Not Found Grade Review', HttpStatus.NOT_FOUND);
+      }
+      if (gradeReview.status != 'OPEN') {
+        throw new HttpException('Grade Review Not Open', HttpStatus.CONFLICT);
+      }
+      const check = await this._classService.getRoleUser(classId, userId);
+      if (check.role == 'STUDENT' && gradeReview.student_account != userId) {
+        throw new HttpException(
+          'Student Account Does Not Match',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      gradeReview.comments.push({
+        author: userId,
+        message: message,
+        created_at: Date.now(),
+      });
+      this._gradeReviewRepository.updateDocument(
+        {
+          _id: gradeReview._id,
+        },
+        { comments: gradeReview.comments },
+      );
+      return gradeReview;
+    } catch (error) {
+      this._logUtil.errorLogger(error, 'GradeReviewService');
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+    }
+  }
+
   onCreate() {}
 }
