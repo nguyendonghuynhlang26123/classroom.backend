@@ -55,3 +55,10 @@ export class GradingQuery {
   @IsNotEmpty()
   assignment_id: string;
 }
+
+export class GradeReviewQuery extends GenericQuery {
+  @ApiProperty({ type: String })
+  @IsString()
+  @IsOptional()
+  status?: 'OPEN' | 'REJECTED' | 'APPROVED';
+}

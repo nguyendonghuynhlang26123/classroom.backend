@@ -39,7 +39,7 @@ export class ActivityStream
 
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'assignment',
+    ref: 'assignments',
     default: null,
   })
   assignment_id: string;
