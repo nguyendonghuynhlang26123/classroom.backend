@@ -4,9 +4,11 @@ import {
   GenericRes,
   GenericQuery,
   GradeReviewQuery,
+  CreateGradeReviewDto,
 } from 'src/interfaces';
 import { GradeReviewRepository } from '../../../connector/repository';
 import { LoggerUtilService } from '../../../shared/loggerUtil';
+import { AssignmentService } from '../../assignments/services/assignment.service';
 import { ClassService } from '../../classes/services/class.service';
 import { GradingAssignmentService } from '../../gradingAssignments/services/gradingAssignment.service';
 
@@ -15,10 +17,68 @@ export class GradeReviewService {
   constructor(
     private _gradeReviewRepository: GradeReviewRepository,
     private _classService: ClassService,
+    private _assignmentService: AssignmentService,
     private _gradingAssignmentService: GradingAssignmentService,
     private _logUtil: LoggerUtilService,
   ) {
     this.onCreate();
+  }
+
+  async createGradeReview(
+    data: CreateGradeReviewDto,
+    classId: string,
+    studentId: string,
+  ) {
+    try {
+      const check = await this._assignmentService.getAssignmentById(
+        data.assignment_id,
+        classId,
+      );
+      if (!check) {
+        throw new HttpException(
+          'Invalid Assignment Id',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      if (data.expect_mark > check.total_points) {
+        throw new HttpException('Invalid Mark', HttpStatus.BAD_REQUEST);
+      }
+      const grading = await this._gradingAssignmentService.getFinalGrading(
+        classId,
+        studentId,
+        data.assignment_id,
+      );
+      let dataGradeReview: GradeReviewInterface = {
+        class_id: classId,
+        student_account: studentId,
+        assignment_id: data.assignment_id,
+        grading_id: grading._id,
+        expect_mark: data.expect_mark,
+        status: 'OPEN',
+        comments: [
+          { author: studentId, message: data.message, created_at: Date.now() },
+        ],
+      };
+      const createGradeReview = new this._gradeReviewRepository._model(
+        dataGradeReview,
+      );
+      let gradeReview = await this._gradeReviewRepository.create(
+        createGradeReview,
+      );
+      return gradeReview;
+    } catch (error) {
+      this._logUtil.errorLogger(error, 'GradeReviewService');
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      if (error.code == 11000 || error.code == 11001) {
+        throw new HttpException(
+          `Duplicate key error collection: ${Object.keys(error.keyValue)}`,
+          HttpStatus.CONFLICT,
+        );
+      }
+      throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+    }
   }
 
   async getAllGradeReview(query: GradeReviewQuery, classId: string) {

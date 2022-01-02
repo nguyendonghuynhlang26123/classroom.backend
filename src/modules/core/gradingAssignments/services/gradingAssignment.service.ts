@@ -373,10 +373,16 @@ export class GradingAssignmentService {
         student_id: studentId,
         assignment_id: assignmentId,
       });
-      if (!grading || grading.status != 'FINAL') {
+      if (!grading) {
         throw new HttpException(
           'Not Found Grading Assignment',
           HttpStatus.NOT_FOUND,
+        );
+      }
+      if (grading.status != 'FINAL') {
+        throw new HttpException(
+          'Not Final Grading Assignment',
+          HttpStatus.BAD_REQUEST,
         );
       }
       return grading;

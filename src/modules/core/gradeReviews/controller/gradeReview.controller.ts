@@ -24,6 +24,7 @@ import {
   QueryClassDto,
   GradeReviewQuery,
   QueryGradeReviewDto,
+  CreateGradeReviewDto,
 } from 'src/interfaces';
 import { AllowFors } from 'src/decorators/allowFors.decorator';
 import { Role } from 'src/enums';
@@ -34,6 +35,26 @@ import { RolesGuard } from '../../auth/guard/role.guard';
 @UseInterceptors(CacheInterceptor)
 export class GradeReviewControllerV1 {
   constructor(private _gradeReviewService: GradeReviewService) {}
+
+  @ApiHeader({
+    name: 'XSRF-Token',
+    description: 'XSRF-Token',
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @AllowFors(Role.Student)
+  @Post('/:class_id/grade-review')
+  async createService(
+    @Param() param: QueryClassDto,
+    @Body() body: CreateGradeReviewDto,
+    @Req() req,
+  ) {
+    return await this._gradeReviewService.createGradeReview(
+      body,
+      param.class_id,
+      req.user._id,
+    );
+  }
 
   @ApiHeader({
     name: 'XSRF-Token',
@@ -83,9 +104,7 @@ export class GradeReviewControllerV1 {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @AllowFors(Role.Owner, Role.Teacher)
   @Put('/:class_id/grade-review/:grade_review_id/reject')
-  async rejectService(
-    @Param() param: QueryGradeReviewDto,
-  ) {
+  async rejectService(@Param() param: QueryGradeReviewDto) {
     return await this._gradeReviewService.rejectGradeReview(
       param.class_id,
       param.grade_review_id,
