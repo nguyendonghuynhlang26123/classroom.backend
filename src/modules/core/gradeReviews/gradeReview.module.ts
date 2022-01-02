@@ -1,5 +1,4 @@
-import { Module, CacheInterceptor, CacheModule, Global } from '@nestjs/common';
-import { APP_INTERCEPTOR } from '@nestjs/core';
+import { Module, CacheModule, Global } from '@nestjs/common';
 import { GradeReviewControllerV1 } from './controller/gradeReview.controller';
 import { GradeReviewService } from './services/gradeReview.service';
 

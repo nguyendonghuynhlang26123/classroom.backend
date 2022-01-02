@@ -7,11 +7,13 @@ import {
 } from 'src/interfaces';
 import { GradeReviewRepository } from '../../../connector/repository';
 import { LoggerUtilService } from '../../../shared/loggerUtil';
+import { ClassService } from '../../classes/services/class.service';
 
 @Injectable()
 export class GradeReviewService {
   constructor(
     private _gradeReviewRepository: GradeReviewRepository,
+    private _classService: ClassService,
     private _logUtil: LoggerUtilService,
   ) {
     this.onCreate();
@@ -48,6 +50,36 @@ export class GradeReviewService {
         data: data[0],
         total_page: data[1],
       };
+    } catch (error) {
+      this._logUtil.errorLogger(error, 'GradeReviewService');
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async getGradeReviewById(
+    classId: string,
+    gradeReviewId: string,
+    userId: string,
+  ) {
+    try {
+      const gradeReview = await this._gradeReviewRepository.getOneDocument({
+        class_id: classId,
+        _id: gradeReviewId,
+      });
+      if (!gradeReview) {
+        throw new HttpException('Not Found Grade Review', HttpStatus.NOT_FOUND);
+      }
+      const check = await this._classService.getRoleUser(classId, userId);
+      if (check.role == 'STUDENT' && gradeReview.student_account != userId) {
+        throw new HttpException(
+          'Student Account Does Not Match',
+          HttpStatus.FORBIDDEN,
+        );
+      }
+      return gradeReview;
     } catch (error) {
       this._logUtil.errorLogger(error, 'GradeReviewService');
       if (error instanceof HttpException) {

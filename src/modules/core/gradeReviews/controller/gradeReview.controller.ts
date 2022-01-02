@@ -23,6 +23,7 @@ import {
   GenericRes,
   QueryClassDto,
   GradeReviewQuery,
+  QueryGradeReviewDto,
 } from 'src/interfaces';
 import { AllowFors } from 'src/decorators/allowFors.decorator';
 import { Role } from 'src/enums';
@@ -49,6 +50,25 @@ export class GradeReviewControllerV1 {
     return await this._gradeReviewService.getAllGradeReview(
       query,
       param.class_id,
+    );
+  }
+
+  @ApiHeader({
+    name: 'XSRF-Token',
+    description: 'XSRF-Token',
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @AllowFors(Role.Owner, Role.Teacher, Role.Student)
+  @Get('/:class_id/grade-review/:grade_review_id')
+  async getServiceById(
+    @Param() param: QueryGradeReviewDto,
+    @Req() req,
+  ) {
+    return await this._gradeReviewService.getGradeReviewById(
+      param.class_id,
+      param.grade_review_id,
+      req.user._id,
     );
   }
 }
