@@ -205,7 +205,7 @@ export class GradingAssignmentService {
   ) {
     try {
       const listGrading =
-        await this._gradingAssignmentRepository.getAllDocument(
+        await this._gradingAssignmentRepository.getAllResource(
           {
             class_id: classId,
             assignment_id: assignmentId,
@@ -229,7 +229,7 @@ export class GradingAssignmentService {
             type: 'GRADING_FINALIZED',
             description: `${username} published gradings for ${e.title}`,
             actor: userId,
-            assignment_id: null,
+            assignment_id: assignmentId,
           });
         });
       return { status: 200 };
