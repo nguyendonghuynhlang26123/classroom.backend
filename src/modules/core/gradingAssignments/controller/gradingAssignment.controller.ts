@@ -83,10 +83,13 @@ export class GradingAssignmentControllerV1 {
   async updateStatusService(
     @Param() param: QueryClassDto,
     @Body() body: UpdateGradingStatusDto,
+    @Req() req,
   ) {
     return await this._gradingAssignmentService.updateStatus(
       param.class_id,
       body.assignment_id,
+      req.user._id,
+      req.user.name,
     );
   }
 

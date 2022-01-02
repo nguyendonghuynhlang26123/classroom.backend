@@ -5,6 +5,7 @@ export * from './classStudent.interface';
 export * from './classroomUser.interface';
 export * from './assignment.interface';
 export * from './gradingAssignment.interface';
+export * from './activityStream.interface';
 export * from './req.interface';
 export * from './res.interface';
 

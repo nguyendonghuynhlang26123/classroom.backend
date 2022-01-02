@@ -13,6 +13,7 @@ import { ClassRepository } from '../../../connector/repository';
 import { LoggerUtilService } from '../../../shared/loggerUtil';
 import { UserService } from '../../users/services/user.service';
 import { MailService } from 'src/modules/feature/mail/mail.service';
+import { ActivityStreamService } from '../../activityStreams/services/activityStream.service';
 
 @Injectable()
 export class ClassService {
@@ -21,6 +22,7 @@ export class ClassService {
     private _classRepository: ClassRepository,
     private _userService: UserService,
     private _mailService: MailService,
+    private _activityStreamService: ActivityStreamService,
     private _logUtil: LoggerUtilService,
   ) {
     this.onCreate();
@@ -97,7 +99,12 @@ export class ClassService {
     }
   }
 
-  async updateClassById(classId: string, dataUpdate: UpdateClassDto) {
+  async updateClassById(
+    classId: string,
+    dataUpdate: UpdateClassDto,
+    userId: string,
+    username: string,
+  ) {
     try {
       let classes = await this._classRepository.getOneDocument({
         _id: classId,
@@ -109,6 +116,15 @@ export class ClassService {
         { _id: classes._id },
         dataUpdate,
       );
+      this._activityStreamService.createActivityStream({
+        class_id: classId,
+        type: 'CLASSROOM_INFO_UPDATE',
+        description: `${username} has updated classroom details: ${Object.keys(
+          dataUpdate,
+        )}`,
+        actor: userId,
+        assignment_id: null,
+      });
       return { status: 200 };
     } catch (error) {
       this._logUtil.errorLogger(error, 'ClassService');
@@ -266,6 +282,7 @@ export class ClassService {
     userId: string,
     role: 'TEACHER' | 'STUDENT',
     code: string,
+    username: string,
   ) {
     try {
       let classes = await this._classRepository.getOneDocument({
@@ -294,6 +311,15 @@ export class ClassService {
         { _id: classId },
         { users: classes.users },
       );
+      if (role == 'TEACHER') {
+        this._activityStreamService.createActivityStream({
+          class_id: classId,
+          type: 'TEACHER_JOIN',
+          description: `${username} has joined this class as a teacher`,
+          actor: userId,
+          assignment_id: null,
+        });
+      }
       return { status: 200 };
     } catch (error) {
       this._logUtil.errorLogger(error, 'ClassService');

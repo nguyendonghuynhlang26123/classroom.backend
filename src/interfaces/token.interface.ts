@@ -9,5 +9,6 @@ export class IToken extends IBase {
 export class IPayLoadToken extends IBase {
   _id: string;
   email?: string;
+  name?: string;
   jwt_id?: string;
 }

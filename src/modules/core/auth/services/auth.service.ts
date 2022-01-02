@@ -36,6 +36,7 @@ export class AuthService {
     const data: IPayLoadToken = {
       _id: result._id,
       email: result.email,
+      name: result.first_name + '' + result.last_name,
     };
     return data;
   }
@@ -125,6 +126,7 @@ export class AuthService {
       const data: IPayLoadToken = {
         _id: result._id,
         email: result.email,
+        name: result.first_name + '' + result.last_name,
       };
       return {
         user: data,

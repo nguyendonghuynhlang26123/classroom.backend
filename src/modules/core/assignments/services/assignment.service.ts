@@ -7,17 +7,24 @@ import {
 } from 'src/interfaces';
 import { AssignmentRepository } from '../../../connector/repository';
 import { LoggerUtilService } from '../../../shared/loggerUtil';
+import { ActivityStreamService } from '../../activityStreams/services/activityStream.service';
 
 @Injectable()
 export class AssignmentService {
   constructor(
     private _assignmentRepository: AssignmentRepository,
+    private _activityStreamService: ActivityStreamService,
     private _logUtil: LoggerUtilService,
   ) {
     this.onCreate();
   }
 
-  async createAssignment(data: CreateAssignmentDto, classId: string) {
+  async createAssignment(
+    data: CreateAssignmentDto,
+    classId: string,
+    userId: string,
+    username: string,
+  ) {
     try {
       const count = await this._assignmentRepository.getCountPage(
         { class_id: classId },
@@ -37,6 +44,13 @@ export class AssignmentService {
       let assignment = await this._assignmentRepository.create(
         createAssignment,
       );
+      this._activityStreamService.createActivityStream({
+        class_id: assignment.class_id,
+        type: 'ASSIGNMENT_ADD',
+        description: `${username} post a new assignment: ${assignment.title}`,
+        actor: userId,
+        assignment_id: assignment._id,
+      });
       return assignment;
     } catch (error) {
       this._logUtil.errorLogger(error, 'AssignmentService');

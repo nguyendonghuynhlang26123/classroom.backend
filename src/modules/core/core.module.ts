@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ActivityStreamModule } from './activityStreams/activityStream.module';
 import { AssignmentModule } from './assignments/assignment.module';
 import { AuthModule } from './auth/auth.module';
 import { ClassModule } from './classes/class.module';
@@ -16,6 +17,7 @@ import { UserModule } from './users/user.module';
     AuthModule,
     TokenModule,
     GradingAssignmentModule,
+    ActivityStreamModule,
   ],
   providers: [],
   exports: [],

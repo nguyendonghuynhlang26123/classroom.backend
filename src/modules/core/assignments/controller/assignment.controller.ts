@@ -65,8 +65,14 @@ export class AssignmentControllerV1 {
   async createService(
     @Param() param: QueryClassDto,
     @Body() body: CreateAssignmentDto,
+    @Req() req,
   ): Promise<HttpException | Assignment> {
-    return await this._assignmentService.createAssignment(body, param.class_id);
+    return await this._assignmentService.createAssignment(
+      body,
+      param.class_id,
+      req.user._id,
+      req.user.name,
+    );
   }
 
   @ApiHeader({

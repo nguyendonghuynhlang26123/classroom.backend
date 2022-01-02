@@ -81,10 +81,16 @@ export class ClassStudentControllerV1 {
     }),
   )
   @Post(':class_id/students')
-  async createService(@UploadedFile() file, @Param() param: QueryClassDto) {
+  async createService(
+    @UploadedFile() file,
+    @Param() param: QueryClassDto,
+    @Req() req,
+  ) {
     return await this._classStudentService.createClassStudent(
       file,
       param.class_id,
+      req.user._id,
+      req.user.name,
     );
   }
 
@@ -122,10 +128,16 @@ export class ClassStudentControllerV1 {
     }),
   )
   @Put(':class_id/students')
-  async updateService(@UploadedFile() file, @Param() param: QueryClassDto) {
+  async updateService(
+    @UploadedFile() file,
+    @Param() param: QueryClassDto,
+    @Req() req,
+  ) {
     return await this._classStudentService.updateClassStudent(
       file,
       param.class_id,
+      req.user._id,
+      req.user.name,
     );
   }
 

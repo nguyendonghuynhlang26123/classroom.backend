@@ -19,6 +19,7 @@ import { LoggerUtilService } from '../../../shared/loggerUtil';
 import { AssignmentService } from '../../assignments/services/assignment.service';
 import { ClassService } from '../../classes/services/class.service';
 import { Parser } from 'json2csv';
+import { ActivityStreamService } from '../../activityStreams/services/activityStream.service';
 // const { Parse } = require('json2csv');
 
 @Injectable()
@@ -28,6 +29,7 @@ export class GradingAssignmentService {
     private _classService: ClassService,
     private _assignmentService: AssignmentService,
     private _importCsvService: ImportCsvService,
+    private _activityStreamService: ActivityStreamService,
     private _logUtil: LoggerUtilService,
   ) {
     this.onCreate();
@@ -164,7 +166,12 @@ export class GradingAssignmentService {
     }
   }
 
-  async updateStatus(classId: string, assignmentId: string) {
+  async updateStatus(
+    classId: string,
+    assignmentId: string,
+    userId: string,
+    username: string,
+  ) {
     try {
       const listGrading =
         await this._gradingAssignmentRepository.getAllDocument(
@@ -183,6 +190,17 @@ export class GradingAssignmentService {
         { _id: arrayId },
         { status: 'FINAL' },
       );
+      this._assignmentService
+        .getAssignmentById(assignmentId, classId)
+        .then((e) => {
+          this._activityStreamService.createActivityStream({
+            class_id: classId,
+            type: 'GRADING_FINALIZED',
+            description: `${username} published gradings for ${e.title}`,
+            actor: userId,
+            assignment_id: null,
+          });
+        });
       return { status: 200 };
     } catch (error) {
       this._logUtil.errorLogger(error, 'GradingAssignmentService');
