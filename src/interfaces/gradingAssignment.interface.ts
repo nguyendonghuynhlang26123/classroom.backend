@@ -11,5 +11,7 @@ export class GradingAssignmentInterface extends IBase {
   @ApiProperty()
   mark: number;
   @ApiProperty()
-  status: "FINAL" | "DRAFT";
+  status: 'FINAL' | 'DRAFT';
+  @ApiProperty()
+  reviews: string[];
 }

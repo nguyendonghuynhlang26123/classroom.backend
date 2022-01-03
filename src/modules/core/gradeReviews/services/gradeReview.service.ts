@@ -65,6 +65,10 @@ export class GradeReviewService {
       let gradeReview = await this._gradeReviewRepository.create(
         createGradeReview,
       );
+      this._gradingAssignmentService.updateReviews(
+        grading._id,
+        gradeReview._id,
+      );
       return gradeReview;
     } catch (error) {
       this._logUtil.errorLogger(error, 'GradeReviewService');

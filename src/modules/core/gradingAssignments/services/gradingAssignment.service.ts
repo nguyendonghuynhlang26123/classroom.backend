@@ -46,6 +46,7 @@ export class GradingAssignmentService {
         student_id: data.student_id,
         mark: data.mark || null,
         status: 'DRAFT',
+        reviews: [],
       };
       const createGrading = new this._gradingAssignmentRepository._model(
         dataGrading,
@@ -103,6 +104,7 @@ export class GradingAssignmentService {
           student_id: e.student_id,
           mark: e.mark != '' ? e.mark : null,
           status: 'DRAFT',
+          reviews: [],
         };
         const createGrading =
           await this._gradingAssignmentRepository.replaceDocument(
@@ -232,6 +234,40 @@ export class GradingAssignmentService {
             assignment_id: assignmentId,
           });
         });
+      return { status: 200 };
+    } catch (error) {
+      this._logUtil.errorLogger(error, 'GradingAssignmentService');
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      if (error.code == 11000 || error.code == 11001) {
+        throw new HttpException(
+          `Duplicate key error collection: ${Object.keys(error.keyValue)}`,
+          HttpStatus.CONFLICT,
+        );
+      }
+      throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async updateReviews(gradingAssignmentId: string, reviewId: string) {
+    try {
+      let grading = await this._gradingAssignmentRepository.getOneDocument({
+        _id: gradingAssignmentId,
+      });
+      if (!grading) {
+        throw new HttpException(
+          'Not Found Grading Assignment',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+      grading.reviews.push(reviewId);
+      let result = await this._gradingAssignmentRepository.updateDocument(
+        {
+          _id: grading._id,
+        },
+        { reviews: grading.reviews },
+      );
       return { status: 200 };
     } catch (error) {
       this._logUtil.errorLogger(error, 'GradingAssignmentService');
