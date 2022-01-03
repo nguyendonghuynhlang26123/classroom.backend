@@ -19,6 +19,11 @@ export class CreateGradeReviewDto {
   @IsNotEmpty()
   assignment_id: string;
 
+  @ApiProperty({ type: String })
+  @IsString()
+  @IsNotEmpty()
+  student_id: string;
+
   @ApiProperty({ type: Number })
   @IsNumber()
   @IsNotEmpty()

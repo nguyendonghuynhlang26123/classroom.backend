@@ -27,7 +27,7 @@ export class GradeReviewService {
   async createGradeReview(
     data: CreateGradeReviewDto,
     classId: string,
-    studentId: string,
+    userId: string,
   ) {
     try {
       const check = await this._assignmentService.getAssignmentById(
@@ -45,18 +45,18 @@ export class GradeReviewService {
       }
       const grading = await this._gradingAssignmentService.getFinalGrading(
         classId,
-        studentId,
+        data.student_id,
         data.assignment_id,
       );
       let dataGradeReview: GradeReviewInterface = {
         class_id: classId,
-        student_account: studentId,
+        student_account: userId,
         assignment_id: data.assignment_id,
         grading_id: grading._id,
         expect_mark: data.expect_mark,
         status: 'OPEN',
         comments: [
-          { author: studentId, message: data.message, created_at: Date.now() },
+          { author: userId, message: data.message, created_at: Date.now() },
         ],
       };
       const createGradeReview = new this._gradeReviewRepository._model(

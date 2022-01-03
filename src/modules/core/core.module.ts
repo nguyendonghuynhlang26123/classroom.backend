@@ -4,6 +4,7 @@ import { AssignmentModule } from './assignments/assignment.module';
 import { AuthModule } from './auth/auth.module';
 import { ClassModule } from './classes/class.module';
 import { ClassStudentModule } from './classStudents/classStudent.module';
+import { GradeReviewModule } from './gradeReviews/gradeReview.module';
 import { GradingAssignmentModule } from './gradingAssignments/gradingAssignment.module';
 import { TokenModule } from './token/token.module';
 import { UserModule } from './users/user.module';
@@ -18,6 +19,7 @@ import { UserModule } from './users/user.module';
     TokenModule,
     GradingAssignmentModule,
     ActivityStreamModule,
+    GradeReviewModule,
   ],
   providers: [],
   exports: [],
