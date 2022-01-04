@@ -134,7 +134,7 @@ export class GradeReviewService {
       const gradeReview = await this._gradeReviewRepository.getOneDocument({
         class_id: classId,
         _id: gradeReviewId,
-      });
+      }).populate('comments.author assignment_id grading_id');
       if (!gradeReview) {
         throw new HttpException('Not Found Grade Review', HttpStatus.NOT_FOUND);
       }
