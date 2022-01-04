@@ -40,6 +40,9 @@ export class GradeReview extends Document implements GradeReviewInterface {
   @Prop({ type: Number, required: true })
   expect_mark: number;
 
+  @Prop({ type: Number, required: true })
+  current_mark: number;
+
   @Prop({ type: String, default: 'OPEN' })
   status: 'OPEN' | 'REJECTED' | 'APPROVED';
 

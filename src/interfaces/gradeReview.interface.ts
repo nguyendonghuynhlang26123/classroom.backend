@@ -24,6 +24,8 @@ export class GradeReviewInterface extends IBase {
   @ApiProperty()
   expect_mark: number;
   @ApiProperty()
+  current_mark: number;
+  @ApiProperty()
   status: 'OPEN' | 'REJECTED' | 'APPROVED';
   @ApiProperty()
   comments: CommentInterface[];

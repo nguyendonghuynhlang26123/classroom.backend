@@ -54,6 +54,7 @@ export class GradeReviewService {
         assignment_id: data.assignment_id,
         grading_id: grading._id,
         expect_mark: data.expect_mark,
+        current_mark: grading.mark,
         status: 'OPEN',
         comments: [
           { author: userId, message: data.message, created_at: Date.now() },
