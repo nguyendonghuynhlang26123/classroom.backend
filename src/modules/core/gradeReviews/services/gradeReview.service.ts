@@ -107,7 +107,7 @@ export class GradeReviewService {
             Number(query.per_page),
             Number(query.page),
           )
-          .populate('comments.author'),
+          .populate('student_account'),
         this._gradeReviewRepository.getCountPage(
           { class_id: classId, ...filter },
           Number(query.per_page),
