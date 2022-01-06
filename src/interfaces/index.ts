@@ -7,6 +7,7 @@ export * from './assignment.interface';
 export * from './gradingAssignment.interface';
 export * from './activityStream.interface';
 export * from './gradeReview.interface';
+export * from './admin.interface';
 export * from './req.interface';
 export * from './res.interface';
 

@@ -30,8 +30,7 @@ export class AuthController {
     private userService: UserService,
     private logOutService: LogOutService,
     private httpService: HttpService,
-  ) {
-  }
+  ) {}
 
   @ApiHeader({
     name: 'XSRF-Token',
@@ -41,6 +40,21 @@ export class AuthController {
   @Post('login')
   async login(@Body() data: LoginDto, @Res() res: Response) {
     const result = await this.authService.login(data);
+    return res.send({
+      data: result.user,
+      access_token: result.access_token,
+      refresh_token: result.refresh_token,
+    });
+  }
+
+  @ApiHeader({
+    name: 'XSRF-Token',
+    description: 'XSRF-Token',
+  })
+  @ApiBearerAuth()
+  @Post('login/admin')
+  async adminLogin(@Body() data: LoginDto, @Res() res: Response) {
+    const result = await this.authService.adminLogin(data);
     return res.send({
       data: result.user,
       access_token: result.access_token,
@@ -121,6 +135,29 @@ export class AuthController {
       token = token.substring(0, token.length - 1);
     }
     const result = await this.authService.refreshToken(token);
+    return res.send({
+      data: result.user,
+      access_token: result.access_token,
+      refresh_token: result.refresh_token,
+    });
+  }
+
+  @ApiHeader({
+    name: 'XSRF-Token',
+    description: 'XSRF-Token',
+  })
+  @ApiBearerAuth()
+  @Post('refresh/admin')
+  async adminRefreshToken(
+    @Body() body: { refresh_token: string },
+    @Req() req,
+    @Res() res: Response,
+  ) {
+    let token = body.refresh_token;
+    if (token[token.length - 1] == ',') {
+      token = token.substring(0, token.length - 1);
+    }
+    const result = await this.authService.adminRefreshToken(token);
     return res.send({
       data: result.user,
       access_token: result.access_token,

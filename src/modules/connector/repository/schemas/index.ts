@@ -6,3 +6,4 @@ export * from './gradingAssignment.schema';
 export * from './activityStream.schema';
 export * from './gradeReview.schema';
 export * from './token.schema';
+export * from './admin.schema';

@@ -18,6 +18,7 @@ import APP_CONFIG from '../../../config';
       { name: 'grading-assignments', schema: schema.GradingAssignmentSchema },
       { name: 'activity-streams', schema: schema.ActivityStreamSchema },
       { name: 'grade-reviews', schema: schema.GradeReviewSchema },
+      { name: 'admins', schema: schema.AdminSchema },
     ]),
   ],
   providers: [
@@ -29,6 +30,7 @@ import APP_CONFIG from '../../../config';
     repository.GradingAssignmentRepository,
     repository.ActivityStreamRepository,
     repository.GradeReviewRepository,
+    repository.AdminRepository,
   ],
   exports: [
     repository.UserRepository,
@@ -39,6 +41,7 @@ import APP_CONFIG from '../../../config';
     repository.GradingAssignmentRepository,
     repository.ActivityStreamRepository,
     repository.GradeReviewRepository,
+    repository.AdminRepository,
   ],
 })
 export class RepositoryModule {}
