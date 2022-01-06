@@ -62,3 +62,10 @@ export class GradeReviewQuery extends GenericQuery {
   @IsOptional()
   status?: 'OPEN' | 'REJECTED' | 'APPROVED';
 }
+
+export class AdminQuery extends GenericQuery {
+  @ApiProperty({ type: String })
+  @IsString()
+  @IsOptional()
+  query?: string;
+}

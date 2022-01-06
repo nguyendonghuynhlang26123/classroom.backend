@@ -19,3 +19,4 @@ export * from './createGradingAssignment.dto';
 export * from './login.dto';
 export * from './changePass.dto';
 export * from './createGradeReview.dto';
+export * from './createAdmin.dto';

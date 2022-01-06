@@ -19,7 +19,7 @@ export class Admin extends Document implements AdminInterface {
   @Prop({ type: String, required: true, trim: true })
   password: string;
 
-  @Prop({ type: String, required: true })
+  @Prop({ type: String, required: true, text: true })
   name: string;
 
   @Prop({ type: String, default: null })
