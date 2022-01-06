@@ -21,6 +21,30 @@ export class AdminService {
     return hash;
   }
 
+  async uploadAvatar(adminId: string, url: string) {
+    try {
+      const admin = await this._adminRepository
+        .getOneDocument({
+          _id: adminId,
+        })
+        .select({ password: 0 });
+      if (!admin) {
+        throw new HttpException('Not Found Admin', HttpStatus.NOT_FOUND);
+      }
+      let result = await this._adminRepository.updateDocument(
+        { _id: admin._id },
+        { avatar: url },
+      );
+      return { status: 200 };
+    } catch (error) {
+      this._logUtil.errorLogger(error, 'AdminService');
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+    }
+  }
+
   async getOneAdmin(email: string) {
     const admin = await this._adminRepository.getOneDocument({
       email: email,
