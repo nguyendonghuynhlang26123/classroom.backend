@@ -3,12 +3,14 @@ import { Reflector } from '@nestjs/core';
 import { Role } from 'src/enums';
 import { ALLOWFOR_KEY } from 'src/decorators/allowFors.decorator';
 import { ClassService } from '../../classes/services/class.service';
+import { AdminService } from '../../admins/services/admin.service';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
   constructor(
     private reflector: Reflector,
     private _classService: ClassService,
+    private _adminService: AdminService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -22,7 +24,19 @@ export class RolesGuard implements CanActivate {
 
     const { user, params } = context.switchToHttp().getRequest();
     console.log(params);
-    if (!user || !params.class_id) {
+    if (!user) {
+      return false;
+    }
+    
+    if (allowForUser.some((role) => Role.Admin == role)) {
+      const admin = await this._adminService.getOneAdmin(user.email);
+      if (!admin) {
+        return false;
+      }
+      return true;
+    }
+
+    if (!params.class_id) {
       return false;
     }
     const data = await this._classService.getRoleUser(
