@@ -23,7 +23,7 @@ import { User } from 'src/modules/connector/repository';
 import { HttpService } from '@nestjs/axios';
 
 @ApiTags('Authenticate')
-@Controller('v1/auth')
+@Controller('v1')
 export class AuthController {
   constructor(
     private authService: AuthService,
@@ -37,7 +37,7 @@ export class AuthController {
     description: 'XSRF-Token',
   })
   @ApiBearerAuth()
-  @Post('login')
+  @Post('/auth/login')
   async login(@Body() data: LoginDto, @Res() res: Response) {
     const result = await this.authService.login(data);
     return res.send({
@@ -52,7 +52,7 @@ export class AuthController {
     description: 'XSRF-Token',
   })
   @ApiBearerAuth()
-  @Post('login/admin')
+  @Post('/admin/auth/login')
   async adminLogin(@Body() data: LoginDto, @Res() res: Response) {
     const result = await this.authService.adminLogin(data);
     return res.send({
@@ -67,7 +67,7 @@ export class AuthController {
     description: 'XSRF-Token',
   })
   @ApiBearerAuth()
-  @Post('register')
+  @Post('/auth/register')
   async createService(@Body() body: CreateUserDto, @Res() res: Response) {
     let user = await this.userService.createUser(body);
     let data: LoginDto = {
@@ -87,7 +87,7 @@ export class AuthController {
     description: 'XSRF-Token',
   })
   @ApiBearerAuth()
-  @Post('google-activate')
+  @Post('/auth/google-activate')
   async googleCreateService(
     @Body() body: LoginGoogleDto,
     @Res() res: Response,
@@ -124,7 +124,7 @@ export class AuthController {
     description: 'XSRF-Token',
   })
   @ApiBearerAuth()
-  @Post('refresh')
+  @Post('/auth/refresh')
   async refreshToken(
     @Body() body: { refresh_token: string },
     @Req() req,
@@ -147,7 +147,7 @@ export class AuthController {
     description: 'XSRF-Token',
   })
   @ApiBearerAuth()
-  @Post('refresh/admin')
+  @Post('/admin/auth/refresh')
   async adminRefreshToken(
     @Body() body: { refresh_token: string },
     @Req() req,
@@ -170,7 +170,7 @@ export class AuthController {
     description: 'XSRF-Token',
   })
   @ApiBearerAuth()
-  @Post('logout')
+  @Post('/auth/logout')
   async logout(
     @Body() body: { refresh_token: string },
     @Res() res: Response,
@@ -187,7 +187,7 @@ export class AuthController {
     description: 'XSRF-Token',
   })
   @ApiBearerAuth()
-  @Post('logout_all')
+  @Post('/auth/logout_all')
   async logoutAll(@Res() res: Response, @Req() req) {
     await this.logOutService.logOutAllDevice(req.user);
     return res.send({ status: 200 });
