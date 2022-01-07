@@ -22,6 +22,7 @@ async function bootstrap() {
     'https://btcn02-18127136-18127269.netlify.app',
     'https://moorssalc-app.herokuapp.com',
     'http://localhost:3000',
+    'http://localhost:4000',
     'https://nguyendonghuynhlang26123.github.io',
   ];
   app.enableCors((req, callback) => {

@@ -60,7 +60,7 @@ export class AdminControllerV1 {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @AllowFors(Role.Admin)
-  @Get('admin-accounts/admins')
+  @Get('admin-accounts')
   async getAllService(
     @Query() query: AdminQuery,
   ): Promise<HttpException | GenericRes<AdminInterface>> {
@@ -74,7 +74,7 @@ export class AdminControllerV1 {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @AllowFors(Role.Admin)
-  @Get('user-accounts/users')
+  @Get('user-accounts')
   async getAllAccountService(
     @Query() query: AdminQuery,
     @Req() req,
@@ -103,7 +103,7 @@ export class AdminControllerV1 {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @AllowFors(Role.Admin)
-  @Get('admin-accounts/admins/:admin_id')
+  @Get('admin-accounts/:admin_id')
   async findOneService(@Param() param: ParamAdminDto) {
     return await this.adminService.findAdminById(param.admin_id);
   }
@@ -115,7 +115,7 @@ export class AdminControllerV1 {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @AllowFors(Role.Admin)
-  @Get('user-accounts/users/:user_id')
+  @Get('user-accounts/:user_id')
   async findOneAccountService(@Param() param: ParamUserDto, @Req() req) {
     return await this.adminService.findUserById(req.user.email, param.user_id);
   }
@@ -139,7 +139,7 @@ export class AdminControllerV1 {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @AllowFors(Role.Admin)
-  @Post('admin-accounts/admins')
+  @Post('admin-accounts')
   async createService(@Body() body: CreateAdminDto) {
     return await this.adminService.createAdmin(body);
   }
@@ -151,7 +151,7 @@ export class AdminControllerV1 {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @AllowFors(Role.Admin)
-  @Put('admin-accounts/admins/:admin_id')
+  @Put('admin-accounts/:admin_id')
   async updateService(
     @Param() param: ParamAdminDto,
     @Body() body: UpdateAdminDto,
@@ -166,7 +166,7 @@ export class AdminControllerV1 {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @AllowFors(Role.Admin)
-  @Put('user-accounts/users/:user_id')
+  @Put('user-accounts/:user_id')
   async updateAccountService(
     @Param() param: ParamUserDto,
     @Body() body: UpdateUserDTO,
@@ -209,7 +209,7 @@ export class AdminControllerV1 {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @AllowFors(Role.Admin)
-  @Delete('admin-accounts/admins/:admin_id')
+  @Delete('admin-accounts/:admin_id')
   async deleteService(@Param() param: ParamAdminDto) {
     return await this.adminService.deleteAdmin(param.admin_id);
   }
