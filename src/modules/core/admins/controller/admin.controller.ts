@@ -198,7 +198,7 @@ export class AdminControllerV1 {
       return res.status(400).send('Error: No files found');
     }
     let data = await this.uploadFileService.uploadImageKit(file);
-    return await this.adminService.uploadAvatar(req.user._id, data.url);
+    return res.status(200).send(data);
   }
 
   @ApiHeader({

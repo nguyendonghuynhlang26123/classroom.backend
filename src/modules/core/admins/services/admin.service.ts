@@ -37,7 +37,7 @@ export class AdminService {
         email: data.email,
         password: data.password,
         name: data.name,
-        avatar: null,
+        avatar: data.avatar || null,
         is_root: false,
       };
       dataAdmin.password = await this.hashPassword(dataAdmin.password);
@@ -272,30 +272,6 @@ export class AdminService {
       let result = await this._userRepository.updateDocument(
         { _id: user._id },
         dataUpdate,
-      );
-      return { status: 200 };
-    } catch (error) {
-      this._logUtil.errorLogger(error, 'AdminService');
-      if (error instanceof HttpException) {
-        throw error;
-      }
-      throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
-    }
-  }
-
-  async uploadAvatar(adminId: string, url: string) {
-    try {
-      const admin = await this._adminRepository
-        .getOneDocument({
-          _id: adminId,
-        })
-        .select({ password: 0 });
-      if (!admin) {
-        throw new HttpException('Not Found Admin', HttpStatus.NOT_FOUND);
-      }
-      let result = await this._adminRepository.updateDocument(
-        { _id: admin._id },
-        { avatar: url },
       );
       return { status: 200 };
     } catch (error) {
