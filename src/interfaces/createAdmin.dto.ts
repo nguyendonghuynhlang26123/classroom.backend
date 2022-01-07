@@ -57,3 +57,10 @@ export class ParamAdminDto {
   @IsNotEmpty()
   admin_id: string;
 }
+
+export class ParamUserDto {
+  @ApiProperty({ type: String })
+  @IsEmail()
+  @IsNotEmpty()
+  user_id: string;
+}

@@ -7,9 +7,11 @@ import {
   AdminQuery,
   CreateAdminDto,
   UpdateAdminDto,
+  UserInterface,
+  UpdateUserDTO,
 } from 'src/interfaces';
 import { Subscription } from 'rxjs';
-import { AdminRepository } from '../../../connector/repository';
+import { AdminRepository, UserRepository } from '../../../connector/repository';
 import { LoggerUtilService } from '../../../shared/loggerUtil';
 
 @Injectable()
@@ -17,6 +19,7 @@ export class AdminService {
   subscription: Subscription = new Subscription();
   constructor(
     private _adminRepository: AdminRepository,
+    private _userRepository: UserRepository,
     private _logUtil: LoggerUtilService,
   ) {
     this.onCreate();
@@ -95,6 +98,48 @@ export class AdminService {
     }
   }
 
+  async getAllUserAccount(query: AdminQuery, email: string) {
+    try {
+      let builder = {};
+      if (query.sort_by && query.sort_type) {
+        let sortBy = query.sort_by.split(',');
+        for (let i = 0; i < sortBy.length; i++) {
+          const e = sortBy[i];
+          builder[e] = query.sort_type;
+        }
+      }
+      let filter = {};
+      if (query.query) {
+        filter = { $text: { $search: query.query } };
+      }
+      const data = await Promise.all([
+        this._userRepository.getAllDocument(
+          { email: email, ...filter },
+          {
+            password: 0,
+          },
+          builder,
+          Number(query.per_page),
+          Number(query.page),
+        ),
+        this._userRepository.getCountPage(
+          { email: email, ...filter },
+          Number(query.per_page),
+        ),
+      ]);
+      return <GenericRes<UserInterface>>{
+        data: data[0],
+        total_page: data[1],
+      };
+    } catch (error) {
+      this._logUtil.errorLogger(error, 'AdminService');
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+    }
+  }
+
   async findAdminById(adminId: string) {
     try {
       const admin = await this._adminRepository.getOneDocument({
@@ -104,6 +149,25 @@ export class AdminService {
         throw new HttpException('Not Found Admin', HttpStatus.NOT_FOUND);
       }
       return admin;
+    } catch (error) {
+      this._logUtil.errorLogger(error, 'AdminService');
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async findUserById(email: string, userId: string) {
+    try {
+      const user = await this._userRepository.getOneDocument({
+        _id: userId,
+        email: email,
+      });
+      if (!user) {
+        throw new HttpException('Not Found User Account', HttpStatus.NOT_FOUND);
+      }
+      return user;
     } catch (error) {
       this._logUtil.errorLogger(error, 'AdminService');
       if (error instanceof HttpException) {
@@ -123,6 +187,33 @@ export class AdminService {
       }
       let result = await this._adminRepository.updateDocument(
         { _id: admin._id },
+        dataUpdate,
+      );
+      return { status: 200 };
+    } catch (error) {
+      this._logUtil.errorLogger(error, 'AdminService');
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async updateUserAccount(
+    email: string,
+    userId: string,
+    dataUpdate: UpdateUserDTO,
+  ) {
+    try {
+      const user = await this._userRepository.getOneDocument({
+        _id: userId,
+        email: email,
+      });
+      if (!user) {
+        throw new HttpException('Not Found User Account', HttpStatus.NOT_FOUND);
+      }
+      let result = await this._userRepository.updateDocument(
+        { _id: user._id },
         dataUpdate,
       );
       return { status: 200 };

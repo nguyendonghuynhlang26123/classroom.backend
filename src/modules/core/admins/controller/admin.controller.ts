@@ -37,9 +37,12 @@ import {
   ParamAdminDto,
   CreateAdminDto,
   UpdateAdminDto,
+  UserInterface,
+  ParamUserDto,
+  UpdateUserDTO,
 } from 'src/interfaces';
 
-@Controller('v1/admins')
+@Controller('v1/admin')
 @ApiTags('Admins')
 @UseInterceptors(CacheInterceptor)
 export class AdminControllerV1 {
@@ -55,7 +58,7 @@ export class AdminControllerV1 {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @AllowFors(Role.Admin)
-  @Get()
+  @Get('admin-accounts/admins')
   async getAllService(
     @Query() query: AdminQuery,
   ): Promise<HttpException | GenericRes<AdminInterface>> {
@@ -69,7 +72,22 @@ export class AdminControllerV1 {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @AllowFors(Role.Admin)
-  @Get('/:admin_id')
+  @Get('user-accounts/users')
+  async getAllAccountService(
+    @Query() query: AdminQuery,
+    @Req() req,
+  ): Promise<HttpException | GenericRes<UserInterface>> {
+    return await this.adminService.getAllUserAccount(query, req.user.email);
+  }
+
+  @ApiHeader({
+    name: 'XSRF-Token',
+    description: 'XSRF-Token',
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @AllowFors(Role.Admin)
+  @Get('admin-accounts/admins/:admin_id')
   async findOneService(@Param() param: ParamAdminDto) {
     return await this.adminService.findAdminById(param.admin_id);
   }
@@ -81,7 +99,19 @@ export class AdminControllerV1 {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @AllowFors(Role.Admin)
-  @Post()
+  @Get('user-accounts/users/:user_id')
+  async findOneAccountService(@Param() param: ParamUserDto, @Req() req) {
+    return await this.adminService.findUserById(req.user.email, param.user_id);
+  }
+
+  @ApiHeader({
+    name: 'XSRF-Token',
+    description: 'XSRF-Token',
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @AllowFors(Role.Admin)
+  @Post('admin-accounts/admins')
   async createService(@Body() body: CreateAdminDto) {
     return await this.adminService.createAdmin(body);
   }
@@ -93,12 +123,32 @@ export class AdminControllerV1 {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @AllowFors(Role.Admin)
-  @Put('/:admin_id')
+  @Put('admin-accounts/admins/:admin_id')
   async updateService(
     @Param() param: ParamAdminDto,
     @Body() body: UpdateAdminDto,
   ) {
     return await this.adminService.updateAdmin(param.admin_id, body);
+  }
+
+  @ApiHeader({
+    name: 'XSRF-Token',
+    description: 'XSRF-Token',
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @AllowFors(Role.Admin)
+  @Put('user-accounts/users/:user_id')
+  async updateAccountService(
+    @Param() param: ParamUserDto,
+    @Body() body: UpdateUserDTO,
+    @Req() req,
+  ) {
+    return await this.adminService.updateUserAccount(
+      req.user.email,
+      param.user_id,
+      body,
+    );
   }
 
   @ApiHeader({
@@ -131,7 +181,7 @@ export class AdminControllerV1 {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @AllowFors(Role.Admin)
-  @Delete('/:admin_id')
+  @Delete('admin-accounts/admins/:admin_id')
   async deleteService(@Param() param: ParamAdminDto) {
     return await this.adminService.deleteAdmin(param.admin_id);
   }
