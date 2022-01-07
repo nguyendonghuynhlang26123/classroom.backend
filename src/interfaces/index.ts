@@ -8,6 +8,7 @@ export * from './gradingAssignment.interface';
 export * from './activityStream.interface';
 export * from './gradeReview.interface';
 export * from './admin.interface';
+export * from './blackList.interface';
 export * from './req.interface';
 export * from './res.interface';
 
@@ -20,3 +21,4 @@ export * from './login.dto';
 export * from './changePass.dto';
 export * from './createGradeReview.dto';
 export * from './createAdmin.dto';
+export * from './createBlackList.dto';

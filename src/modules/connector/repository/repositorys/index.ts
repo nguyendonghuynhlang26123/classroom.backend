@@ -7,3 +7,4 @@ export * from './activityStream.repository';
 export * from './gradeReview.repository';
 export * from './token.repository';
 export * from './admin.repository';
+export * from './blackList.repository';

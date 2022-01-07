@@ -3,6 +3,7 @@ import { ActivityStreamModule } from './activityStreams/activityStream.module';
 import { AdminModule } from './admins/admin.module';
 import { AssignmentModule } from './assignments/assignment.module';
 import { AuthModule } from './auth/auth.module';
+import { BlackListModule } from './blackLists/blackList.module';
 import { ClassModule } from './classes/class.module';
 import { ClassStudentModule } from './classStudents/classStudent.module';
 import { GradeReviewModule } from './gradeReviews/gradeReview.module';
@@ -22,6 +23,7 @@ import { UserModule } from './users/user.module';
     ActivityStreamModule,
     GradeReviewModule,
     AdminModule,
+    BlackListModule,
   ],
   providers: [],
   exports: [],

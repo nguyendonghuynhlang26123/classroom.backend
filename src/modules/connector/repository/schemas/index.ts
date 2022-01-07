@@ -7,3 +7,4 @@ export * from './activityStream.schema';
 export * from './gradeReview.schema';
 export * from './token.schema';
 export * from './admin.schema';
+export * from './blackList.schema';

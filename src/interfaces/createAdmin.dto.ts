@@ -53,14 +53,14 @@ export class UpdateAdminDto {
 
 export class ParamAdminDto {
   @ApiProperty({ type: String })
-  @IsEmail()
+  @IsString()
   @IsNotEmpty()
   admin_id: string;
 }
 
 export class ParamUserDto {
   @ApiProperty({ type: String })
-  @IsEmail()
+  @IsString()
   @IsNotEmpty()
   user_id: string;
 }

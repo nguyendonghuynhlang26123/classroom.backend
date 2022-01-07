@@ -19,6 +19,7 @@ import APP_CONFIG from '../../../config';
       { name: 'activity-streams', schema: schema.ActivityStreamSchema },
       { name: 'grade-reviews', schema: schema.GradeReviewSchema },
       { name: 'admins', schema: schema.AdminSchema },
+      { name: 'black-lists', schema: schema.BlackListSchema },
     ]),
   ],
   providers: [
@@ -31,6 +32,7 @@ import APP_CONFIG from '../../../config';
     repository.ActivityStreamRepository,
     repository.GradeReviewRepository,
     repository.AdminRepository,
+    repository.BlackListRepository,
   ],
   exports: [
     repository.UserRepository,
@@ -42,6 +44,7 @@ import APP_CONFIG from '../../../config';
     repository.ActivityStreamRepository,
     repository.GradeReviewRepository,
     repository.AdminRepository,
+    repository.BlackListRepository,
   ],
 })
 export class RepositoryModule {}
