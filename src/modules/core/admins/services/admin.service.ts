@@ -104,7 +104,7 @@ export class AdminService {
     }
   }
 
-  async getAllUserAccount(query: AdminQuery, email: string) {
+  async getAllUserAccount(query: AdminQuery) {
     try {
       let builder = {};
       if (query.sort_by && query.sort_type) {
@@ -120,7 +120,7 @@ export class AdminService {
       }
       const data = await Promise.all([
         this._userRepository.getAllDocument(
-          { email: email, ...filter },
+          { ...filter },
           {
             password: 0,
           },
@@ -129,7 +129,7 @@ export class AdminService {
           Number(query.page),
         ),
         this._userRepository.getCountPage(
-          { email: email, ...filter },
+          { ...filter },
           Number(query.per_page),
         ),
       ]);
@@ -203,11 +203,10 @@ export class AdminService {
     }
   }
 
-  async findUserById(email: string, userId: string) {
+  async findUserById(userId: string) {
     try {
       const user = await this._userRepository.getOneDocument({
         _id: userId,
-        email: email,
       });
       if (!user) {
         throw new HttpException('Not Found User Account', HttpStatus.NOT_FOUND);
@@ -262,15 +261,10 @@ export class AdminService {
     }
   }
 
-  async updateUserAccount(
-    email: string,
-    userId: string,
-    dataUpdate: UpdateUserDTO,
-  ) {
+  async updateUserAccount(userId: string, dataUpdate: UpdateUserDTO) {
     try {
       const user = await this._userRepository.getOneDocument({
         _id: userId,
-        email: email,
       });
       if (!user) {
         throw new HttpException('Not Found User Account', HttpStatus.NOT_FOUND);

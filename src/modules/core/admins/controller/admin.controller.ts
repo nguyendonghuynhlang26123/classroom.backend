@@ -79,7 +79,7 @@ export class AdminControllerV1 {
     @Query() query: AdminQuery,
     @Req() req,
   ): Promise<HttpException | GenericRes<UserInterface>> {
-    return await this.adminService.getAllUserAccount(query, req.user.email);
+    return await this.adminService.getAllUserAccount(query);
   }
 
   @ApiHeader({
@@ -117,7 +117,7 @@ export class AdminControllerV1 {
   @AllowFors(Role.Admin)
   @Get('user-accounts/:user_id')
   async findOneAccountService(@Param() param: ParamUserDto, @Req() req) {
-    return await this.adminService.findUserById(req.user.email, param.user_id);
+    return await this.adminService.findUserById(param.user_id);
   }
 
   @ApiHeader({
@@ -173,7 +173,6 @@ export class AdminControllerV1 {
     @Req() req,
   ) {
     return await this.adminService.updateUserAccount(
-      req.user.email,
       param.user_id,
       body,
     );

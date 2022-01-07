@@ -25,10 +25,10 @@ export class User extends Document implements UserInterface {
   @Prop({ type: String, default: null })
   avatar: string;
 
-  @Prop({ default: null, text: true })
+  @Prop({ default: null })
   first_name: string;
 
-  @Prop({ default: null, text: true })
+  @Prop({ default: null })
   last_name: string;
 
   @Prop({ type: String, default: null })
@@ -45,3 +45,4 @@ export class User extends Document implements UserInterface {
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
+UserSchema.index({ first_name: 'text', last_name: 'text' });

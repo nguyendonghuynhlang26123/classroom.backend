@@ -19,7 +19,7 @@ export class Admin extends Document implements AdminInterface {
   @Prop({ type: String, required: true, trim: true })
   password: string;
 
-  @Prop({ type: String, required: true, text: true })
+  @Prop({ type: String, required: true})
   name: string;
 
   @Prop({ type: String, default: null })
@@ -39,3 +39,4 @@ export class Admin extends Document implements AdminInterface {
 }
 
 export const AdminSchema = SchemaFactory.createForClass(Admin);
+AdminSchema.index({ email: 'text', name: 'text' });
