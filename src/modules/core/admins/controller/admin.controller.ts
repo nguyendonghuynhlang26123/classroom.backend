@@ -40,6 +40,8 @@ import {
   UserInterface,
   ParamUserDto,
   UpdateUserDTO,
+  ClassInterface,
+  QueryClassDto,
 } from 'src/interfaces';
 
 @Controller('v1/admin')
@@ -87,6 +89,20 @@ export class AdminControllerV1 {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @AllowFors(Role.Admin)
+  @Get('classrooms')
+  async getAllClassService(
+    @Query() query: AdminQuery,
+  ): Promise<HttpException | GenericRes<ClassInterface>> {
+    return await this.adminService.getAllClass(query);
+  }
+
+  @ApiHeader({
+    name: 'XSRF-Token',
+    description: 'XSRF-Token',
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @AllowFors(Role.Admin)
   @Get('admin-accounts/admins/:admin_id')
   async findOneService(@Param() param: ParamAdminDto) {
     return await this.adminService.findAdminById(param.admin_id);
@@ -102,6 +118,18 @@ export class AdminControllerV1 {
   @Get('user-accounts/users/:user_id')
   async findOneAccountService(@Param() param: ParamUserDto, @Req() req) {
     return await this.adminService.findUserById(req.user.email, param.user_id);
+  }
+
+  @ApiHeader({
+    name: 'XSRF-Token',
+    description: 'XSRF-Token',
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @AllowFors(Role.Admin)
+  @Get('classrooms/:class_id')
+  async findOneClassService(@Param() param: QueryClassDto) {
+    return await this.adminService.findClassroomById(param.class_id);
   }
 
   @ApiHeader({

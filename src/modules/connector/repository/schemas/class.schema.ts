@@ -13,7 +13,7 @@ import { ClassInterface, ClassroomUserInterface } from 'src/interfaces';
   },
 })
 export class Class extends Document implements ClassInterface {
-  @Prop({ type: String, required: true })
+  @Prop({ type: String, required: true, text: true })
   title: string;
 
   @Prop({ type: String, required: true })
