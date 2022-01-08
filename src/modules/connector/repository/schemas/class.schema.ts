@@ -13,7 +13,7 @@ import { ClassInterface, ClassroomUserInterface } from 'src/interfaces';
   },
 })
 export class Class extends Document implements ClassInterface {
-  @Prop({ type: String, required: true, text: true })
+  @Prop({ type: String, required: true })
   title: string;
 
   @Prop({ type: String, required: true })
@@ -61,3 +61,9 @@ export class Class extends Document implements ClassInterface {
 }
 
 export const ClassSchema = SchemaFactory.createForClass(Class);
+ClassSchema.index({
+  title: 'text',
+  subject: 'text',
+  section: 'text',
+  room: 'text',
+});
