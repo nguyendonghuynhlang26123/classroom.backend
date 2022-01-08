@@ -231,6 +231,6 @@ export class AdminControllerV1 {
   @AllowFors(Role.Admin)
   @Delete('classrooms/:class_id')
   async deleteClassroom(@Param() param: QueryClassDto) {
-    return await this.adminService.deleteUser(param.class_id);
+    return await this.adminService.deleteClassroom(param.class_id);
   }
 }
