@@ -1,4 +1,4 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus, forwardRef, Inject } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import {
   UserInterface,
@@ -13,6 +13,7 @@ import { Subscription } from 'rxjs';
 import { UserRepository } from '../../../connector/repository';
 import { LoggerUtilService } from '../../../shared/loggerUtil';
 import { MailService } from 'src/modules/feature/mail/mail.service';
+import { UserActivationService } from '../../userActivations/services/userActivation.service';
 
 @Injectable()
 export class UserService {
@@ -20,6 +21,8 @@ export class UserService {
   constructor(
     private _userRepository: UserRepository,
     private _mailService: MailService,
+    @Inject(forwardRef(() => UserActivationService))
+    private _userActivationService: UserActivationService,
     private _logUtil: LoggerUtilService,
   ) {
     this.onCreate();
@@ -40,6 +43,13 @@ export class UserService {
       dataUser.password = await this.hashPassword(dataUser.password);
       const createUser = new this._userRepository._model(dataUser);
       let user = await this._userRepository.create(createUser);
+      this._userActivationService.createUserActivation(user._id).then((e) => {
+        this._mailService.sendActivationCode(
+          user.email,
+          user.first_name,
+          e.activate_code,
+        );
+      });
       return user;
     } catch (error) {
       this._logUtil.errorLogger(error, 'UserService');
