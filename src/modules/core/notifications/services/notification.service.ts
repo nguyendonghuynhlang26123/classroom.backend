@@ -55,7 +55,7 @@ export class NotificationService {
             Number(query.per_page),
             Number(query.page),
           )
-          .populate('actor_id'),
+          .populate('actor_id assignment'),
         this._notificationRepository.getCountPage(
           { for: userId, actor_id: { $ne: userId } },
           Number(query.per_page),

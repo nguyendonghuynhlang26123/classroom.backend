@@ -64,15 +64,17 @@ export class BlackListService {
         builder[query.sort_by] = query.sort_type;
       }
       const data = await Promise.all([
-        this._blackListRepository.getAllDocument(
-          {},
-          {
-            password: 0,
-          },
-          builder,
-          Number(query.per_page),
-          Number(query.page),
-        ),
+        this._blackListRepository
+          .getAllDocument(
+            {},
+            {
+              password: 0,
+            },
+            builder,
+            Number(query.per_page),
+            Number(query.page),
+          )
+          .populate('actor account'),
         this._blackListRepository.getCountPage({}, Number(query.per_page)),
       ]);
       return <GenericRes<BlackListInterface>>{
