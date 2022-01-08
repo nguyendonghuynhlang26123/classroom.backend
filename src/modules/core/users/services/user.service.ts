@@ -81,7 +81,7 @@ export class UserService {
         last_name: data.last_name,
         avatar: data.avatar,
         google_id: data.google_id,
-        is_activated: false,
+        is_activated: true,
       };
       const createUser = new this._userRepository._model(dataUser);
       let user = await this._userRepository.create(createUser);
