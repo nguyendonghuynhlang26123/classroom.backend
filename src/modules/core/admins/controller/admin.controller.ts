@@ -42,6 +42,7 @@ import {
   UpdateUserDTO,
   ClassInterface,
   QueryClassDto,
+  UpdateClassDto,
 } from 'src/interfaces';
 
 @Controller('v1/admin')
@@ -172,10 +173,23 @@ export class AdminControllerV1 {
     @Body() body: UpdateUserDTO,
     @Req() req,
   ) {
-    return await this.adminService.updateUserAccount(
-      param.user_id,
-      body,
-    );
+    return await this.adminService.updateUserAccount(param.user_id, body);
+  }
+
+  @ApiHeader({
+    name: 'XSRF-Token',
+    description: 'XSRF-Token',
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @AllowFors(Role.Admin)
+  @Put('classroom/:class_id')
+  async updateClassroomService(
+    @Param() param: QueryClassDto,
+    @Body() body: UpdateClassDto,
+    @Req() req,
+  ) {
+    return await this.adminService.updateClassroom(param.class_id, body);
   }
 
   @ApiHeader({

@@ -12,7 +12,7 @@ export class ClassInterface extends IBase {
   @ApiProperty()
   room: string;
   @ApiProperty()
-  image: 'https://gstatic.com/classroom/themes/img_backtoschool.jpg';
+  image: string;
   @ApiProperty()
   code: string;
   @ApiProperty()
