@@ -39,6 +39,7 @@ export class AuthService {
       _id: result._id,
       email: result.email,
       name: result.first_name + '' + result.last_name,
+      is_activated: result.is_activated,
     };
     return data;
   }
@@ -57,6 +58,7 @@ export class AuthService {
       _id: result._id,
       email: result.email,
       name: result.name,
+      is_activated: true,
     };
     return data;
   }
@@ -176,6 +178,7 @@ export class AuthService {
         _id: result._id,
         email: result.email,
         name: result.first_name + '' + result.last_name,
+        is_activated: result.is_activated,
       };
       return {
         user: data,
@@ -216,6 +219,7 @@ export class AuthService {
         _id: result._id,
         email: result.email,
         name: result.name,
+        is_activated: true,
       };
       return {
         user: data,

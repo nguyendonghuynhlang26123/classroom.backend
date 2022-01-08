@@ -33,6 +33,7 @@ export class UserService {
         last_name: data.last_name,
         avatar: null,
         google_id: null,
+        is_activated: false,
       };
       dataUser.password = await this.hashPassword(dataUser.password);
       const createUser = new this._userRepository._model(dataUser);
@@ -78,6 +79,7 @@ export class UserService {
         last_name: data.last_name,
         avatar: data.avatar,
         google_id: data.google_id,
+        is_activated: false,
       };
       const createUser = new this._userRepository._model(dataUser);
       let user = await this._userRepository.create(createUser);
@@ -157,6 +159,28 @@ export class UserService {
       let result = await this._userRepository.updateDocument(
         { _id: user._id },
         { ...dataUpdate },
+      );
+      return result;
+    } catch (error) {
+      this._logUtil.errorLogger(error, 'UserService');
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async activateUser(userId: string) {
+    try {
+      let user = await this._userRepository.getOneDocument({
+        _id: userId,
+      });
+      if (!user) {
+        throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+      }
+      let result = await this._userRepository.updateDocument(
+        { _id: user._id },
+        { is_activated: true },
       );
       return result;
     } catch (error) {

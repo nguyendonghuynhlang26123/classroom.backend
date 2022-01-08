@@ -34,6 +34,9 @@ export class User extends Document implements UserInterface {
   @Prop({ type: String, default: null })
   google_id: string;
 
+  @Prop({ type: Boolean, default: false })
+  is_activated: boolean;
+
   @Prop({ type: Number })
   created_at: number;
 
