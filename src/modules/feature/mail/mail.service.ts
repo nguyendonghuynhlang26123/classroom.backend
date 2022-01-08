@@ -25,4 +25,13 @@ export class MailService {
       html: `<p>${inviterName} (${inviterEmail}) want to invite you to join class "${classTitle}" as a "${role}".</p><br><a target="_blank" rel="noopener noreferrer" href="${process.env.FRONT_END_HOST}classes/join?classId=${classId}&role=${role}&code=${classroomCode}${inviteCode}">Click here to accept.</a>`,
     });
   }
+
+  async sendResetPassMail(email: string, password: string) {
+    await this.mailerService.sendMail({
+      from: '"No Reply" <thependailynews@gmail.com>',
+      to: email,
+      subject: `Reset password - ${new Date(Date.now()).toLocaleDateString()}`,
+      html: `<p>New password: ${password}</p>`,
+    });
+  }
 }

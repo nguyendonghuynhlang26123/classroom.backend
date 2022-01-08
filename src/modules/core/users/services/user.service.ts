@@ -12,12 +12,14 @@ import {
 import { Subscription } from 'rxjs';
 import { UserRepository } from '../../../connector/repository';
 import { LoggerUtilService } from '../../../shared/loggerUtil';
+import { MailService } from 'src/modules/feature/mail/mail.service';
 
 @Injectable()
 export class UserService {
   subscription: Subscription = new Subscription();
   constructor(
     private _userRepository: UserRepository,
+    private _mailService: MailService,
     private _logUtil: LoggerUtilService,
   ) {
     this.onCreate();
@@ -136,6 +138,40 @@ export class UserService {
         { _id: user._id },
         { password: user.password },
       );
+    } catch (error) {
+      this._logUtil.errorLogger(error, 'UserService');
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async resetPassword(userId: string, paramId: string, isActivated: boolean) {
+    try {
+      if (userId != paramId) {
+        throw new HttpException('Not Expired', HttpStatus.CONFLICT);
+      }
+      if (!isActivated) {
+        throw new HttpException(
+          'Account is not activated',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      let user = await this._userRepository.getOneDocument({
+        _id: userId,
+      });
+      if (!user) {
+        throw new HttpException('Not Found User', HttpStatus.NOT_FOUND);
+      }
+      let newPassword = Math.random().toString(36).substr(2, 6);
+      user.password = await this.hashPassword(newPassword);
+      let result = await this._userRepository.updateDocument(
+        { _id: user._id },
+        { password: user.password },
+      );
+      this._mailService.sendResetPassMail(user.email, newPassword);
+      return { status: 200 };
     } catch (error) {
       this._logUtil.errorLogger(error, 'UserService');
       if (error instanceof HttpException) {

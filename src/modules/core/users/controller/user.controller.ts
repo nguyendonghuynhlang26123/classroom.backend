@@ -25,6 +25,7 @@ import {
   GenericRes,
   UpdateUserDTO,
   ChangePassDTO,
+  ParamUserDto,
 } from 'src/interfaces';
 
 @Controller('v1/users')
@@ -71,6 +72,20 @@ export class UserControllerV1 {
     @Body() pass: ChangePassDTO,
   ) {
     return await this.userService.changePass(req.user._id, param.user_id, pass);
+  }
+
+  @ApiHeader({
+    name: 'XSRF-Token',
+    description: 'XSRF-Token',
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Put('/:user_id/reset_password')
+  async resetPassService(
+    @Request() req,
+    @Param() param: ParamUserDto,
+  ) {
+    return await this.userService.resetPassword(req.user._id, param.user_id, req.user.is_activated);
   }
 
   @ApiHeader({
