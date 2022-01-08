@@ -28,6 +28,8 @@ export class UserInterface extends IBase {
   email: string;
   @ApiProperty()
   google_id: string;
+  @ApiProperty()
+  is_activated: boolean;
 }
 
 export class UpdateUserDTO {

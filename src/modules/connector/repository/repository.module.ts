@@ -21,6 +21,7 @@ import APP_CONFIG from '../../../config';
       { name: 'admins', schema: schema.AdminSchema },
       { name: 'black-lists', schema: schema.BlackListSchema },
       { name: 'notifications', schema: schema.NotificationSchema },
+      { name: 'user-activations', schema: schema.UserActivationSchema },
     ]),
   ],
   providers: [
@@ -35,6 +36,7 @@ import APP_CONFIG from '../../../config';
     repository.AdminRepository,
     repository.BlackListRepository,
     repository.NotificationRepository,
+    repository.UserActivationRepository,
   ],
   exports: [
     repository.UserRepository,
@@ -48,6 +50,7 @@ import APP_CONFIG from '../../../config';
     repository.AdminRepository,
     repository.BlackListRepository,
     repository.NotificationRepository,
+    repository.UserActivationRepository,
   ],
 })
 export class RepositoryModule {}

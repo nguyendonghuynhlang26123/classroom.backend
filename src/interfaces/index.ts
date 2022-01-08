@@ -10,6 +10,7 @@ export * from './gradeReview.interface';
 export * from './admin.interface';
 export * from './blackList.interface';
 export * from './notification.interface';
+export * from './userActivation.interface';
 export * from './req.interface';
 export * from './res.interface';
 

@@ -9,3 +9,4 @@ export * from './token.schema';
 export * from './admin.schema';
 export * from './blackList.schema';
 export * from './notification.schema';
+export * from './userActivation.schema';

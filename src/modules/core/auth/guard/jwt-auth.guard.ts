@@ -2,6 +2,8 @@ import {
   Injectable,
   ExecutionContext,
   UnauthorizedException,
+  HttpStatus,
+  HttpException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
@@ -24,6 +26,10 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     if (err || !user || user.jwt_id) {
       if (allowAny) return true;
       throw err || new UnauthorizedException();
+    }
+
+    if (!user.is_activated) {
+      throw new HttpException('Account is not activated', HttpStatus.FORBIDDEN);
     }
 
     return user;

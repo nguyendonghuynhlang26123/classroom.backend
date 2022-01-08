@@ -10,6 +10,7 @@ import { GradeReviewModule } from './gradeReviews/gradeReview.module';
 import { GradingAssignmentModule } from './gradingAssignments/gradingAssignment.module';
 import { NotificationModule } from './notifications/notification.module';
 import { TokenModule } from './token/token.module';
+import { UserActivationModule } from './userActivations/userActivation.module';
 import { UserModule } from './users/user.module';
 
 @Module({
@@ -26,6 +27,7 @@ import { UserModule } from './users/user.module';
     AdminModule,
     BlackListModule,
     NotificationModule,
+    UserActivationModule,
   ],
   providers: [],
   exports: [],
