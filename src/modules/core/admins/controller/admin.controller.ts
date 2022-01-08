@@ -229,7 +229,7 @@ export class AdminControllerV1 {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @AllowFors(Role.Admin)
-  @Delete('classroom/:class_id')
+  @Delete('classrooms/:class_id')
   async deleteClassroom(@Param() param: QueryClassDto) {
     return await this.adminService.deleteUser(param.class_id);
   }
