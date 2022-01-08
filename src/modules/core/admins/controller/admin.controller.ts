@@ -172,10 +172,7 @@ export class AdminControllerV1 {
     @Body() body: UpdateUserDTO,
     @Req() req,
   ) {
-    return await this.adminService.updateUserAccount(
-      param.user_id,
-      body,
-    );
+    return await this.adminService.updateUserAccount(param.user_id, body);
   }
 
   @ApiHeader({
@@ -209,7 +206,31 @@ export class AdminControllerV1 {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @AllowFors(Role.Admin)
   @Delete('admin-accounts/:admin_id')
-  async deleteService(@Param() param: ParamAdminDto) {
+  async deleteService(@Param() param: ParamAdminDto, @Req() req) {
     return await this.adminService.deleteAdmin(param.admin_id);
+  }
+
+  @ApiHeader({
+    name: 'XSRF-Token',
+    description: 'XSRF-Token',
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @AllowFors(Role.Admin)
+  @Delete('user-accounts/:user_id')
+  async deleteUser(@Param() param: ParamUserDto) {
+    return await this.adminService.deleteUser(param.user_id);
+  }
+
+  @ApiHeader({
+    name: 'XSRF-Token',
+    description: 'XSRF-Token',
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @AllowFors(Role.Admin)
+  @Delete('classroom/:class_id')
+  async deleteClassroom(@Param() param: QueryClassDto) {
+    return await this.adminService.deleteUser(param.class_id);
   }
 }
