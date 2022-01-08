@@ -8,3 +8,4 @@ export * from './gradeReview.repository';
 export * from './token.repository';
 export * from './admin.repository';
 export * from './blackList.repository';
+export * from './notification.repository';

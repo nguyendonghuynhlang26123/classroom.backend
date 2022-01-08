@@ -211,6 +211,30 @@ export class ClassService {
     }
   }
 
+  async getStudentInClass(classId: string) {
+    try {
+      let classes = await this._classRepository.getOneDocument({
+        _id: classId,
+        users: { $elemMatch: { status: 'ACTIVATED', role: 'STUDENT' } },
+      });
+      if (!classes) {
+        throw new HttpException('Not Found Class', HttpStatus.NOT_FOUND);
+      }
+      let users = classes.users;
+      let arrayId = [];
+      for (let i = 0; i < users.length; i++) {
+        arrayId.push(users[i].user_id);
+      }
+      return { list_user: arrayId };
+    } catch (error) {
+      this._logUtil.errorLogger(error, 'ClassService');
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+    }
+  }
+
   async inviteUser(
     classId: string,
     teacherId: string,

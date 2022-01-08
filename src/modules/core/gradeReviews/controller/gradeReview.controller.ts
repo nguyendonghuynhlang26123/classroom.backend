@@ -53,6 +53,7 @@ export class GradeReviewControllerV1 {
       body,
       param.class_id,
       req.user._id,
+      req.user.name,
     );
   }
 
@@ -74,6 +75,7 @@ export class GradeReviewControllerV1 {
       param.grade_review_id,
       req.user._id,
       body.message,
+      req.user.name,
     );
   }
 
@@ -88,11 +90,14 @@ export class GradeReviewControllerV1 {
   async acceptService(
     @Param() param: QueryGradeReviewDto,
     @Body() body: { mark: number },
+    @Req() req,
   ) {
     return await this._gradeReviewService.acceptGradeReview(
       param.class_id,
       param.grade_review_id,
       body.mark,
+      req.user.name,
+      req.user._id,
     );
   }
 
@@ -104,10 +109,12 @@ export class GradeReviewControllerV1 {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @AllowFors(Role.Owner, Role.Teacher)
   @Put('/:class_id/grade-review/:grade_review_id/reject')
-  async rejectService(@Param() param: QueryGradeReviewDto) {
+  async rejectService(@Param() param: QueryGradeReviewDto, @Req() req) {
     return await this._gradeReviewService.rejectGradeReview(
       param.class_id,
       param.grade_review_id,
+      req.user.name,
+      req.user._id,
     );
   }
 

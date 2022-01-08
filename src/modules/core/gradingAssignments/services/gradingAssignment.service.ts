@@ -20,6 +20,7 @@ import { AssignmentService } from '../../assignments/services/assignment.service
 import { ClassService } from '../../classes/services/class.service';
 import { Parser } from 'json2csv';
 import { ActivityStreamService } from '../../activityStreams/services/activityStream.service';
+import { NotificationService } from '../../notifications/services/notification.service';
 // const { Parse } = require('json2csv');
 
 @Injectable()
@@ -30,6 +31,7 @@ export class GradingAssignmentService {
     private _assignmentService: AssignmentService,
     private _importCsvService: ImportCsvService,
     private _activityStreamService: ActivityStreamService,
+    private _notificationService: NotificationService,
     private _logUtil: LoggerUtilService,
   ) {
     this.onCreate();
@@ -223,6 +225,7 @@ export class GradingAssignmentService {
         { _id: arrayId },
         { status: 'FINAL' },
       );
+      let listUser = await this._classService.getStudentInClass(classId);
       this._assignmentService
         .getAssignmentById(assignmentId, classId)
         .then((e) => {
@@ -232,6 +235,15 @@ export class GradingAssignmentService {
             description: `${username} published gradings for ${e.title}`,
             actor: userId,
             assignment_id: assignmentId,
+          });
+          this._notificationService.createNotification({
+            class_id: classId,
+            for: listUser.list_user,
+            type: 'GRADE_FINALIZE',
+            description: `${username} published grading for assignment: ${e.title}`,
+            actor_id: userId,
+            assignment: assignmentId,
+            grading: null,
           });
         });
       return { status: 200 };

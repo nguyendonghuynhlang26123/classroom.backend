@@ -20,6 +20,7 @@ import APP_CONFIG from '../../../config';
       { name: 'grade-reviews', schema: schema.GradeReviewSchema },
       { name: 'admins', schema: schema.AdminSchema },
       { name: 'black-lists', schema: schema.BlackListSchema },
+      { name: 'notifications', schema: schema.NotificationSchema },
     ]),
   ],
   providers: [
@@ -33,6 +34,7 @@ import APP_CONFIG from '../../../config';
     repository.GradeReviewRepository,
     repository.AdminRepository,
     repository.BlackListRepository,
+    repository.NotificationRepository,
   ],
   exports: [
     repository.UserRepository,
@@ -45,6 +47,7 @@ import APP_CONFIG from '../../../config';
     repository.GradeReviewRepository,
     repository.AdminRepository,
     repository.BlackListRepository,
+    repository.NotificationRepository,
   ],
 })
 export class RepositoryModule {}

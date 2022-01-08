@@ -11,6 +11,7 @@ import { LoggerUtilService } from '../../../shared/loggerUtil';
 import { AssignmentService } from '../../assignments/services/assignment.service';
 import { ClassService } from '../../classes/services/class.service';
 import { GradingAssignmentService } from '../../gradingAssignments/services/gradingAssignment.service';
+import { NotificationService } from '../../notifications/services/notification.service';
 
 @Injectable()
 export class GradeReviewService {
@@ -19,6 +20,7 @@ export class GradeReviewService {
     private _classService: ClassService,
     private _assignmentService: AssignmentService,
     private _gradingAssignmentService: GradingAssignmentService,
+    private _notificationService: NotificationService,
     private _logUtil: LoggerUtilService,
   ) {
     this.onCreate();
@@ -28,6 +30,7 @@ export class GradeReviewService {
     data: CreateGradeReviewDto,
     classId: string,
     userId: string,
+    username: string,
   ) {
     try {
       const check = await this._assignmentService.getAssignmentById(
@@ -66,10 +69,24 @@ export class GradeReviewService {
       let gradeReview = await this._gradeReviewRepository.create(
         createGradeReview,
       );
+      let listUser = await this._classService.getStudentInClass(classId);
       this._gradingAssignmentService.updateReviews(
         grading._id,
         gradeReview._id,
       );
+      this._assignmentService
+        .getAssignmentById(gradeReview.assignment_id, classId)
+        .then((e) => {
+          this._notificationService.createNotification({
+            class_id: classId,
+            for: listUser.list_user,
+            type: 'GRADE_REVIEW_UPDATE',
+            description: `${username} requested a grade review for ${e.title}`,
+            actor_id: userId,
+            assignment: gradeReview.assignment_id,
+            grading: gradeReview.grading_id,
+          });
+        });
       return gradeReview;
     } catch (error) {
       this._logUtil.errorLogger(error, 'GradeReviewService');
@@ -132,10 +149,12 @@ export class GradeReviewService {
     userId: string,
   ) {
     try {
-      const gradeReview = await this._gradeReviewRepository.getOneDocument({
-        class_id: classId,
-        _id: gradeReviewId,
-      }).populate('comments.author assignment_id grading_id');
+      const gradeReview = await this._gradeReviewRepository
+        .getOneDocument({
+          class_id: classId,
+          _id: gradeReviewId,
+        })
+        .populate('comments.author assignment_id grading_id');
       if (!gradeReview) {
         throw new HttpException('Not Found Grade Review', HttpStatus.NOT_FOUND);
       }
@@ -161,6 +180,7 @@ export class GradeReviewService {
     gradeReviewId: string,
     userId: string,
     message: string,
+    username: string,
   ) {
     try {
       let gradeReview = await this._gradeReviewRepository.getOneDocument({
@@ -185,12 +205,32 @@ export class GradeReviewService {
         message: message,
         created_at: Date.now(),
       });
-      this._gradeReviewRepository.updateDocument(
+      let arrayAuthor = [];
+      for (let i = 0; i < gradeReview.comments.length; i++) {
+        const e = gradeReview.comments[i];
+        if (
+          arrayAuthor.findIndex((el) => {
+            return el == e.author;
+          }) == -1
+        ) {
+          arrayAuthor.push(e.author);
+        }
+      }
+      let result = await this._gradeReviewRepository.updateDocument(
         {
           _id: gradeReview._id,
         },
         { comments: gradeReview.comments },
       );
+      this._notificationService.createNotification({
+        class_id: classId,
+        for: arrayAuthor,
+        type: 'GRADE_REVIEW_UPDATE',
+        description: `${username} replied to your comment: ${message}`,
+        actor_id: userId,
+        assignment: gradeReview.assignment_id,
+        grading: gradeReview.grading_id,
+      });
       return gradeReview;
     } catch (error) {
       this._logUtil.errorLogger(error, 'GradeReviewService');
@@ -205,6 +245,8 @@ export class GradeReviewService {
     classId: string,
     gradeReviewId: string,
     mark: number,
+    username: string,
+    userId: string,
   ) {
     try {
       let gradeReview = await this._gradeReviewRepository.getOneDocument({
@@ -227,6 +269,19 @@ export class GradeReviewService {
         },
         { status: 'APPROVED', comments: gradeReview.comments },
       );
+      this._assignmentService
+        .getAssignmentById(gradeReview.assignment_id, classId)
+        .then((e) => {
+          this._notificationService.createNotification({
+            class_id: classId,
+            for: [gradeReview.student_account],
+            type: 'GRADE_REVIEW_UPDATE',
+            description: `${username} accepted your grade review for ${e.title} and updated your grade to ${mark}`,
+            actor_id: userId,
+            assignment: gradeReview.assignment_id,
+            grading: gradeReview.grading_id,
+          });
+        });
       return gradeReview;
     } catch (error) {
       this._logUtil.errorLogger(error, 'GradeReviewService');
@@ -237,7 +292,12 @@ export class GradeReviewService {
     }
   }
 
-  async rejectGradeReview(classId: string, gradeReviewId: string) {
+  async rejectGradeReview(
+    classId: string,
+    gradeReviewId: string,
+    username: string,
+    userId: string,
+  ) {
     try {
       let gradeReview = await this._gradeReviewRepository.getOneDocument({
         class_id: classId,
@@ -258,6 +318,19 @@ export class GradeReviewService {
         },
         { status: 'REJECTED', comments: gradeReview.comments },
       );
+      this._assignmentService
+        .getAssignmentById(gradeReview.assignment_id, classId)
+        .then((e) => {
+          this._notificationService.createNotification({
+            class_id: classId,
+            for: [gradeReview.student_account],
+            type: 'GRADE_REVIEW_UPDATE',
+            description: `${username} rejected your grade review for ${e.title}`,
+            actor_id: userId,
+            assignment: gradeReview.assignment_id,
+            grading: gradeReview.grading_id,
+          });
+        });
       return gradeReview;
     } catch (error) {
       this._logUtil.errorLogger(error, 'GradeReviewService');
