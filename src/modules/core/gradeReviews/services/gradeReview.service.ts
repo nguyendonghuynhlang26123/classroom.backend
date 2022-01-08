@@ -69,7 +69,7 @@ export class GradeReviewService {
       let gradeReview = await this._gradeReviewRepository.create(
         createGradeReview,
       );
-      let listUser = await this._classService.getStudentInClass(classId);
+      let listUser = await this._classService.getTeachersInClass(classId);
       this._gradingAssignmentService.updateReviews(
         grading._id,
         gradeReview._id,
