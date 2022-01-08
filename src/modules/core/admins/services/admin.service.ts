@@ -314,8 +314,56 @@ export class AdminService {
       if (!admin) {
         throw new HttpException('Not Found Admin', HttpStatus.NOT_FOUND);
       }
+      if (admin.is_root) {
+        throw new HttpException(
+          'Cannot delete root admin',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
       const result = this._adminRepository.deleteDocument({
         _id: adminId,
+      });
+      return { status: 200 };
+    } catch (error) {
+      this._logUtil.errorLogger(error, 'AdminService');
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async deleteUser(userId: string) {
+    try {
+      const user = await this._userRepository.getOneDocument({
+        _id: userId,
+      });
+      if (!user) {
+        throw new HttpException('Not Found User', HttpStatus.NOT_FOUND);
+      }
+      const result = this._adminRepository.deleteDocument({
+        _id: user,
+      });
+      return { status: 200 };
+    } catch (error) {
+      this._logUtil.errorLogger(error, 'AdminService');
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async deleteClassroom(classId: string) {
+    try {
+      const classroom = await this._classRepository.getOneDocument({
+        _id: classId,
+      });
+      if (!classroom) {
+        throw new HttpException('Not Found Classroom', HttpStatus.NOT_FOUND);
+      }
+      const result = this._classRepository.deleteDocument({
+        _id: classroom,
       });
       return { status: 200 };
     } catch (error) {
