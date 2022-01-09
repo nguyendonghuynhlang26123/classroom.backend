@@ -12,11 +12,11 @@ import { Server } from 'ws';
 import * as cookie from 'cookie';
 import { AuthService } from '../../auth/services/auth.service';
 import { DeviceService } from '../../devices/services/device.service';
-import * as dotenv from 'dotenv';
-dotenv.config();
+// import * as dotenv from 'dotenv';
+// dotenv.config();
 
-const port = parseInt(process.env.PORT) || 3001;
-@WebSocketGateway(port, { namespace: '/socket/notification', cors: true })
+// const port = parseInt(process.env.PORT) || 3001;
+@WebSocketGateway({ namespace: '/socket/notification', cors: true })
 export class NotificationGateway implements OnGatewayConnection {
   constructor(
     private _authService: AuthService,
