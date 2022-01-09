@@ -26,6 +26,7 @@ export class NotificationService {
       let notification = await this._notificationRepository.create(
         createNotification,
       );
+      notification = await notification.populate('actor_id assignment');
       const socketIds = await this._deviceService.getAllSocketIds(
         notification.for.filter((uid) => uid !== notification.actor_id),
       );
