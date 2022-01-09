@@ -18,7 +18,7 @@ async function bootstrap() {
   });
   // app.useStaticAssets(join(__dirname, '..', 'public'));
   app.useGlobalPipes(new ValidationPipe());
-  app.useWebSocketAdapter(new RedisIoAdapter(app));
+  // app.useWebSocketAdapter(new RedisIoAdapter(app));
 
   app.use(cookieParser());
   const allowList = [
