@@ -226,6 +226,17 @@ export class ClassStudentService {
           HttpStatus.NOT_FOUND,
         );
       }
+
+      //Find previous studentId that this userId had synced
+      let previousSyncIndex = classStudent.students.findIndex(
+        (e) => e.user_id && e.user_id.toString() === userId.toString(),
+      );
+      if (previousSyncIndex !== -1) {
+        classStudent.students[previousSyncIndex].status = 'NOT_SYNCED';
+        classStudent.students[previousSyncIndex].user_id = null;
+      }
+
+      //Check new studentId is suitable for synchronizing
       let index = classStudent.students.findIndex((e) => {
         return e.student_id == studentId;
       });
