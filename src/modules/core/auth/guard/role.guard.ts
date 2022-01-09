@@ -25,7 +25,6 @@ export class RolesGuard implements CanActivate {
     }
 
     const { user, params } = context.switchToHttp().getRequest();
-    console.log(params);
     if (!user) {
       return false;
     }
@@ -53,7 +52,7 @@ export class RolesGuard implements CanActivate {
       params.class_id,
       user._id,
     );
-    console.log(data);
+    // console.log(data);
     if (!data) {
       return false;
     }

@@ -7,6 +7,7 @@ import {
 import { NotificationRepository } from '../../../connector/repository';
 import { LoggerUtilService } from '../../../shared/loggerUtil';
 import { DeviceService } from '../../devices/services/device.service';
+import { NotificationGateway } from '../gateways/notification.gateway';
 
 @Injectable()
 export class NotificationService {
@@ -14,6 +15,7 @@ export class NotificationService {
     private _notificationRepository: NotificationRepository,
     private _deviceService: DeviceService,
     private _logUtil: LoggerUtilService,
+    private _gateway: NotificationGateway,
   ) {
     this.onCreate();
   }
@@ -24,7 +26,13 @@ export class NotificationService {
       let notification = await this._notificationRepository.create(
         createNotification,
       );
-      this._deviceService.pushNoti(notification.for, notification.description);
+      const socketIds = await this._deviceService.getAllSocketIds(
+        notification.for.filter((uid) => uid !== notification.actor_id),
+      );
+      for (let i = 0; i < socketIds.length; i++) {
+        const socketId = socketIds[i];
+        this._gateway.server.to(socketId).emit('notification', notification);
+      }
       return notification;
     } catch (error) {
       this._logUtil.errorLogger(error, 'NotificationService');

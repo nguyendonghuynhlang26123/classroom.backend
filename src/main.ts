@@ -70,7 +70,7 @@ async function bootstrap() {
     .setVersion('1.0')
     .build();
   const document = SwaggerModule.createDocument(app, options);
-  fs.writeFileSync('./swagger-spec.json', JSON.stringify(document));
+  // fs.writeFileSync('./swagger-spec.json', JSON.stringify(document));
   SwaggerModule.setup('docs', app, document);
   await app.listen(parseInt(process.env.PORT) || 3001, '0.0.0.0');
   console.log(`Application is running on: ${await app.getUrl()}`);

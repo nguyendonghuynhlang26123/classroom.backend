@@ -11,6 +11,12 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 
+#uploads
+*.csv
+
+#Swagger gen
+*/swagger-spec.json
+
 #env
 .env
 

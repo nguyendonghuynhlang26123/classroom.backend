@@ -87,5 +87,23 @@ export class DeviceService {
     }
   }
 
+  async getAllSocketIds(listUsers: string[]) {
+    try {
+      const devices = await this._deviceRepository.getAllDocument(
+        {
+          user_id: listUsers,
+        },
+        { _id: 1, socket_id: 1 },
+      );
+      return devices.map((d) => d.socket_id);
+    } catch (error) {
+      this._logUtil.errorLogger(error, 'DeviceService');
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+    }
+  }
+
   onCreate() {}
 }
