@@ -34,4 +34,13 @@ export class MailService {
       html: `<p>New password: ${password}</p>`,
     });
   }
+
+  async sendActivationCode(email: string, firstName: string, code: string) {
+    await this.mailerService.sendMail({
+      from: '"No Reply" <thependailynews@gmail.com>',
+      to: email,
+      subject: `Reset password - ${new Date(Date.now()).toLocaleDateString()}`,
+      html: `<p>Hello ${firstName}, click here to activate the account. Link: </p><a target="_blank" rel="noopener noreferrer" href="${process.env.FRONT_END_HOST}/mail-activate?code=${code}">Click here</a>`,
+    });
+  }
 }

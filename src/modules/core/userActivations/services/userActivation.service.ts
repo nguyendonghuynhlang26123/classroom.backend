@@ -1,4 +1,4 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus, forwardRef, Inject } from '@nestjs/common';
 import {
   UserActivationInterface,
   GenericRes,
@@ -12,6 +12,7 @@ import { UserService } from '../../users/services/user.service';
 export class UserActivationService {
   constructor(
     private _userActivationRepository: UserActivationRepository,
+    @Inject(forwardRef(() => UserService))
     private _userService: UserService,
     private _logUtil: LoggerUtilService,
   ) {
@@ -29,7 +30,6 @@ export class UserActivationService {
       }
       const check = await this._userActivationRepository.getOneDocument({
         _id: userId,
-        expired_at: { $lt: Date.now() },
       });
       if (check) {
         throw new HttpException(
@@ -39,7 +39,6 @@ export class UserActivationService {
       }
       let data: UserActivationInterface = {
         user: userId,
-        expired_at: Date.now() + 300000,
         activate_code: Math.random().toString(36).substr(2, 6),
       };
       const createUserActivation = new this._userActivationRepository._model(
@@ -75,7 +74,6 @@ export class UserActivationService {
       }
       const check = await this._userActivationRepository.getOneDocument({
         _id: userId,
-        expired_at: { $lt: Date.now() },
       });
       if (!check) {
         throw new HttpException(

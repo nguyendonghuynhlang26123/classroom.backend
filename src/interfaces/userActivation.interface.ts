@@ -7,8 +7,6 @@ export class UserActivationInterface extends IBase {
   @ApiProperty()
   user: string | UserInterface;
   @ApiProperty()
-  expired_at: number;
-  @ApiProperty()
   activate_code: string;
 }
 

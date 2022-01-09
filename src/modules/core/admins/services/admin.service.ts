@@ -10,6 +10,7 @@ import {
   UserInterface,
   UpdateUserDTO,
   ClassInterface,
+  UpdateClassDto,
 } from 'src/interfaces';
 import { Subscription } from 'rxjs';
 import {
@@ -271,6 +272,28 @@ export class AdminService {
       }
       let result = await this._userRepository.updateDocument(
         { _id: user._id },
+        dataUpdate,
+      );
+      return { status: 200 };
+    } catch (error) {
+      this._logUtil.errorLogger(error, 'AdminService');
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async updateClassroom(classId: string, dataUpdate: UpdateClassDto) {
+    try {
+      const classroom = await this._userRepository.getOneDocument({
+        _id: classId,
+      });
+      if (!classroom) {
+        throw new HttpException('Not Found Classroom', HttpStatus.NOT_FOUND);
+      }
+      let result = await this._userRepository.updateDocument(
+        { _id: classroom._id },
         dataUpdate,
       );
       return { status: 200 };

@@ -23,9 +23,6 @@ export class UserActivation
   })
   user: string;
 
-  @Prop({ type: Number, default: Date.now() + 300000 })
-  expired_at: number;
-
   @Prop({ type: String, required: true })
   activate_code: string;
 
