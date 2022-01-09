@@ -3,6 +3,7 @@ import {
   IsAscii,
   IsEmail,
   IsNotEmpty,
+  IsOptional,
   IsString,
   Length,
   Matches,
@@ -13,6 +14,11 @@ export class CreateUserDto {
   @IsEmail()
   @IsNotEmpty()
   email: string;
+
+  @ApiProperty({ type: String })
+  @IsString()
+  @IsOptional()
+  student_id?: string;
 
   @ApiProperty({ type: String })
   @IsString()

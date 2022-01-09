@@ -25,6 +25,13 @@ export class CreateGradingAssignmentDto {
   mark?: number;
 }
 
+export class UpdateGradingStatusDto {
+  @ApiProperty({ type: String })
+  @IsString()
+  @IsNotEmpty()
+  assignment_id: string;
+}
+
 export class UpdateGradingAssignmentDto {
   @ApiProperty({ type: String })
   @IsString()
@@ -40,22 +47,6 @@ export class UpdateGradingAssignmentDto {
   @IsNumber()
   @IsNotEmpty()
   mark: number;
-}
-
-export class CreateArrayGradingDto {
-  @ApiProperty({ type: () => [CreateGradingAssignmentDto] })
-  @ValidateNested()
-  @Type(() => CreateGradingAssignmentDto)
-  @IsNotEmpty()
-  data: CreateGradingAssignmentDto[];
-}
-
-export class UpdateArrayGradingDto {
-  @ApiProperty({ type: () => [UpdateGradingAssignmentDto] })
-  @ValidateNested()
-  @Type(() => UpdateGradingAssignmentDto)
-  @IsNotEmpty()
-  data: UpdateGradingAssignmentDto[];
 }
 
 export class CreateGradingByFileDto {

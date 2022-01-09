@@ -9,13 +9,17 @@ import { AuthController } from './controller/auth.controller';
 import { TokenModule } from '../token/token.module';
 import { LogOutService } from './services/logOut.service';
 import { HttpModule } from '@nestjs/axios';
+import { AdminModule } from '../admins/admin.module';
+import { BlackListModule } from '../blackLists/blackList.module';
 
 @Global()
 @Module({
   imports: [
     UserModule,
+    AdminModule,
     TokenModule,
     PassportModule,
+    BlackListModule,
     JwtModule.register({
       secret: jwtConstants.secret,
       signOptions: { expiresIn: '300s' }, // 5p

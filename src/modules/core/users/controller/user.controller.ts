@@ -25,6 +25,7 @@ import {
   GenericRes,
   UpdateUserDTO,
   ChangePassDTO,
+  ParamUserDto,
 } from 'src/interfaces';
 
 @Controller('v1/users')
@@ -64,7 +65,7 @@ export class UserControllerV1 {
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
-  @Put('changePass/:user_id')
+  @Put(':user_id/changePass')
   async changePassService(
     @Request() req,
     @Param() param: { user_id: string },

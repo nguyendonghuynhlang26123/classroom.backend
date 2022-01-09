@@ -29,7 +29,7 @@ export class Class extends Document implements ClassInterface {
     type: String,
     default: 'https://gstatic.com/classroom/themes/img_backtoschool.jpg',
   })
-  image: 'https://gstatic.com/classroom/themes/img_backtoschool.jpg';
+  image: string;
 
   @Prop({ type: String, default: Math.random().toString(36).substr(2, 6) })
   code: string;
@@ -39,7 +39,7 @@ export class Class extends Document implements ClassInterface {
       {
         user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'users' },
         status: { type: String, enum: ['ACTIVATED', 'INACTIVATED'] },
-        role: { type: String, enum: ['ADMIN', 'TEACHER', 'STUDENT'] },
+        role: { type: String, enum: ['OWNER', 'TEACHER', 'STUDENT'] },
         invite_code: {
           type: String,
           default: null,
@@ -61,3 +61,9 @@ export class Class extends Document implements ClassInterface {
 }
 
 export const ClassSchema = SchemaFactory.createForClass(Class);
+ClassSchema.index({
+  title: 'text',
+  subject: 'text',
+  section: 'text',
+  room: 'text',
+});

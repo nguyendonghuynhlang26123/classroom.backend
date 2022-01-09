@@ -1,4 +1,10 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import {
+  Injectable,
+  HttpException,
+  HttpStatus,
+  forwardRef,
+  Inject,
+} from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import {
   UserInterface,
@@ -12,12 +18,17 @@ import {
 import { Subscription } from 'rxjs';
 import { UserRepository } from '../../../connector/repository';
 import { LoggerUtilService } from '../../../shared/loggerUtil';
+import { MailService } from 'src/modules/feature/mail/mail.service';
+import { UserActivationService } from '../../userActivations/services/userActivation.service';
 
 @Injectable()
 export class UserService {
   subscription: Subscription = new Subscription();
   constructor(
     private _userRepository: UserRepository,
+    private _mailService: MailService,
+    @Inject(forwardRef(() => UserActivationService))
+    private _userActivationService: UserActivationService,
     private _logUtil: LoggerUtilService,
   ) {
     this.onCreate();
@@ -27,15 +38,26 @@ export class UserService {
     try {
       let dataUser: UserInterface = {
         email: data.email,
+        student_id: data.student_id || null,
         password: data.password,
         first_name: data.first_name,
         last_name: data.last_name,
         avatar: null,
         google_id: null,
+        is_activated: false,
+        is_banned: false,
       };
       dataUser.password = await this.hashPassword(dataUser.password);
       const createUser = new this._userRepository._model(dataUser);
       let user = await this._userRepository.create(createUser);
+      this._userActivationService.createUserActivation(user._id).then((e) => {
+        this._mailService.sendActivationCode(
+          user._id,
+          user.email,
+          user.first_name,
+          e.activate_code,
+        );
+      });
       return user;
     } catch (error) {
       this._logUtil.errorLogger(error, 'UserService');
@@ -71,11 +93,14 @@ export class UserService {
       }
       let dataUser: UserInterface = {
         email: data.email,
+        student_id: null,
         password: null,
         first_name: data.first_name,
         last_name: data.last_name,
         avatar: data.avatar,
         google_id: data.google_id,
+        is_activated: true,
+        is_banned: false,
       };
       const createUser = new this._userRepository._model(dataUser);
       let user = await this._userRepository.create(createUser);
@@ -86,6 +111,8 @@ export class UserService {
         last_name: user.last_name,
         avatar: user.avatar,
         google_id: user.google_id,
+        is_activated: true,
+        is_banned: false,
       };
     } catch (error) {
       this._logUtil.errorLogger(error, 'UserService');
@@ -141,6 +168,34 @@ export class UserService {
     }
   }
 
+  async resetPassword(email: string) {
+    try {
+      let user = await this._userRepository.getOneDocument({
+        email: email,
+      });
+      if (!user) {
+        throw new HttpException(
+          `Not Found User with email: '${email}'`,
+          HttpStatus.NOT_FOUND,
+        );
+      }
+      let newPassword = '@M0orssalc' + Math.random().toString(36).substr(2, 6);
+      user.password = await this.hashPassword(newPassword);
+      let result = await this._userRepository.updateDocument(
+        { _id: user._id },
+        { password: user.password },
+      );
+      this._mailService.sendResetPassMail(user.email, newPassword);
+      return { status: 200 };
+    } catch (error) {
+      this._logUtil.errorLogger(error, 'UserService');
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+    }
+  }
+
   async updateUser(userID: string, paramId: string, dataUpdate: UpdateUserDTO) {
     try {
       let user = await this._userRepository.getOneDocument({
@@ -155,6 +210,28 @@ export class UserService {
       let result = await this._userRepository.updateDocument(
         { _id: user._id },
         { ...dataUpdate },
+      );
+      return result;
+    } catch (error) {
+      this._logUtil.errorLogger(error, 'UserService');
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async activateUser(userId: string) {
+    try {
+      let user = await this._userRepository.getOneDocument({
+        _id: userId,
+      });
+      if (!user) {
+        throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+      }
+      let result = await this._userRepository.updateDocument(
+        { _id: user._id },
+        { is_activated: true },
       );
       return result;
     } catch (error) {

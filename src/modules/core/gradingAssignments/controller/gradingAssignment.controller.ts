@@ -33,11 +33,10 @@ import {
   GradingAssignmentInterface,
   QueryGradingStudentDto,
   QueryGradingAssignmentDto,
-  CreateArrayGradingDto,
-  UpdateArrayGradingDto,
-  CreateGradingByFileDto,
-  DownloadQueryDto,
   QueryAssignmentDto,
+  UpdateGradingAssignmentDto,
+  UpdateGradingStatusDto,
+  GradingQuery,
 } from 'src/interfaces';
 import { AllowFors } from 'src/decorators/allowFors.decorator';
 import { Role } from 'src/enums';
@@ -61,14 +60,14 @@ export class GradingAssignmentControllerV1 {
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @AllowFors(Role.Admin, Role.Teacher)
+  @AllowFors(Role.Owner, Role.Teacher)
   @Post('/:class_id/grading')
   async createService(
     @Param() param: QueryClassDto,
-    @Body() body: CreateArrayGradingDto,
+    @Body() body: CreateGradingAssignmentDto,
   ) {
     return await this._gradingAssignmentService.createGradingAssignment(
-      body.data,
+      body,
       param.class_id,
     );
   }
@@ -77,8 +76,29 @@ export class GradingAssignmentControllerV1 {
     name: 'XSRF-Token',
     description: 'XSRF-Token',
   })
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @AllowFors(Role.Admin, Role.Teacher)
+  @AllowFors(Role.Owner, Role.Teacher)
+  @Put('/:class_id/grading/finalize')
+  async updateStatusService(
+    @Param() param: QueryClassDto,
+    @Body() body: UpdateGradingStatusDto,
+    @Req() req,
+  ) {
+    return await this._gradingAssignmentService.updateStatus(
+      param.class_id,
+      body.assignment_id,
+      req.user._id,
+      req.user.name,
+    );
+  }
+
+  @ApiHeader({
+    name: 'XSRF-Token',
+    description: 'XSRF-Token',
+  })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @AllowFors(Role.Owner, Role.Teacher)
   @ApiConsumes('multipart/form-data')
   @ApiFile('csv')
   @UseInterceptors(
@@ -124,14 +144,14 @@ export class GradingAssignmentControllerV1 {
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @AllowFors(Role.Admin, Role.Teacher)
+  @AllowFors(Role.Owner, Role.Teacher)
   @Put('/:class_id/grading')
   async updateService(
     @Param() param: QueryClassDto,
-    @Body() body: UpdateArrayGradingDto,
+    @Body() body: UpdateGradingAssignmentDto,
   ) {
     return await this._gradingAssignmentService.updateGradingAssignment(
-      body.data,
+      body,
       param.class_id,
     );
   }
@@ -142,7 +162,7 @@ export class GradingAssignmentControllerV1 {
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @AllowFors(Role.Admin, Role.Teacher, Role.Student)
+  @AllowFors(Role.Owner, Role.Teacher, Role.Student)
   @Get('/:class_id/grading')
   async getAllService(
     @Query() query: GenericQuery,
@@ -160,7 +180,7 @@ export class GradingAssignmentControllerV1 {
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @AllowFors(Role.Admin, Role.Teacher, Role.Student)
+  @AllowFors(Role.Student)
   @Get('/:class_id/grading/student/:student_id')
   async getAllServiceByStudentId(
     @Query() query: GenericQuery,
@@ -179,9 +199,9 @@ export class GradingAssignmentControllerV1 {
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @AllowFors(Role.Admin, Role.Teacher, Role.Student)
+  @AllowFors(Role.Owner, Role.Teacher)
   @Get('/:class_id/grading/assignment/:assignment_id')
-  async getAllServiceBAssignmentId(
+  async getAllServiceAssignmentId(
     @Query() query: GenericQuery,
     @Param() param: QueryGradingAssignmentDto,
   ): Promise<HttpException | GenericRes<GradingAssignmentInterface>> {
@@ -198,7 +218,7 @@ export class GradingAssignmentControllerV1 {
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @AllowFors(Role.Admin, Role.Teacher, Role.Student)
+  @AllowFors(Role.Owner, Role.Teacher, Role.Student)
   @Get(':class_id/grading/assignment/:assignment_id/export')
   async exportFile(@Param() param: QueryAssignmentDto, @Req() req, @Res() res) {
     let result = await this._gradingAssignmentService.exportMark(
@@ -207,5 +227,24 @@ export class GradingAssignmentControllerV1 {
     );
     res.attachment('grading.csv');
     res.status(200).send(result);
+  }
+
+  @ApiHeader({
+    name: 'XSRF-Token',
+    description: 'XSRF-Token',
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @AllowFors(Role.Student)
+  @Get('/:class_id/grading/finalize')
+  async getFinalService(
+    @Query() query: GradingQuery,
+    @Param() param: QueryClassDto,
+  ) {
+    return await this._gradingAssignmentService.getFinalGrading(
+      param.class_id,
+      query.student_id,
+      query.assignment_id,
+    );
   }
 }

@@ -13,6 +13,7 @@ import { ClassRepository } from '../../../connector/repository';
 import { LoggerUtilService } from '../../../shared/loggerUtil';
 import { UserService } from '../../users/services/user.service';
 import { MailService } from 'src/modules/feature/mail/mail.service';
+import { ActivityStreamService } from '../../activityStreams/services/activityStream.service';
 
 @Injectable()
 export class ClassService {
@@ -21,6 +22,7 @@ export class ClassService {
     private _classRepository: ClassRepository,
     private _userService: UserService,
     private _mailService: MailService,
+    private _activityStreamService: ActivityStreamService,
     private _logUtil: LoggerUtilService,
   ) {
     this.onCreate();
@@ -40,7 +42,7 @@ export class ClassService {
       let teacher: ClassroomUserInterface = {
         user_id: userId,
         status: 'ACTIVATED',
-        role: 'ADMIN',
+        role: 'OWNER',
         invite_code: Math.random().toString(36).substr(2, 6),
       };
       dataClass.users.push(teacher);
@@ -97,7 +99,12 @@ export class ClassService {
     }
   }
 
-  async updateClassById(classId: string, dataUpdate: UpdateClassDto) {
+  async updateClassById(
+    classId: string,
+    dataUpdate: UpdateClassDto,
+    userId: string,
+    username: string,
+  ) {
     try {
       let classes = await this._classRepository.getOneDocument({
         _id: classId,
@@ -109,6 +116,15 @@ export class ClassService {
         { _id: classes._id },
         dataUpdate,
       );
+      this._activityStreamService.createActivityStream({
+        class_id: classId,
+        type: 'CLASSROOM_INFO_UPDATE',
+        description: `${username} has updated classroom details: ${Object.keys(
+          dataUpdate,
+        )}`,
+        actor: userId,
+        assignment_id: null,
+      });
       return { status: 200 };
     } catch (error) {
       this._logUtil.errorLogger(error, 'ClassService');
@@ -195,6 +211,54 @@ export class ClassService {
     }
   }
 
+  async getStudentInClass(classId: string) {
+    try {
+      let classes = await this._classRepository.getOneDocument({
+        _id: classId,
+      });
+      if (!classes) {
+        throw new HttpException('Not Found Class', HttpStatus.NOT_FOUND);
+      }
+      let users = classes.users;
+      let arrayId = [];
+      for (let i = 0; i < users.length; i++) {
+        if (users[i].role === 'STUDENT' && users[i].status === 'ACTIVATED')
+          arrayId.push(users[i].user_id);
+      }
+      return { list_user: arrayId };
+    } catch (error) {
+      this._logUtil.errorLogger(error, 'ClassService');
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async getTeachersInClass(classId: string) {
+    try {
+      let classes = await this._classRepository.getOneDocument({
+        _id: classId,
+      });
+      if (!classes) {
+        throw new HttpException('Not Found Class', HttpStatus.NOT_FOUND);
+      }
+      let users = classes.users;
+      let arrayId = [];
+      for (let i = 0; i < users.length; i++) {
+        if (users[i].role !== 'STUDENT' && users[i].status === 'ACTIVATED')
+          arrayId.push(users[i].user_id);
+      }
+      return { list_user: arrayId };
+    } catch (error) {
+      this._logUtil.errorLogger(error, 'ClassService');
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+    }
+  }
+
   async inviteUser(
     classId: string,
     teacherId: string,
@@ -212,7 +276,7 @@ export class ClassService {
       if (
         index == -1 ||
         (classes.users[index].role != 'TEACHER' &&
-          classes.users[index].role != 'ADMIN')
+          classes.users[index].role != 'OWNER')
       ) {
         throw new HttpException('Not Acceptable', HttpStatus.NOT_ACCEPTABLE);
       }
@@ -266,6 +330,7 @@ export class ClassService {
     userId: string,
     role: 'TEACHER' | 'STUDENT',
     code: string,
+    username: string,
   ) {
     try {
       let classes = await this._classRepository.getOneDocument({
@@ -294,6 +359,15 @@ export class ClassService {
         { _id: classId },
         { users: classes.users },
       );
+      if (role == 'TEACHER') {
+        this._activityStreamService.createActivityStream({
+          class_id: classId,
+          type: 'TEACHER_JOIN',
+          description: `${username} has joined this class as a teacher`,
+          actor: userId,
+          assignment_id: null,
+        });
+      }
       return { status: 200 };
     } catch (error) {
       this._logUtil.errorLogger(error, 'ClassService');
@@ -400,7 +474,7 @@ export class ClassService {
           HttpStatus.NOT_FOUND,
         );
       }
-      if (classes.users[index].role == 'ADMIN') {
+      if (classes.users[index].role == 'OWNER') {
         throw new HttpException(
           'Admin Can Not Leave Class',
           HttpStatus.BAD_REQUEST,
@@ -446,7 +520,7 @@ export class ClassService {
           HttpStatus.NOT_FOUND,
         );
       }
-      if (classes.users[index].role != 'ADMIN') {
+      if (classes.users[index].role != 'OWNER') {
         throw new HttpException(
           'Only Admin Can Delete Class',
           HttpStatus.NOT_ACCEPTABLE,
@@ -482,7 +556,7 @@ export class ClassService {
           HttpStatus.NOT_FOUND,
         );
       }
-      if (classes.users[index].role != 'ADMIN') {
+      if (classes.users[index].role != 'OWNER') {
         throw new HttpException(
           'Only Admin Can Restore Class',
           HttpStatus.NOT_ACCEPTABLE,
@@ -518,7 +592,7 @@ export class ClassService {
           HttpStatus.NOT_FOUND,
         );
       }
-      if (classes.users[index].role != 'ADMIN') {
+      if (classes.users[index].role != 'OWNER') {
         throw new HttpException(
           'Only Admin Can Remove Class',
           HttpStatus.NOT_ACCEPTABLE,

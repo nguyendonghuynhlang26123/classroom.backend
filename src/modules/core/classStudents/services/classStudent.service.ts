@@ -11,6 +11,7 @@ import { LoggerUtilService } from '../../../shared/loggerUtil';
 import { ImportCsvService } from 'src/modules/feature/importCsv/services/importCsv.service';
 import { join } from 'path';
 import { readFileSync } from 'fs';
+import { ActivityStreamService } from '../../activityStreams/services/activityStream.service';
 
 @Injectable()
 export class ClassStudentService {
@@ -18,12 +19,18 @@ export class ClassStudentService {
   constructor(
     private _classStudentRepository: ClassStudentRepository,
     private _importCsvService: ImportCsvService,
+    private _activityStreamService: ActivityStreamService,
     private _logUtil: LoggerUtilService,
   ) {
     this.onCreate();
   }
 
-  async createClassStudent(file, classId: string) {
+  async createClassStudent(
+    file,
+    classId: string,
+    userId: string,
+    username: string,
+  ) {
     try {
       let dataClassStudent: ClassStudentInterface = {
         class_id: classId,
@@ -49,6 +56,13 @@ export class ClassStudentService {
       let classStudent = await this._classStudentRepository.create(
         createClassStudent,
       );
+      this._activityStreamService.createActivityStream({
+        class_id: classId,
+        type: 'CLASSROOM_INFO_UPDATE',
+        description: `${username} has uploaded a new list of students for this class`,
+        actor: userId,
+        assignment_id: null,
+      });
       return classStudent;
     } catch (error) {
       this._logUtil.errorLogger(error, 'ClassStudentService');
@@ -65,7 +79,12 @@ export class ClassStudentService {
     }
   }
 
-  async updateClassStudent(file, classId: string) {
+  async updateClassStudent(
+    file,
+    classId: string,
+    userId: string,
+    username: string,
+  ) {
     try {
       if (file == null) {
         throw new HttpException(
@@ -97,6 +116,13 @@ export class ClassStudentService {
           students: classStudent.students,
         },
       );
+      this._activityStreamService.createActivityStream({
+        class_id: classId,
+        type: 'CLASSROOM_INFO_UPDATE',
+        description: `${username} has uploaded a new list of students for this class`,
+        actor: userId,
+        assignment_id: null,
+      });
       return { status: 200 };
     } catch (error) {
       this._logUtil.errorLogger(error, 'ClassStudentService');
@@ -200,6 +226,17 @@ export class ClassStudentService {
           HttpStatus.NOT_FOUND,
         );
       }
+
+      //Find previous studentId that this userId had synced
+      let previousSyncIndex = classStudent.students.findIndex(
+        (e) => e.user_id && e.user_id.toString() === userId.toString(),
+      );
+      if (previousSyncIndex !== -1) {
+        classStudent.students[previousSyncIndex].status = 'NOT_SYNCED';
+        classStudent.students[previousSyncIndex].user_id = null;
+      }
+
+      //Check new studentId is suitable for synchronizing
       let index = classStudent.students.findIndex((e) => {
         return e.student_id == studentId;
       });

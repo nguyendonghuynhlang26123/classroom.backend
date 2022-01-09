@@ -21,18 +21,13 @@ import * as path from 'path';
 import { bucket, storage } from 'src/connectFirebase';
 import { JwtAuthGuard } from 'src/modules/core/auth/guard/jwt-auth.guard';
 import { ApiFile } from 'src/decorators';
-var ImageKit = require('imagekit');
-var imagekit = new ImageKit({
-  publicKey: 'public_xm+LGgkPKYxwp2LhqZN0osZtQf8=',
-  privateKey: 'private_MgB6KkHFOT4EV4kG4d4eE5PZQAI=',
-  urlEndpoint: 'https://ik.imagekit.io/mv9a74wawbo/',
-});
+import { UploadFileService } from './uploadFile.service';
 
 @Controller('v1/upload-files')
 @ApiTags('Upload Files')
 @UseInterceptors(CacheInterceptor)
 export class UploadFileControllerV1 {
-  constructor() {}
+  constructor(private _uploadFileService: UploadFileService) {}
 
   @ApiHeader({
     name: 'XSRF-Token',
@@ -89,14 +84,7 @@ export class UploadFileControllerV1 {
     if (!file) {
       return res.status(400).send('Error: No files found');
     }
-    const uniqueSuffix = `${Date.now()}${Math.round(Math.random() * 1e9)}`;
-    const filename =
-      file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname);
-
-    let data = await imagekit.upload({
-      file: file.buffer,
-      fileName: filename,
-    });
+    let data = await this._uploadFileService.uploadImageKit(file);
     return res.status(200).send(data);
   }
 

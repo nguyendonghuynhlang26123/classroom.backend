@@ -73,14 +73,19 @@ export class ClassControllerV1 {
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @AllowFors(Role.Admin, Role.Teacher)
+  @AllowFors(Role.Owner, Role.Teacher)
   @Put(':class_id')
   async updateService(
     @Param() param: QueryClassDto,
     @Req() req,
     @Body() body: UpdateClassDto,
   ) {
-    return await this._classService.updateClassById(param.class_id, body);
+    return await this._classService.updateClassById(
+      param.class_id,
+      body,
+      req.user._id,
+      req.user.name,
+    );
   }
 
   @ApiHeader({
@@ -151,6 +156,7 @@ export class ClassControllerV1 {
       req.user._id,
       body.role,
       body.code,
+      req.user.name,
     );
   }
 

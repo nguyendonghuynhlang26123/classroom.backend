@@ -15,6 +15,8 @@ import { IsVNName } from './base/validVNName';
 
 export class UserInterface extends IBase {
   @ApiProperty()
+  student_id: string;
+  @ApiProperty()
   password: string;
   @ApiProperty()
   first_name: string;
@@ -26,9 +28,18 @@ export class UserInterface extends IBase {
   email: string;
   @ApiProperty()
   google_id: string;
+  @ApiProperty()
+  is_activated: boolean;
+  @ApiProperty()
+  is_banned: boolean;
 }
 
 export class UpdateUserDTO {
+  @ApiProperty({ type: String })
+  @IsString()
+  @IsOptional()
+  student_id?: string;
+
   @ApiProperty({ type: String })
   @IsString()
   @Matches(

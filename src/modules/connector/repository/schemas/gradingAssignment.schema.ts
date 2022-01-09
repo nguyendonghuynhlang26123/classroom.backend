@@ -36,6 +36,12 @@ export class GradingAssignment
   @Prop({ type: Number, default: null })
   mark: number;
 
+  @Prop({ type: String, default: 'DRAFT' })
+  status: 'FINAL' | 'DRAFT';
+
+  @Prop([{ type: mongoose.Schema.Types.ObjectId, ref: 'grade-reviews' }])
+  reviews: string[];
+
   @Prop({ type: Number })
   created_at: number;
 

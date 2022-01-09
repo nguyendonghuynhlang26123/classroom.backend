@@ -13,11 +13,13 @@ import { TokenService } from '../../token/token.service';
 import { LoginDto } from 'src/interfaces';
 import { IPayLoadToken } from 'src/interfaces';
 import { UnauthorizedException } from '@nestjs/common';
+import { AdminService } from '../../admins/services/admin.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UserService,
+    private adminService: AdminService,
     private _tokenService: TokenService,
     private jwtService: JwtService,
     private _logUtil: LoggerUtilService,
@@ -36,6 +38,29 @@ export class AuthService {
     const data: IPayLoadToken = {
       _id: result._id,
       email: result.email,
+      name: result.first_name + '' + result.last_name,
+      is_activated: result.is_activated,
+      is_banned: result.is_banned,
+    };
+    return data;
+  }
+
+  async validateAdmin(email: string, pass: string): Promise<any> {
+    const admin = await this.adminService.getOneAdmin(email);
+    if (!admin) {
+      return null;
+    }
+    const match = await bcrypt.compare(pass, admin.password);
+    if (!match) {
+      return null;
+    }
+    const { password, ...result } = admin;
+    const data: IPayLoadToken = {
+      _id: result._id,
+      email: result.email,
+      name: result.name,
+      is_activated: true,
+      is_banned: false,
     };
     return data;
   }
@@ -53,6 +78,35 @@ export class AuthService {
     }
     const token = await this._tokenService.createToken(
       'user',
+      data._id,
+      Date.now() + 2592000000,
+    );
+    return {
+      user: data,
+      access_token: this.jwtService.sign({ ...data }),
+      refresh_token: this.jwtService.sign(
+        { ...data, jwt_id: token._id },
+        {
+          expiresIn: 2592000,
+          secret: jwtConstants.refresh_secret,
+        },
+      ),
+    };
+  }
+
+  async adminLogin(user: LoginDto) {
+    if (!user) {
+      throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+    }
+    let data;
+    if (user.email) {
+      data = await this.validateAdmin(user.email, user.password);
+    }
+    if (!user.email) {
+      throw new HttpException('BAD REQUEST', HttpStatus.BAD_REQUEST);
+    }
+    const token = await this._tokenService.createToken(
+      'admin',
       data._id,
       Date.now() + 2592000000,
     );
@@ -125,6 +179,51 @@ export class AuthService {
       const data: IPayLoadToken = {
         _id: result._id,
         email: result.email,
+        name: result.first_name + '' + result.last_name,
+        is_activated: result.is_activated,
+        is_banned: result.is_banned,
+      };
+      return {
+        user: data,
+        refresh_token: refreshToken,
+        access_token: this.jwtService.sign(data),
+      };
+    } catch (error) {
+      this._logUtil.errorLogger(error, 'AuthService');
+      throw new HttpException('Token Expried', HttpStatus.CONFLICT);
+    }
+  }
+
+  async adminRefreshToken(refreshToken: string) {
+    try {
+      const check: IPayLoadToken = await this.jwtService.verifyAsync(
+        refreshToken,
+        {
+          secret: jwtConstants.refresh_secret,
+        },
+      );
+      if (!check || !check.jwt_id) {
+        throw new HttpException('FORBIDDEN', HttpStatus.FORBIDDEN);
+      }
+      const token = await this._tokenService.getToken(check.jwt_id);
+
+      if (token.is_revoked) {
+        throw new UnprocessableEntityException('Refresh token revoked');
+      }
+      if (token.expires < Date.now()) {
+        throw new UnprocessableEntityException('Refresh token expired');
+      }
+      const result = await this.adminService.getOneAdmin(check.email);
+      if (!result) {
+        throw new HttpException('UNAUTHORIZED', HttpStatus.UNAUTHORIZED);
+      }
+
+      const data: IPayLoadToken = {
+        _id: result._id,
+        email: result.email,
+        name: result.name,
+        is_activated: true,
+        is_banned: false,
       };
       return {
         user: data,

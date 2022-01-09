@@ -10,4 +10,8 @@ export class GradingAssignmentInterface extends IBase {
   student_id: string;
   @ApiProperty()
   mark: number;
+  @ApiProperty()
+  status: 'FINAL' | 'DRAFT';
+  @ApiProperty()
+  reviews: string[];
 }

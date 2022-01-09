@@ -8,7 +8,7 @@ export class ClassroomUserInterface extends IBase {
   @ApiProperty()
   status: 'ACTIVATED' | 'INACTIVATED';
   @ApiProperty()
-  role: 'ADMIN' | 'TEACHER' | 'STUDENT';
+  role: 'OWNER' | 'TEACHER' | 'STUDENT';
   @ApiProperty()
   invite_code: string;
 }

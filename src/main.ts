@@ -7,6 +7,7 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import * as cookieParser from 'cookie-parser';
 import * as dotenv from 'dotenv';
 import * as fs from 'fs';
+import { RedisIoAdapter } from './socket.adapter';
 
 dotenv.config();
 
@@ -17,12 +18,16 @@ async function bootstrap() {
   });
   // app.useStaticAssets(join(__dirname, '..', 'public'));
   app.useGlobalPipes(new ValidationPipe());
+  app.useWebSocketAdapter(new RedisIoAdapter(app));
+
   app.use(cookieParser());
   const allowList = [
     'https://btcn02-18127136-18127269.netlify.app',
     'https://moorssalc-app.herokuapp.com',
     'http://localhost:3000',
+    'http://localhost:4000',
     'https://nguyendonghuynhlang26123.github.io',
+    'ws://localhost:8080',
   ];
   app.enableCors((req, callback) => {
     let corsOptions = {
@@ -65,7 +70,7 @@ async function bootstrap() {
     .setVersion('1.0')
     .build();
   const document = SwaggerModule.createDocument(app, options);
-  fs.writeFileSync('./swagger-spec.json', JSON.stringify(document));
+  // fs.writeFileSync('./swagger-spec.json', JSON.stringify(document));
   SwaggerModule.setup('docs', app, document);
   await app.listen(parseInt(process.env.PORT) || 3001, '0.0.0.0');
   console.log(`Application is running on: ${await app.getUrl()}`);

@@ -103,6 +103,11 @@ export class UpdateClassDto {
   @ApiProperty({ type: String })
   @IsString()
   @IsOptional()
+  image?: string;
+
+  @ApiProperty({ type: String })
+  @IsString()
+  @IsOptional()
   subject?: string;
 
   @ApiProperty({ type: String })
