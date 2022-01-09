@@ -52,6 +52,7 @@ export class UserService {
       let user = await this._userRepository.create(createUser);
       this._userActivationService.createUserActivation(user._id).then((e) => {
         this._mailService.sendActivationCode(
+          user._id,
           user.email,
           user.first_name,
           e.activate_code,

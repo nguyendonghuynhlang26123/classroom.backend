@@ -35,12 +35,19 @@ export class MailService {
     });
   }
 
-  async sendActivationCode(email: string, firstName: string, code: string) {
+  async sendActivationCode(
+    userId: string,
+    email: string,
+    firstName: string,
+    code: string,
+  ) {
     await this.mailerService.sendMail({
       from: '"No Reply" <thependailynews@gmail.com>',
       to: email,
-      subject: `Reset password - ${new Date(Date.now()).toLocaleDateString()}`,
-      html: `<p>Hello ${firstName}, click here to activate the account. Link: </p><a target="_blank" rel="noopener noreferrer" href="${process.env.FRONT_END_HOST}/mail-activate?code=${code}">Click here</a>`,
+      subject: `Activate account - ${new Date(
+        Date.now(),
+      ).toLocaleDateString()}`,
+      html: `<p>Hello ${firstName}, click the link below to activate the account. Link: </p><a target="_blank" rel="noopener noreferrer" href="${process.env.FRONT_END_HOST}/mail-activate?code=${code}&id=${userId}">Activation link</a>`,
     });
   }
 }

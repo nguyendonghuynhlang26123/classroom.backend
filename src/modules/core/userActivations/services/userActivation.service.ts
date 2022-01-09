@@ -1,4 +1,10 @@
-import { Injectable, HttpException, HttpStatus, forwardRef, Inject } from '@nestjs/common';
+import {
+  Injectable,
+  HttpException,
+  HttpStatus,
+  forwardRef,
+  Inject,
+} from '@nestjs/common';
 import {
   UserActivationInterface,
   GenericRes,
@@ -73,7 +79,7 @@ export class UserActivationService {
         );
       }
       const check = await this._userActivationRepository.getOneDocument({
-        _id: userId,
+        user: user._id,
       });
       if (!check) {
         throw new HttpException(

@@ -53,7 +53,7 @@ export class UserActivationControllerV1 {
     description: 'XSRF-Token',
   })
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @Post('/:user_id/activate')
   async activateService(
     @Param() param: ParamUserDto,
