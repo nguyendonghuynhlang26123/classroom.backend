@@ -27,7 +27,7 @@ export class NotificationGateway implements OnGatewayConnection {
       console.log('connect');
       const cookies = cookie.parse(client.handshake.headers.cookie);
       const user = await this._authService.verifyToken(
-        cookies.access_token_cms,
+        cookies.access_token,
       );
       this._deviceService.createDevice({
         socket_id: client.id,
@@ -41,7 +41,7 @@ export class NotificationGateway implements OnGatewayConnection {
   async handleDisconnect(client: Socket) {
     console.log('disconnect');
     const cookies = cookie.parse(client.handshake.headers.cookie);
-    const user = await this._authService.verifyToken(cookies.access_token_cms);
+    const user = await this._authService.verifyToken(cookies.access_token);
     this._deviceService.removeDevice({
       socket_id: client.id,
       user_id: user._id,
