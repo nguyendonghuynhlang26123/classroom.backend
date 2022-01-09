@@ -60,6 +60,40 @@ export class AdminService {
     }
   }
 
+  async createAdminRoot() {
+    try {
+      const check = await this._adminRepository.getOneDocument({
+        is_root: true,
+      });
+      if (check) {
+        return;
+      }
+      let dataAdmin: AdminInterface = {
+        email: 'admin@mail.com',
+        password: 'Abc@123',
+        name: 'admin',
+        avatar: null,
+        is_root: true,
+      };
+      dataAdmin.password = await this.hashPassword(dataAdmin.password);
+      const createAdmin = new this._adminRepository._model(dataAdmin);
+      let admin = await this._adminRepository.create(createAdmin);
+      return admin;
+    } catch (error) {
+      this._logUtil.errorLogger(error, 'AdminService');
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      if (error.code == 11000 || error.code == 11001) {
+        throw new HttpException(
+          `Duplicate key error collection: ${Object.keys(error.keyValue)}`,
+          HttpStatus.CONFLICT,
+        );
+      }
+      throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+    }
+  }
+
   async hashPassword(password) {
     const saltRounds = 10;
     const hash = await bcrypt.hashSync(password, saltRounds);
@@ -404,5 +438,7 @@ export class AdminService {
     return admin;
   }
 
-  onCreate() {}
+  onCreate() {
+    this.createAdminRoot();
+  }
 }
