@@ -1,4 +1,10 @@
-import { Injectable, HttpException, HttpStatus, forwardRef, Inject } from '@nestjs/common';
+import {
+  Injectable,
+  HttpException,
+  HttpStatus,
+  forwardRef,
+  Inject,
+} from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import {
   UserInterface,
@@ -39,6 +45,7 @@ export class UserService {
         avatar: null,
         google_id: null,
         is_activated: false,
+        is_banned: false,
       };
       dataUser.password = await this.hashPassword(dataUser.password);
       const createUser = new this._userRepository._model(dataUser);
@@ -92,6 +99,7 @@ export class UserService {
         avatar: data.avatar,
         google_id: data.google_id,
         is_activated: true,
+        is_banned: false,
       };
       const createUser = new this._userRepository._model(dataUser);
       let user = await this._userRepository.create(createUser);

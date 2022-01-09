@@ -30,6 +30,8 @@ export class UserInterface extends IBase {
   google_id: string;
   @ApiProperty()
   is_activated: boolean;
+  @ApiProperty()
+  is_banned: boolean;
 }
 
 export class UpdateUserDTO {

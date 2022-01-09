@@ -12,4 +12,5 @@ export class IPayLoadToken extends IBase {
   name?: string;
   jwt_id?: string;
   is_activated?: boolean;
+  is_banned?: boolean;
 }

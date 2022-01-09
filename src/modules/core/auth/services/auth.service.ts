@@ -40,6 +40,7 @@ export class AuthService {
       email: result.email,
       name: result.first_name + '' + result.last_name,
       is_activated: result.is_activated,
+      is_banned: result.is_banned,
     };
     return data;
   }
@@ -59,6 +60,7 @@ export class AuthService {
       email: result.email,
       name: result.name,
       is_activated: true,
+      is_banned: false,
     };
     return data;
   }
@@ -179,6 +181,7 @@ export class AuthService {
         email: result.email,
         name: result.first_name + '' + result.last_name,
         is_activated: result.is_activated,
+        is_banned: result.is_banned,
       };
       return {
         user: data,
@@ -220,6 +223,7 @@ export class AuthService {
         email: result.email,
         name: result.name,
         is_activated: true,
+        is_banned: false,
       };
       return {
         user: data,

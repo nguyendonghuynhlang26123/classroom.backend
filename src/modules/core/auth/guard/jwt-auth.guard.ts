@@ -32,6 +32,10 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       throw new HttpException('Account is not activated', HttpStatus.FORBIDDEN);
     }
 
+    if (user.is_banned) {
+      throw new HttpException('User is banned', HttpStatus.FORBIDDEN);
+    }
+
     return user;
   }
 }
