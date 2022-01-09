@@ -111,6 +111,8 @@ export class UserService {
         last_name: user.last_name,
         avatar: user.avatar,
         google_id: user.google_id,
+        is_activated: true,
+        is_banned: false,
       };
     } catch (error) {
       this._logUtil.errorLogger(error, 'UserService');

@@ -15,7 +15,7 @@ import { DeviceService } from '../../devices/services/device.service';
 import * as dotenv from 'dotenv';
 dotenv.config();
 
-const port = parseInt(process.env.PORT) || 8080;
+const port = parseInt(process.env.PORT) || 3001;
 @WebSocketGateway(port, { namespace: '/socket/notification', cors: true })
 export class NotificationGateway implements OnGatewayConnection {
   constructor(
