@@ -6,11 +6,13 @@ import {
 } from 'src/interfaces';
 import { NotificationRepository } from '../../../connector/repository';
 import { LoggerUtilService } from '../../../shared/loggerUtil';
+import { DeviceService } from '../../devices/services/device.service';
 
 @Injectable()
 export class NotificationService {
   constructor(
     private _notificationRepository: NotificationRepository,
+    private _deviceService: DeviceService,
     private _logUtil: LoggerUtilService,
   ) {
     this.onCreate();
@@ -22,6 +24,7 @@ export class NotificationService {
       let notification = await this._notificationRepository.create(
         createNotification,
       );
+      this._deviceService.pushNoti(notification.for, notification.description);
       return notification;
     } catch (error) {
       this._logUtil.errorLogger(error, 'NotificationService');

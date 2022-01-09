@@ -6,6 +6,7 @@ import { AuthModule } from './auth/auth.module';
 import { BlackListModule } from './blackLists/blackList.module';
 import { ClassModule } from './classes/class.module';
 import { ClassStudentModule } from './classStudents/classStudent.module';
+import { DeviceModule } from './devices/device.module';
 import { GradeReviewModule } from './gradeReviews/gradeReview.module';
 import { GradingAssignmentModule } from './gradingAssignments/gradingAssignment.module';
 import { NotificationModule } from './notifications/notification.module';
@@ -28,6 +29,7 @@ import { UserModule } from './users/user.module';
     BlackListModule,
     NotificationModule,
     UserActivationModule,
+    DeviceModule,
   ],
   providers: [],
   exports: [],

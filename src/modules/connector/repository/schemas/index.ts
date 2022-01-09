@@ -10,3 +10,4 @@ export * from './admin.schema';
 export * from './blackList.schema';
 export * from './notification.schema';
 export * from './userActivation.schema';
+export * from './device.schema';

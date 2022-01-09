@@ -11,6 +11,7 @@ export * from './admin.interface';
 export * from './blackList.interface';
 export * from './notification.interface';
 export * from './userActivation.interface';
+export * from './device.interface';
 export * from './req.interface';
 export * from './res.interface';
 

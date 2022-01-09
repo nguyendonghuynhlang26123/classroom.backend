@@ -10,3 +10,4 @@ export * from './admin.repository';
 export * from './blackList.repository';
 export * from './notification.repository';
 export * from './userActivation.repository';
+export * from './device.repository';

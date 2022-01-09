@@ -7,6 +7,7 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import * as cookieParser from 'cookie-parser';
 import * as dotenv from 'dotenv';
 import * as fs from 'fs';
+import { RedisIoAdapter } from './socket.adapter';
 
 dotenv.config();
 
@@ -17,6 +18,8 @@ async function bootstrap() {
   });
   // app.useStaticAssets(join(__dirname, '..', 'public'));
   app.useGlobalPipes(new ValidationPipe());
+  app.useWebSocketAdapter(new RedisIoAdapter(app));
+
   app.use(cookieParser());
   const allowList = [
     'https://btcn02-18127136-18127269.netlify.app',
@@ -24,6 +27,7 @@ async function bootstrap() {
     'http://localhost:3000',
     'http://localhost:4000',
     'https://nguyendonghuynhlang26123.github.io',
+    'ws://localhost:8080',
   ];
   app.enableCors((req, callback) => {
     let corsOptions = {
