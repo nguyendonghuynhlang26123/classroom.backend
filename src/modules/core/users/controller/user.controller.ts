@@ -65,27 +65,13 @@ export class UserControllerV1 {
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
-  @Put('changePass/:user_id')
+  @Put(':user_id/changePass')
   async changePassService(
     @Request() req,
     @Param() param: { user_id: string },
     @Body() pass: ChangePassDTO,
   ) {
     return await this.userService.changePass(req.user._id, param.user_id, pass);
-  }
-
-  @ApiHeader({
-    name: 'XSRF-Token',
-    description: 'XSRF-Token',
-  })
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
-  @Put('/:user_id/reset_password')
-  async resetPassService(
-    @Request() req,
-    @Param() param: ParamUserDto,
-  ) {
-    return await this.userService.resetPassword(req.user._id, param.user_id, req.user.is_activated);
   }
 
   @ApiHeader({

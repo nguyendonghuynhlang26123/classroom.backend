@@ -192,4 +192,18 @@ export class AuthController {
     await this.logOutService.logOutAllDevice(req.user);
     return res.send({ status: 200 });
   }
+
+  @ApiHeader({
+    name: 'XSRF-Token',
+    description: 'XSRF-Token',
+  })
+  @Post('/auth/reset_password')
+  async resetPass(
+    @Res() res: Response,
+    @Req() req,
+    @Body() body: { email: string },
+  ) {
+    await this.userService.resetPassword(body.email);
+    return res.send({ status: 200 });
+  }
 }

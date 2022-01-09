@@ -166,24 +166,18 @@ export class UserService {
     }
   }
 
-  async resetPassword(userId: string, paramId: string, isActivated: boolean) {
+  async resetPassword(email: string) {
     try {
-      if (userId != paramId) {
-        throw new HttpException('Not Expired', HttpStatus.CONFLICT);
-      }
-      if (!isActivated) {
-        throw new HttpException(
-          'Account is not activated',
-          HttpStatus.BAD_REQUEST,
-        );
-      }
       let user = await this._userRepository.getOneDocument({
-        _id: userId,
+        email: email,
       });
       if (!user) {
-        throw new HttpException('Not Found User', HttpStatus.NOT_FOUND);
+        throw new HttpException(
+          `Not Found User with email: '${email}'`,
+          HttpStatus.NOT_FOUND,
+        );
       }
-      let newPassword = Math.random().toString(36).substr(2, 6);
+      let newPassword = '@M0orssalc' + Math.random().toString(36).substr(2, 6);
       user.password = await this.hashPassword(newPassword);
       let result = await this._userRepository.updateDocument(
         { _id: user._id },
