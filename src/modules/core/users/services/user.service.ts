@@ -222,7 +222,7 @@ export class UserService {
         let check = await this._userRepository.getOneDocument({
           student_id: dataUpdate.student_id,
         });
-        if (check && check._id != user._id) {
+        if (check && check._id != userID) {
           throw new HttpException(
             'Student Id Already Exist',
             HttpStatus.CONFLICT,
