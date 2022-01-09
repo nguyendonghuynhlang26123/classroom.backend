@@ -37,6 +37,9 @@ export class User extends Document implements UserInterface {
   @Prop({ type: Boolean, default: false })
   is_activated: boolean;
 
+  @Prop({ type: Boolean, default: false })
+  is_banned: boolean;
+
   @Prop({ type: Number })
   created_at: number;
 

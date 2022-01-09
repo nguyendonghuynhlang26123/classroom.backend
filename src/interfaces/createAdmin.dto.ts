@@ -68,3 +68,10 @@ export class ParamUserDto {
   @IsNotEmpty()
   user_id: string;
 }
+
+export class ParamBlacklistDto {
+  @ApiProperty({ type: String })
+  @IsString()
+  @IsNotEmpty()
+  blacklist_id: string;
+}
