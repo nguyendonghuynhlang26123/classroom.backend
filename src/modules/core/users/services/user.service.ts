@@ -36,6 +36,17 @@ export class UserService {
 
   async createUser(data: CreateUserDto) {
     try {
+      if (data.student_id) {
+        let check = await this._userRepository.getOneDocument({
+          student_id: data.student_id,
+        });
+        if (check) {
+          throw new HttpException(
+            'Student Id Already Exist',
+            HttpStatus.CONFLICT,
+          );
+        }
+      }
       let dataUser: UserInterface = {
         email: data.email,
         student_id: data.student_id || null,
@@ -206,6 +217,17 @@ export class UserService {
       }
       if (userID != paramId) {
         throw new HttpException('Not Expired', HttpStatus.CONFLICT);
+      }
+      if (dataUpdate.student_id) {
+        let check = await this._userRepository.getOneDocument({
+          student_id: dataUpdate.student_id,
+        });
+        if (check && check._id != user._id) {
+          throw new HttpException(
+            'Student Id Already Exist',
+            HttpStatus.CONFLICT,
+          );
+        }
       }
       let result = await this._userRepository.updateDocument(
         { _id: user._id },
