@@ -84,10 +84,10 @@ export class UserControllerV1 {
   updateUserInfo(
     @Req() req,
     @Body() data: UpdateUserDTO,
-    @Param() { user_id },
+    @Param() param: ParamUserDto,
   ) {
     return this.userService
-      .updateUser(req.user._id, user_id, data)
+      .updateUser(req.user._id, param.user_id, data)
       .then((d) => d)
       .catch((e) => {
         throw e;

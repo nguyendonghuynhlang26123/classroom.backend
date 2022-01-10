@@ -26,10 +26,11 @@ export class NotificationService {
       let notification = await this._notificationRepository.create(
         createNotification,
       );
-      notification = await notification.populate('actor_id assignment');
-      const socketIds = await this._deviceService.getAllSocketIds(
-        notification.for.filter((uid) => uid !== notification.actor_id),
+      const idList = notification.for.filter(
+        (uid) => uid.toString() !== notification.actor_id.toString(),
       );
+      notification = await notification.populate('actor_id assignment');
+      const socketIds = await this._deviceService.getAllSocketIds(idList);
       for (let i = 0; i < socketIds.length; i++) {
         const socketId = socketIds[i];
         this._gateway.server.to(socketId).emit('notification', notification);

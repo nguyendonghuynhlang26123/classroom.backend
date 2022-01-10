@@ -25,11 +25,11 @@ export class NotificationGateway implements OnGatewayConnection {
   async handleConnection(client: Socket) {
     try {
       console.log('connected');
-      const token = client.handshake?.query?.token;
-      const user = await this._authService.verifyToken(token);
+      const userId = client.handshake?.query?.userId;
+      // const user = await this._authService.verifyToken(token);
       this._deviceService.createDevice({
         socket_id: client.id,
-        user_id: user._id,
+        user_id: userId as string,
       });
     } catch (error) {
       client.disconnect();
@@ -38,12 +38,8 @@ export class NotificationGateway implements OnGatewayConnection {
 
   async handleDisconnect(client: Socket) {
     console.log('disconnect');
-    const token = client.handshake?.query?.token;
-    const user = await this._authService.verifyToken(token);
-    this._deviceService.removeDevice({
-      socket_id: client.id,
-      user_id: user._id,
-    });
+    const userId = client.handshake?.query?.userId;
+    this._deviceService.removeDevice(client.id);
     client.disconnect();
   }
 }

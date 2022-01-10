@@ -446,7 +446,7 @@ export class GradingAssignmentService {
   async exportMark(classId: string, assignmentId: string) {
     try {
       const gradingAssignments =
-        await this._gradingAssignmentRepository.getAllDocument(
+        await this._gradingAssignmentRepository.getAllResource(
           { class_id: classId, assignment_id: assignmentId },
           { student_id: 1, mark: 1 },
         );
@@ -456,7 +456,7 @@ export class GradingAssignmentService {
       const fields = ['student_id', 'mark'];
       const opts = { fields };
       const parser = new Parser(opts);
-      const csv = parser.parse(gradingAssignments);
+      const csv = await parser.parse(gradingAssignments);
       return csv;
     } catch (error) {
       this._logUtil.errorLogger(error, 'GradingAssignmentService');

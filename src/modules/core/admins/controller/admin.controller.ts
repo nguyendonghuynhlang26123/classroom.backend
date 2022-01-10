@@ -1,3 +1,4 @@
+import { BlackListService } from './../../blackLists/services/blackList.service';
 import {
   Controller,
   Get,
@@ -53,6 +54,7 @@ export class AdminControllerV1 {
   constructor(
     private adminService: AdminService,
     private uploadFileService: UploadFileService,
+    private blacklistService: BlackListService,
   ) {}
 
   @ApiHeader({
@@ -177,17 +179,30 @@ export class AdminControllerV1 {
     return await this.adminService.updateUserAccount(param.user_id, body);
   }
 
-  @ApiHeader({
-    name: 'XSRF-Token',
-    description: 'XSRF-Token',
-  })
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @AllowFors(Role.Admin)
-  @Post('blacklist/')
-  async bannedService(@Body() body: ParamUserDto, @Req() req) {
-    return await this.adminService.updateBanned(body.user_id, true);
-  }
+  // @ApiHeader({
+  //   name: 'XSRF-Token',
+  //   description: 'XSRF-Token',
+  // })
+  // @ApiBearerAuth()
+  // @UseGuards(JwtAuthGuard, RolesGuard)
+  // @AllowFors(Role.Admin)
+  // @Post('blacklist/')
+  // async bannedService(@Body() body: ParamUserDto, @Req() req) {
+  //   await this.adminService.updateBanned(body.user_id, true)
+  //   return await this.adminService;
+  // }
+
+  // @ApiHeader({
+  //   name: 'XSRF-Token',
+  //   description: 'XSRF-Token',
+  // })
+  // @ApiBearerAuth()
+  // @UseGuards(JwtAuthGuard, RolesGuard)
+  // @AllowFors(Role.Admin)
+  // @Put('blacklist/:blacklist_id/restore')
+  // async restoreBannedService(@Param() param: ParamBlacklistDto, @Req() req) {
+  //   return await this.adminService.updateBanned(param.blacklist_id, false);
+  // }
 
   @ApiHeader({
     name: 'XSRF-Token',
@@ -196,19 +211,7 @@ export class AdminControllerV1 {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @AllowFors(Role.Admin)
-  @Put('blacklist/:blacklist_id/restore')
-  async restoreBannedService(@Param() param: ParamBlacklistDto, @Req() req) {
-    return await this.adminService.updateBanned(param.blacklist_id, false);
-  }
-
-  @ApiHeader({
-    name: 'XSRF-Token',
-    description: 'XSRF-Token',
-  })
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @AllowFors(Role.Admin)
-  @Put('classroom/:class_id')
+  @Put('classrooms/:class_id')
   async updateClassroomService(
     @Param() param: QueryClassDto,
     @Body() body: UpdateClassDto,
