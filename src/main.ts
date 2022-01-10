@@ -22,6 +22,8 @@ async function bootstrap() {
 
   app.use(cookieParser());
   const allowList = [
+    'https://moorssalsc-app.herokuapp.com',
+    'https://moorssalc-admin.herokuapp.com',
     'https://btcn02-18127136-18127269.netlify.app',
     'https://moorssalc-app.herokuapp.com',
     'http://localhost:3000',
