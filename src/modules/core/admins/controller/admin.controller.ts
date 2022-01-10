@@ -179,31 +179,30 @@ export class AdminControllerV1 {
     return await this.adminService.updateUserAccount(param.user_id, body);
   }
 
-  @ApiHeader({
-    name: 'XSRF-Token',
-    description: 'XSRF-Token',
-  })
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @AllowFors(Role.Admin)
-  @Post('blacklist/')
-  async bannedService(@Body() body: ParamUserDto, @Req() req) {
-    await this.adminService.updateBanned(body.user_id, true)
-     
-    return await this.adminService.;
-  }
+  // @ApiHeader({
+  //   name: 'XSRF-Token',
+  //   description: 'XSRF-Token',
+  // })
+  // @ApiBearerAuth()
+  // @UseGuards(JwtAuthGuard, RolesGuard)
+  // @AllowFors(Role.Admin)
+  // @Post('blacklist/')
+  // async bannedService(@Body() body: ParamUserDto, @Req() req) {
+  //   await this.adminService.updateBanned(body.user_id, true)
+  //   return await this.adminService;
+  // }
 
-  @ApiHeader({
-    name: 'XSRF-Token',
-    description: 'XSRF-Token',
-  })
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @AllowFors(Role.Admin)
-  @Put('blacklist/:blacklist_id/restore')
-  async restoreBannedService(@Param() param: ParamBlacklistDto, @Req() req) {
-    return await this.adminService.updateBanned(param.blacklist_id, false);
-  }
+  // @ApiHeader({
+  //   name: 'XSRF-Token',
+  //   description: 'XSRF-Token',
+  // })
+  // @ApiBearerAuth()
+  // @UseGuards(JwtAuthGuard, RolesGuard)
+  // @AllowFors(Role.Admin)
+  // @Put('blacklist/:blacklist_id/restore')
+  // async restoreBannedService(@Param() param: ParamBlacklistDto, @Req() req) {
+  //   return await this.adminService.updateBanned(param.blacklist_id, false);
+  // }
 
   @ApiHeader({
     name: 'XSRF-Token',

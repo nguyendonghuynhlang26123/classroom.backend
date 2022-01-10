@@ -318,28 +318,6 @@ export class AdminService {
     }
   }
 
-  async updateBanned(userId: string, isBanned: boolean) {
-    try {
-      let user = await this._userRepository.getOneDocument({
-        _id: userId,
-      });
-      if (!user) {
-        throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
-      }
-      let result = await this._userRepository.updateDocument(
-        { _id: user._id },
-        { is_banned: isBanned },
-      );
-      return result;
-    } catch (error) {
-      this._logUtil.errorLogger(error, 'AdminService');
-      if (error instanceof HttpException) {
-        throw error;
-      }
-      throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
-    }
-  }
-
   async updateClassroom(classId: string, dataUpdate: UpdateClassDto) {
     try {
       const classroom = await this._classRepository.getOneDocument({
