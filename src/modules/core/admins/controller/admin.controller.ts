@@ -1,3 +1,4 @@
+import { BlackListService } from './../../blackLists/services/blackList.service';
 import {
   Controller,
   Get,
@@ -53,6 +54,7 @@ export class AdminControllerV1 {
   constructor(
     private adminService: AdminService,
     private uploadFileService: UploadFileService,
+    private blacklistService: BlackListService,
   ) {}
 
   @ApiHeader({
@@ -186,7 +188,9 @@ export class AdminControllerV1 {
   @AllowFors(Role.Admin)
   @Post('blacklist/')
   async bannedService(@Body() body: ParamUserDto, @Req() req) {
-    return await this.adminService.updateBanned(body.user_id, true);
+    await this.adminService.updateBanned(body.user_id, true)
+     
+    return await this.adminService.;
   }
 
   @ApiHeader({
@@ -208,7 +212,7 @@ export class AdminControllerV1 {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @AllowFors(Role.Admin)
-  @Put('classroom/:class_id')
+  @Put('classrooms/:class_id')
   async updateClassroomService(
     @Param() param: QueryClassDto,
     @Body() body: UpdateClassDto,

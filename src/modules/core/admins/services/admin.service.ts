@@ -342,13 +342,13 @@ export class AdminService {
 
   async updateClassroom(classId: string, dataUpdate: UpdateClassDto) {
     try {
-      const classroom = await this._userRepository.getOneDocument({
+      const classroom = await this._classRepository.getOneDocument({
         _id: classId,
       });
       if (!classroom) {
         throw new HttpException('Not Found Classroom', HttpStatus.NOT_FOUND);
       }
-      let result = await this._userRepository.updateDocument(
+      let result = await this._classRepository.updateDocument(
         { _id: classroom._id },
         dataUpdate,
       );
