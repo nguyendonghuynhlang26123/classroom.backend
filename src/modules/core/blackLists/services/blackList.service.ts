@@ -1,3 +1,4 @@
+import { UserRepository } from './../../../connector/repository';
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import {
   BlackListInterface,
@@ -14,6 +15,7 @@ export class BlackListService {
   subscription: Subscription = new Subscription();
   constructor(
     private _blackListRepository: BlackListRepository,
+    private _userRepository: UserRepository,
     private _logUtil: LoggerUtilService,
   ) {
     this.onCreate();
@@ -31,6 +33,11 @@ export class BlackListService {
           HttpStatus.CONFLICT,
         );
       }
+
+      //Update User
+      this.updateBanned(data.user_id, true);
+
+      //Create black list record
       let dataBlackList: BlackListInterface = {
         account: data.user_id,
         actor: adminId,
@@ -52,6 +59,28 @@ export class BlackListService {
           `Duplicate key error collection: ${Object.keys(error.keyValue)}`,
           HttpStatus.CONFLICT,
         );
+      }
+      throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async updateBanned(userId: string, isBanned: boolean) {
+    try {
+      let user = await this._userRepository.getOneDocument({
+        _id: userId,
+      });
+      if (!user) {
+        throw new HttpException('Not Found Account', HttpStatus.NOT_FOUND);
+      }
+      let result = await this._userRepository.updateDocument(
+        { _id: user._id },
+        { is_banned: isBanned },
+      );
+      return result;
+    } catch (error) {
+      this._logUtil.errorLogger(error, 'AdminService');
+      if (error instanceof HttpException) {
+        throw error;
       }
       throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
     }
@@ -117,6 +146,10 @@ export class BlackListService {
       if (!blackList) {
         throw new HttpException('Not Found BlackList', HttpStatus.NOT_FOUND);
       }
+
+      //Update User
+      this.updateBanned(blackList.account, false);
+
       let result = await this._blackListRepository.updateDocument(
         { _id: blackList._id },
         { restored: true },

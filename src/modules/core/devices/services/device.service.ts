@@ -43,11 +43,10 @@ export class DeviceService {
     }
   }
 
-  async removeDevice(data: DeviceInterface) {
+  async removeDevice(socketId: string) {
     try {
       const device = await this._deviceRepository.getOneDocument({
-        user_id: data.user_id,
-        socket_id: data.socket_id,
+        socket_id: socketId,
       });
       if (!device) {
         throw new HttpException('Not Found Device', HttpStatus.NOT_FOUND);
